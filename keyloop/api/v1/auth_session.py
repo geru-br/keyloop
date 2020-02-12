@@ -1,18 +1,27 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import marshmallow
-
 from cornice.resource import resource
-
+from pyramid.security import remember, forget
 
 from grip.resource import BaseResource
 from grip.context import SimpleBaseFactory
 
+from keyloop.schemas.auth_session import AuthSessionSchema
+from keyloop.schemas.path import BasePathSchema
+from keyloop.models.identity import Identity
+from keyloop.models.auth_session import AuthSession
+
+from zope.interface.adapter import AdapterRegistry
+
+from pyramid.httpexceptions import HTTPAccepted
+
+
+registry = AdapterRegistry()
 
 class AuthSessionContext(SimpleBaseFactory):
-    pass
+
+    def __acl__(self):
+        # TODO: implement access permission (fixed token?)
+        pass
 
 
 class CollectionPostSchema(marshmallow.Schema):
@@ -23,10 +32,9 @@ class CollectionPostSchema(marshmallow.Schema):
 
 collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "password"])}
 
-
 @resource(
-    collection_path="/api/v1/{partner_slug}/tokens",
-    path="/api/v1/{partner_slug}/tokens/{id}",
+    collection_path="/api/v1/realms/{realm_slug}/auth-session",
+    path="/api/v1/realms/{realm_slug}/auth-session/\",
     content_type="application/json",
     factory=AuthSessionContext,
 )
@@ -38,13 +46,43 @@ class AuthSessionAPIv1(BaseResource):
     def collection_post(self):
 
         realm = self.request.validated["path"]["realm_slug"]
-
         validated = self.request.validated["body"]
 
-        identity = Identity.get_user(validated["username"])
+        username = validated["username"]
+        password = validated["password"]
+        
+        identity = registry.lookup(IIdentitySource, IIdentity, realm)(username)
+        identity.login(username, password)
 
-        session = AuthSession(validated["username"], validated["password"], identity)
+        session = AuthSession(username, password, identity)
 
-        remember(validated["username"])
+        remember(self.request, username, policy_name='kloop')
 
         return session
+    
+    def get(self):
+        """ Return identity info + permissions """
+
+        # realm = self.request.validated["path"]["realm_slug"]
+        # id = self.request.validated["path"]["id"]
+
+        # # session = AuthSession.get_session(id, realm)
+
+        # identity = Identity.get_identity(realm, username)
+
+        # session = AuthSession(username, password, identity)
+
+        # return session
+
+        # TODO: fetch permisions
+
+        pass
+
+    def delete(self):
+        """ Logout """
+
+        # Should we trigger notifications to other services?
+        forget(self.request)
+
+        return HTTPAccepted()
+

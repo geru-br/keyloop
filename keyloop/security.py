@@ -10,7 +10,7 @@ from webob.cookies import CookieProfile
 
 
 from keyloop.utils.signing import create_signed, retrieve_signed, BadSignatureError
-
+    
 
 class CookieProfileCache:
     def __init__(self, prefix="kloop", max_age=None):

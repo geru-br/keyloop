@@ -31,12 +31,3 @@ class CreatedUpdatedMixin(object):
         nullable=True,
         index=True,
     )
-
-
-class WhiteLabelMixin(object):
-
-    # referencia ao partner (e.g. `loan uuid`)
-    partner_slug = sa.Column(sa.String(50), nullable=False, index=True)
-
-    # referencia ao parterner (e.g. `loan uuid`)
-    partner_customer_key = sa.Column(sa.String(200), nullable=False, index=True)
