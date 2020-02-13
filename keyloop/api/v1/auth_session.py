@@ -9,6 +9,7 @@ from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
 from keyloop.models.identity import Identity
 from keyloop.models.auth_session import AuthSession
+from keyloop.interfaces import IIdentitySource, IIdentity
 
 from zope.interface.adapter import AdapterRegistry
 
@@ -34,7 +35,7 @@ collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "pass
 
 @resource(
     collection_path="/api/v1/realms/{realm_slug}/auth-session",
-    path="/api/v1/realms/{realm_slug}/auth-session/\",
+    path="/api/v1/realms/{realm_slug}/auth-session/",
     content_type="application/json",
     factory=AuthSessionContext,
 )
