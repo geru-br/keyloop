@@ -30,13 +30,13 @@ class Meta(type):
             collection_get,
             schema=collection_get_schema,
             validators=(marshmallow_validator,),
-            content_type="application/json",
+            content_type="application/vnd.api+json",
             # apispec_show=True,
             renderer="json",
-            permission="view",
+            # permission="view",
         )
 
-        # collectin_post
+        # collection_post
         if "collection_post" not in namespace:
 
             def collection_post(self):
@@ -65,11 +65,11 @@ class Meta(type):
             collection_post,
             validators=(marshmallow_validator,),
             # apispec_show=True,
-            content_type="application/json",
+            content_type="application/vnd.api+json",
             renderer="json_api",
             schema=collection_post_schema,
             # apispec_response_schemas=collection_response_schemas,
-            permission="edit",
+            # permission="edit",
         )
 
         if (
@@ -101,7 +101,7 @@ class Meta(type):
             validators=(marshmallow_validator,),
             # apispec_response_schemas=resource_response_schemas,
             renderer="json_api",
-            permission="view",
+            # permission="view",
         )
 
         # post
@@ -125,7 +125,7 @@ class Meta(type):
             schema=resource_post_schema,
             # apispec_response_schemas=resource_response_schemas,
             renderer="json_api",
-            permission="edit",
+            # permission="edit",
         )
 
         cls = super(Meta, mcs).__new__(mcs, name, bases, namespace)

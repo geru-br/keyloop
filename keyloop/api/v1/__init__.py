@@ -1,3 +1,3 @@
 def includeme(config):
     config.include(".realms")
-    # config.scan(".auth_session")
+    config.scan(".auth_session")

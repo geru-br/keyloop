@@ -15,10 +15,7 @@ registry = AdapterRegistry()
 
 
 class AuthSessionContext(SimpleBaseFactory):
-
-    def __acl__(self):
-        # TODO: implement access permission (fixed token?)
-        pass
+    pass
 
 
 class CollectionPostSchema(marshmallow.Schema):
@@ -30,16 +27,21 @@ collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "pass
 
 
 @resource(
-    collection_path="/api/v1/realms/{realm_slug}/auth-session",
-    path="/api/v1/realms/{realm_slug}/auth-session/{id}",
-    content_type="application/json",
+    collection_path="/realms/{realm_slug}/auth-session",
+    path="/realms/{realm_slug}/auth-session/{id}",
+    renderer="json_api",
+    content_type="application/vnd.api+json",
     factory=AuthSessionContext,
 )
-class AuthSession(BaseResource):
+class AuthSessionResource(BaseResource):
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
 
     def collection_post(self):
+        import pdb
+        pdb.set_trace()
+        # where is this property being set?
+        # should we define a property direct on the factory context
         realm = self.request.validated["path"]["realm_slug"]
         validated = self.request.validated["body"]
 
@@ -71,7 +73,7 @@ class AuthSession(BaseResource):
 
         # TODO: fetch permisions
 
-        pass
+        return {}
 
     def delete(self):
         """ Logout """

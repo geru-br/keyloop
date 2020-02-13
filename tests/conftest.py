@@ -54,7 +54,7 @@ def testapp(app):
             HTTP_HOST="auth.keyloop.org",
         ),
     )
-    return testapp_
+    yield testapp_
 
 
 @pytest.fixture(scope="function")
