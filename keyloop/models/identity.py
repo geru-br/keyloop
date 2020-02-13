@@ -1,13 +1,13 @@
-from zope.interface import implements
-from keyloop.interfaces import IIdentity
-
-@implements(IIdentity)
-class Identity:
-    
-    @classmethod
-    def get_identity(cls, realm_slug, username):
-        # how to filter an identity and check if it is from the receved realm?
-        return cls.query.filter(realm_slug=realm_slug, username=username).first()
+# from zope.interface import implements
+# from keyloop.interfaces import IIdentity
+#
+# @implements(IIdentity)
+# class Identity:
+#
+#     @classmethod
+#     def get_identity(cls, realm_slug, username):
+#         # how to filter an identity and check if it is from the receved realm?
+#         return cls.query.filter(realm_slug=realm_slug, username=username).first()
 
 """
 abstract IdentityBla
