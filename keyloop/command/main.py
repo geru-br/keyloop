@@ -4,7 +4,7 @@ from pprint import pprint
 from pyramid.paster import bootstrap
 
 
-from keyloop.models.realms import Realms
+from keyloop.models.realms import Realm
 
 
 class BasePrompt(Cmd):
@@ -25,7 +25,7 @@ class RealmPrompt(BasePrompt):
     prompt = "realms> "
 
     def do_list(self, inp):
-        realms = Realms.objects.raw({})
+        realms = Realm.objects.raw({})
         pprint([r for r in realms])
 
     def do_add(self, inp):
@@ -33,13 +33,13 @@ class RealmPrompt(BasePrompt):
         realm_slug = input(f"Slug [{realm_name.lower()}]: ") or realm_name.lower()
         realm_description = input("Description:  ")
 
-        Realms(name=realm_name, slug=realm_slug, description=realm_description).update()
+        Realm(name=realm_name, slug=realm_slug, description=realm_description).update()
 
     def do_delete(self, inp):
         realm_slug = input(f"Slug: ")
         try:
-            realm = Realms.objects.raw(dict(_id=realm_slug)).first()
-        except Realms.DoesNotExist:
+            realm = Realm.objects.raw(dict(_id=realm_slug)).first()
+        except Realm.DoesNotExist:
             print(f"Realm '{realm_slug}' not found.")
         else:
             realm.delete()
