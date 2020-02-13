@@ -6,7 +6,7 @@ from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
-from keyloop.interfaces import IIdentitySource, IIdentity
+from keyloop.interfaces import IdentityDummyAdapter, IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
@@ -38,8 +38,6 @@ class AuthSessionResource(BaseResource):
     collection_response_schemas = collection_response_schemas
 
     def collection_post(self):
-        import pdb
-        pdb.set_trace()
         # where is this property being set?
         # should we define a property direct on the factory context
         realm = self.request.validated["path"]["realm_slug"]
@@ -48,7 +46,8 @@ class AuthSessionResource(BaseResource):
         username = validated["username"]
         password = validated["password"]
 
-        identity = registry.lookup(IIdentitySource, IIdentity, realm)(username)
+        registry.register([IIdentitySource], IIdentity, realm, IdentityDummyAdapter)
+        identity = registry.lookup([IIdentitySource], IIdentity, realm)(username)
         identity.login(password)
 
         session = AuthSession(username, password, identity)
