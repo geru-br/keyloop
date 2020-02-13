@@ -4,10 +4,10 @@ from pyramid.security import remember, forget
 
 from grip.resource import BaseResource
 from grip.context import SimpleBaseFactory
+from keyloop.interfaces import IIdentitySource, IIdentity
 
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
-from keyloop.models.identity import Identity
 from keyloop.models.auth_session import AuthSession
 from keyloop.interfaces import IIdentitySource, IIdentity
 
@@ -15,8 +15,8 @@ from zope.interface.adapter import AdapterRegistry
 
 from pyramid.httpexceptions import HTTPAccepted
 
-
 registry = AdapterRegistry()
+
 
 class AuthSessionContext(SimpleBaseFactory):
 
@@ -26,41 +26,39 @@ class AuthSessionContext(SimpleBaseFactory):
 
 
 class CollectionPostSchema(marshmallow.Schema):
-
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
 
 
 collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "password"])}
 
+
 @resource(
     collection_path="/api/v1/realms/{realm_slug}/auth-session",
-    path="/api/v1/realms/{realm_slug}/auth-session/",
+    path="/api/v1/realms/{realm_slug}/auth-session/{id}",
     content_type="application/json",
     factory=AuthSessionContext,
 )
 class AuthSessionAPIv1(BaseResource):
-
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
 
     def collection_post(self):
-
         realm = self.request.validated["path"]["realm_slug"]
         validated = self.request.validated["body"]
 
         username = validated["username"]
         password = validated["password"]
-        
+
         identity = registry.lookup(IIdentitySource, IIdentity, realm)(username)
-        identity.login(username, password)
+        identity.login(password)
 
         session = AuthSession(username, password, identity)
 
         remember(self.request, username, policy_name='kloop')
 
         return session
-    
+
     def get(self):
         """ Return identity info + permissions """
 
@@ -86,4 +84,3 @@ class AuthSessionAPIv1(BaseResource):
         forget(self.request)
 
         return HTTPAccepted()
-
