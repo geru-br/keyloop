@@ -1,7 +1,7 @@
 import marshmallow_jsonapi
 import marshmallow
 
-from identity import IdentitySchema
+from .identity import IdentitySchema
 
 
 class AuthSessionSchema(marshmallow_jsonapi.Schema):

@@ -1,19 +1,15 @@
 import marshmallow
 from cornice.resource import resource
+from pyramid.httpexceptions import HTTPAccepted
 from pyramid.security import remember, forget
-
-from grip.resource import BaseResource
-from grip.context import SimpleBaseFactory
-from keyloop.interfaces import IIdentitySource, IIdentity
-
-from keyloop.schemas.auth_session import AuthSessionSchema
-from keyloop.schemas.path import BasePathSchema
-from keyloop.models.auth_session import AuthSession
-from keyloop.interfaces import IIdentitySource, IIdentity
-
 from zope.interface.adapter import AdapterRegistry
 
-from pyramid.httpexceptions import HTTPAccepted
+from grip.context import SimpleBaseFactory
+from grip.resource import BaseResource
+from keyloop.interfaces import IIdentitySource, IIdentity
+from keyloop.models.auth_session import AuthSession
+from keyloop.schemas.auth_session import AuthSessionSchema
+from keyloop.schemas.path import BasePathSchema
 
 registry = AdapterRegistry()
 
@@ -39,7 +35,7 @@ collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "pass
     content_type="application/json",
     factory=AuthSessionContext,
 )
-class AuthSessionAPIv1(BaseResource):
+class AuthSession(BaseResource):
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
 

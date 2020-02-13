@@ -31,7 +31,7 @@ class Meta(type):
             schema=collection_get_schema,
             validators=(marshmallow_validator,),
             content_type="application/json",
-            apispec_show=True,
+            # apispec_show=True,
             renderer="json",
             permission="view",
         )
@@ -64,11 +64,11 @@ class Meta(type):
         namespace["collection_post"] = add_view(
             collection_post,
             validators=(marshmallow_validator,),
-            apispec_show=True,
+            # apispec_show=True,
             content_type="application/json",
             renderer="json_api",
             schema=collection_post_schema,
-            apispec_response_schemas=collection_response_schemas,
+            # apispec_response_schemas=collection_response_schemas,
             permission="edit",
         )
 
@@ -96,10 +96,10 @@ class Meta(type):
 
         namespace["get"] = add_view(
             get,
-            apispec_show=True,
+            # apispec_show=True,
             schema=resource_get_schema,
             validators=(marshmallow_validator,),
-            apispec_response_schemas=resource_response_schemas,
+            # apispec_response_schemas=resource_response_schemas,
             renderer="json_api",
             permission="view",
         )
@@ -121,9 +121,9 @@ class Meta(type):
         namespace["post"] = add_view(
             post,
             validators=(marshmallow_validator,),
-            apispec_show=True,
+            # apispec_show=True,
             schema=resource_post_schema,
-            apispec_response_schemas=resource_response_schemas,
+            # apispec_response_schemas=resource_response_schemas,
             renderer="json_api",
             permission="edit",
         )

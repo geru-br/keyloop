@@ -16,6 +16,8 @@ requires = [
     "SQLAlchemy-Utils==0.36.1",
     "pyramid-ipython==0.2",
     "alembic==1.3.3",
+    "marshmallow-jsonapi==0.23.0",
+    "cornice-apispec==0.9.7"
 ]
 
 test_requires = [
