@@ -6,6 +6,7 @@ from keyloop.interfaces import IIdentity, IIdentitySource
 
 
 @implementer(IIdentity)
+@implementer(IIdentitySource)
 @dataclass
 class User:
     username: str
@@ -16,8 +17,7 @@ class User:
             return self
         return None
 
+    @classmethod
+    def  get_echo_user(cls, username):
+        return cls(username, password="1234567a")
 
-
-@implementer(IIdentitySource)
-def  echo_user_provider(username):
-    return User(username, password="1234567a")
