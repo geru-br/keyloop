@@ -72,8 +72,7 @@ class AuthSessionResource(BaseResource):
 
         # return session
 
-        # TODO: fetch permisions
-
+        # TODO: fetch permisionn
         return {}
 
     def delete(self):

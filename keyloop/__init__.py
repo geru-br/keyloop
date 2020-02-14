@@ -13,8 +13,7 @@ def includeme(config):
     config.include("cornice")
     config.include('cornice_apispec')
 
-
-    config.include("api.v1", route_prefix="/api/v1")
+    config.include("keyloop.api.v1", route_prefix="/api/v1")
 
     # Security policies
     authn_policy = KeyLoopAuthenticationPolicy(
@@ -29,4 +28,4 @@ def includeme(config):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
-    config.scan()
+    config.scan(ignore=['keyloop.api.v1'])
