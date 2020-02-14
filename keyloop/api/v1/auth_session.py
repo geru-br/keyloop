@@ -6,7 +6,7 @@ from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
-from keyloop.interfaces import IdentityDummyAdapter, IIdentitySource, IIdentity
+from keyloop.interfaces import IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
