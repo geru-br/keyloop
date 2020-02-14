@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPNotFound
 from sqlalchemy.orm.exc import NoResultFound
 
 # Do not remove this line. Its is important for swagger
-from cornice_apispec import validators
+# from cornice_apispec import validators
 
 
 class Meta(type):
@@ -68,7 +68,7 @@ class Meta(type):
             content_type="application/vnd.api+json",
             renderer="json_api",
             schema=collection_post_schema,
-            # apispec_response_schemas=collection_response_schemas,
+            apispec_response_schemas=collection_response_schemas,
             # permission="edit",
         )
 

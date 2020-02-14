@@ -11,6 +11,7 @@ def main(_, **settings):
     with Configurator(settings=settings) as config:
         config.include("keyloop.models")
         config.include("cornice")
+        config.include('cornice_apispec')
 
         config.include("keyloop.api", route_prefix="/api")
 

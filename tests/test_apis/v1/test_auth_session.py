@@ -1,5 +1,8 @@
-def test_post_auth_session(testapp):
+from zope.interface.adapter import AdapterRegistry
 
+
+def test_post_auth_session(testapp):
+    registry = AdapterRegistry()
     payload = {
         "data": {
             "type": "auth-session",

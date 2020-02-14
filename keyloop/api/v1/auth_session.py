@@ -1,7 +1,7 @@
 import marshmallow
 from cornice.resource import resource
 from pyramid.httpexceptions import HTTPAccepted
-from pyramid.security import remember, forget
+from pyramid.security import remember, forget, Everyone, Allow
 from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
@@ -15,7 +15,9 @@ registry = AdapterRegistry()
 
 
 class AuthSessionContext(SimpleBaseFactory):
-    pass
+    def __acl__(self):
+        # TODO: implement access permission (fixed token?)
+        return [(Allow, Everyone, 'edit')]
 
 
 class CollectionPostSchema(marshmallow.Schema):
@@ -29,7 +31,6 @@ collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "pass
 @resource(
     collection_path="/realms/{realm_slug}/auth-session",
     path="/realms/{realm_slug}/auth-session/{id}",
-    renderer="json_api",
     content_type="application/vnd.api+json",
     factory=AuthSessionContext,
 )
@@ -40,6 +41,7 @@ class AuthSessionResource(BaseResource):
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
+
         realm = self.request.validated["path"]["realm_slug"]
         validated = self.request.validated["body"]
 
