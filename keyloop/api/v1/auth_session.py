@@ -1,6 +1,7 @@
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted
+from pyramid.httpexceptions import HTTPAccepted, HTTPUnauthorized, HTTPNotFound
+from pyramid.config import Configurator
 from pyramid.security import remember, forget, Everyone, Allow
 from zope.interface.adapter import AdapterRegistry
 
@@ -10,8 +11,6 @@ from keyloop.interfaces import IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
-
-registry = AdapterRegistry()
 
 
 class AuthSessionContext(SimpleBaseFactory):
@@ -42,21 +41,30 @@ class AuthSessionResource(BaseResource):
         # where is this property being set?
         # should we define a property direct on the factory context
 
+
         realm = self.request.validated["path"]["realm_slug"]
         validated = self.request.validated["body"]
 
         username = validated["username"]
         password = validated["password"]
 
-        registry.register([IIdentitySource], IIdentity, realm, IdentityDummyAdapter)
+        registry = self.request.registry.settings["keyloop_adapters"]
+
+        identity_provider = registry.lookup([IIdentitySource], IIdentity, realm)
+
+        if not identity_provider:
+            # realm not found
+            raise HTTPNotFound("No such realm")
+
         identity = registry.lookup([IIdentitySource], IIdentity, realm)(username)
-        identity.login(password)
 
-        session = AuthSession(username, password, identity)
+        if identity.login(username, password):
+            session = AuthSession(username, password, identity)
+            remember(self.request, username, policy_name='kloop')
+            return session
 
-        remember(self.request, username, policy_name='kloop')
+        raise HTTPUnauthorized("Incorrect username or password")
 
-        return session
 
     def get(self):
         """ Return identity info + permissions """

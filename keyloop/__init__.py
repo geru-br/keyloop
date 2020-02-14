@@ -1,3 +1,7 @@
+from zope.interface.adapter import AdapterRegistry
+
+
+
 from pyramid.config import Configurator
 from pyramid.response import Response
 
@@ -7,6 +11,20 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from grip.renderers import json_api_renderer
 
 from keyloop.security import KeyLoopAuthenticationPolicy
+
+from keyloop import interfaces
+
+
+def _register_adapters(config):
+
+    settings = config.registry.settings
+    adapter_registry = AdapterRegistry()
+
+    realm, identity_source_name = settings["keyloop.identity_source"].split(":")
+
+    adapter_registry.register([interfaces.IIdentitySource], interfaces.IIdentity, realm, config.maybe_dotted(identity_source_name))
+
+    config.registry.settings["keyloop_adapters"] = adapter_registry
 
 
 def includeme(config):
@@ -27,5 +45,6 @@ def includeme(config):
     authz_policy = ACLAuthorizationPolicy()
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
+    _register_adapters(config)
 
     config.scan(ignore=['keyloop.api.v1'])

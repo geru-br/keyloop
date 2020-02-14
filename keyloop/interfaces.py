@@ -12,9 +12,10 @@ from zope.interface import (
 
 
 class IIdentity(Interface):
+    username = Attribute('Unique string used for identifying a user party.')
     password = Attribute('The password for verifying the user')
 
-    def login(password) -> bool:
+    def login(username, password) -> bool:
         """Verify the identity."""
         pass
 
