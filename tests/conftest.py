@@ -1,61 +1,49 @@
+import sys
 import pytest
-import transaction
-
-from pyramid import paster
 from pyramid import testing
-
-from sqlalchemy import engine_from_config
-
 from webtest import TestApp
 
-from keyloop.models import DBSession
-from keyloop.models.base import Base
+from unittest.mock import Mock
 
-settings = paster.get_appsettings("testing.ini", name="main")
+PY3K = sys.version_info >= (3, 0)
 
+@pytest.fixture
+def mock_module():
+    """Creates a fake "testing_mock" module
+    that can be "imported" by parts of the app being tested.
 
-@pytest.fixture(scope="session")
-def sqlalchemy_engine():
-    engine = engine_from_config(settings, "sqlalchemy.")
-    DBSession.configure(bind=engine)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    yield engine
-    Base.metadata.drop_all(engine)
+    The classes that are intended to be tested (if they are instantiated/methods calles, etc),
+    are created as permanent attributes on the fake module (Currently only MockUser)
 
 
-@pytest.fixture(scope="function", autouse=True)
-def sqlalchemy_subtransaction(sqlalchemy_engine):
-    connection = sqlalchemy_engine.connect()
-    trans = connection.begin_nested()
-    DBSession.configure(bind=connection)
-    yield
-    trans.rollback()
-    DBSession.remove()
-    transaction.abort()
-    connection.close()
+    """
+    import sys
+    if not "testing_mock" in sys.modules:
+        sys.modules["testing_mock"] = Mock()
 
+    TestingModule = sys.modules["testing_mock"]
+    TestingModule.MockUser.reset_mock()
+    return TestingModule
 
-@pytest.fixture(scope="session")
-def app():
-    config = testing.setUp(settings=settings)
-    yield main(config, **settings)
-    testing.tearDown()
+@pytest.fixture
+def pyramid_config(mock_module):
 
+    config = testing.setUp(
+        settings={
 
-@pytest.fixture(scope="function")
-def testapp(app):
-    testapp_ = TestApp(
-        app,
-        extra_environ=dict(
-            SERVER_NAME="auth.keyloop.org",
-            SERVER_PORT="80",
-            HTTP_HOST="auth.keyloop.org",
-        ),
+            "keyloop.identity_sources": "REALM:testing_mock.MockUser"
+        }
     )
-    yield testapp_
+
+    config.include("keyloop")
+    config.include("grip")
+    # config.scan('.')
+
+    return config
 
 
-@pytest.fixture(scope="function")
-def registry(testapp):
-    return testapp.app.registry
+@pytest.fixture
+def pyramid_app(pyramid_config):
+    return TestApp(pyramid_config.make_wsgi_app())
+
+

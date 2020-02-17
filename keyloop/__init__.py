@@ -55,8 +55,8 @@ def includeme(config):
         # callback=groupfinder,
     )
     authz_policy = ACLAuthorizationPolicy()
-    config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
+    config.set_authentication_policy(authn_policy)
     _register_adapters(config)
 
     config.scan(ignore=['keyloop.api.v1'])

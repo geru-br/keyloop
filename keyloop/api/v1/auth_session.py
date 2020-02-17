@@ -49,7 +49,6 @@ class AuthSessionResource(BaseResource):
         registry = self.request.registry.settings["keyloop_adapters"]
 
         identity_provider = registry.lookup([IIdentity], IIdentitySource, self.context.realm)
-
         if not identity_provider:
             # realm not found
             raise HTTPNotFound("No such realm")
