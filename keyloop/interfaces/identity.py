@@ -26,23 +26,3 @@ class IIdentitySource(Interface):
     def __call__(username) -> IIdentity:
         pass
 
-
-@implementer(IIdentitySource)
-class IdentityDummyAdapter:
-
-    def __init__(self, username):
-        self.username = username
-        self._query_password()
-
-    def login(self, password) -> bool:
-        """Verify the identity
-        """
-        if self.password == password:
-            print("freaking passowrd is right")
-            return True
-
-        print("freaking passowrd is wrong")
-        return False
-
-    def _query_password(self):
-        self.password = "blablabla"

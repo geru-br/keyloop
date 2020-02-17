@@ -29,5 +29,4 @@ class CustomBase:
         default=lambda: uuid4().hex,
     )
 
-
 Base = declarative_base(cls=CustomBase)
