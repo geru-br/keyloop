@@ -52,7 +52,7 @@ class IdentityResource(BaseResource):
 
         registry = self.request.registry.settings["keyloop_adapters"]
 
-        identity_provider = registry.lookup([IIdentitySource], IIdentity, self.context.realm)
+        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.context.realm)
 
         if not identity_provider:
             # realm not found
@@ -62,7 +62,7 @@ class IdentityResource(BaseResource):
             identity = identity_provider.create(username, password, name, contacts)
             return identity
         except Exception as e:
-            logger.error("Could not create new Identity")
+            logger.error("Could not create new Identity: '%s'", e)
             raise
 
     def get(self):
