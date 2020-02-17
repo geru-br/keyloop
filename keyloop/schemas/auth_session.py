@@ -10,8 +10,4 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
 
     id = marshmallow.fields.UUID(dump_only=True, attribute="uuid")
 
-    username = marshmallow.fields.String()
-
-    password = marshmallow.fields.String()
-
     identity = marshmallow.fields.Nested(IdentitySchema)

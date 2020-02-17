@@ -8,12 +8,13 @@ from zope.interface.adapter import AdapterRegistry
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
 from keyloop.interfaces import IIdentitySource, IIdentity
-from keyloop.models.auth_session import AuthSession
-from keyloop.schemas.auth_session import AuthSessionSchema
+    from keyloop.models.identity import Identity
+from keyloop.schemas.identity import IdentitySchema
 from keyloop.schemas.path import BasePathSchema
 
 
-class AuthSessionContext(SimpleBaseFactory):
+
+class IdentityContext(SimpleBaseFactory):
     def __acl__(self):
         # TODO: implement access permission (fixed token?)
         return [(Allow, Everyone, 'edit')]
@@ -21,19 +22,19 @@ class AuthSessionContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
+    body = marshmallow.fields.Nested(IdentitySchema(exclude=["password"]))
 
 
-collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "password"])}
+collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
 
 
 @resource(
-    collection_path="/realms/{realm_slug}/auth-session",
+    collection_path="/realms/{realm_slug}/identities",
     path="/realms/{realm_slug}/auth-session/{id}",
     content_type="application/vnd.api+json",
-    factory=AuthSessionContext,
+    factory=IdentityContext,
 )
-class AuthSessionResource(BaseResource):
+class IdentityResource(BaseResource):
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
 
@@ -48,13 +49,13 @@ class AuthSessionResource(BaseResource):
 
         registry = self.request.registry.settings["keyloop_adapters"]
 
-        identity_provider = registry.lookup([IIdentitySource], IIdentity, self.realm)
+        identity_provider = registry.lookup([IIdentitySource], IIdentity, realm)
 
         if not identity_provider:
             # realm not found
             raise HTTPNotFound("No such realm")
 
-        identity = registry.lookup([IIdentitySource], IIdentity, self.realm)(username)
+        identity = registry.lookup([IIdentitySource], IIdentity, realm)(username)
 
         if identity.login(username, password):
             session = AuthSession(username, password, identity)

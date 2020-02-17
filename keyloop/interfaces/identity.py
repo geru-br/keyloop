@@ -1,3 +1,5 @@
+import typing as T
+
 from zope.interface import (
     implementer,
     Interface,
@@ -9,6 +11,12 @@ from zope.interface import (
 #     POST: recebe action e atualiza estado (semântica adotada pela Geru referente ao POST)
 #     DELETE: deleta identidade (soft delete)
 #     GET: retorna info da identidade + permissões
+
+
+class IContact(Interface):
+    type: str = None
+    value: str = None
+    valid_for_auth: bool = None
 
 
 class IIdentity(Interface):
@@ -25,4 +33,9 @@ class IIdentitySource(Interface):
     """
     def __call__(username) -> IIdentity:
         pass
+
+    def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
+        pass
+
+
 
