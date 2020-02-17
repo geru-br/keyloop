@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from zope.interface import implementer
 
-from keyloop.interfaces import IIdentity, IIdentitySource
+from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
 
 @implementer(IIdentity)
@@ -11,6 +11,7 @@ from keyloop.interfaces import IIdentity, IIdentitySource
 class User:
     username: str
     password: str
+    name: str
 
     def login(self, username, password):
         if password == self.password:
@@ -18,6 +19,15 @@ class User:
         return None
 
     @classmethod
-    def  get_echo_user(cls, username):
+    def  get(cls, username):
         return cls(username, password="1234567a")
-
+    
+    @classmethod
+    def create(cls, username, password, name, contacts):
+        import json
+        with open(username, 'w') as fp:
+            json.dump({
+                'password':password,
+                'name': name,
+                'contact': contacts
+            }, fp)

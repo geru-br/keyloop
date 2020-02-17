@@ -14,9 +14,9 @@ from zope.interface import (
 
 
 class IContact(Interface):
-    type: str = None
-    value: str = None
-    valid_for_auth: bool = None
+    type = Attribute('String to indicate type of contact (e.g. email, phone, etc...)')
+    value = Attribute('String value of contact type')
+    valid_for_auth = Attribute('Boolean to indicate if contact type is valid for auth')
 
 
 class IIdentity(Interface):
@@ -31,11 +31,8 @@ class IIdentity(Interface):
 class IIdentitySource(Interface):
     """Marker interface for callables that retrieve an Identity object given a username
     """
-    def __call__(username) -> IIdentity:
+    def get(username) -> IIdentity:
         pass
 
     def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
         pass
-
-
-

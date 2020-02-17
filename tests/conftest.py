@@ -1,7 +1,6 @@
 import pytest
 import transaction
 
-from keyloop import main
 from pyramid import paster
 from pyramid import testing
 

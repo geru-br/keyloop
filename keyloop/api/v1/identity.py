@@ -7,12 +7,13 @@ from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
-from keyloop.interfaces import IIdentitySource, IIdentity
-    from keyloop.models.identity import Identity
+from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.schemas.identity import IdentitySchema
 from keyloop.schemas.path import BasePathSchema
 
+import logging
 
+logger = logging.getLogger(__name__)
 
 class IdentityContext(SimpleBaseFactory):
     def __acl__(self):
@@ -22,7 +23,7 @@ class IdentityContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(IdentitySchema(exclude=["password"]))
+    body = marshmallow.fields.Nested(IdentitySchema)
 
 
 collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
@@ -30,7 +31,7 @@ collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
 
 @resource(
     collection_path="/realms/{realm_slug}/identities",
-    path="/realms/{realm_slug}/auth-session/{id}",
+    path="/realms/{realm_slug}/identities/{id}",
     content_type="application/vnd.api+json",
     factory=IdentityContext,
 )
@@ -46,24 +47,23 @@ class IdentityResource(BaseResource):
 
         username = validated["username"]
         password = validated["password"]
+        name = validated["name"]
+        contacts = validated["contacts"]
 
         registry = self.request.registry.settings["keyloop_adapters"]
 
-        identity_provider = registry.lookup([IIdentitySource], IIdentity, realm)
+        identity_provider = registry.lookup([IIdentitySource], IIdentity, self.context.realm)
 
         if not identity_provider:
             # realm not found
             raise HTTPNotFound("No such realm")
 
-        identity = registry.lookup([IIdentitySource], IIdentity, realm)(username)
-
-        if identity.login(username, password):
-            session = AuthSession(username, password, identity)
-            remember(self.request, username, policy_name='kloop')
-            return session
-
-        raise HTTPUnauthorized("Incorrect username or password")
-
+        try:
+            identity = identity_provider.create(username, password, name, contacts)
+            return identity
+        except Exception as e:
+            logger.error("Could not create new Identity")
+            raise
 
     def get(self):
         """ Return identity info + permissions """

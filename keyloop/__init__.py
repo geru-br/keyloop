@@ -10,7 +10,7 @@ from grip.renderers import json_api_renderer
 
 from keyloop.security import KeyLoopAuthenticationPolicy
 
-from keyloop import interfaces
+from keyloop.interfaces import identity
 
 
 def _register_adapters(config):
@@ -19,7 +19,7 @@ def _register_adapters(config):
 
     realm, identity_source_name = settings["keyloop.identity_source"].split(":")
 
-    adapter_registry.register([interfaces.IIdentitySource], interfaces.IIdentity, realm,
+    adapter_registry.register([identity.IIdentitySource], identity.IIdentity, realm,
                               config.maybe_dotted(identity_source_name))
 
     config.registry.settings["keyloop_adapters"] = adapter_registry
