@@ -17,5 +17,5 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
 
     username = fields.String()
     password = fields.String()
-    name = fields.String()
-    contacts = fields.List(fields.Nested(ContactSchema))
+    name = fields.String(required=False)
+    contacts = fields.List(fields.Nested(ContactSchema), required=False)

@@ -21,10 +21,10 @@ class AuthSessionContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
+    body = marshmallow.fields.Nested(AuthSessionSchema)
 
 
-collection_response_schemas = {200: AuthSessionSchema(exclude=["username", "password"])}
+collection_response_schemas = {200: AuthSessionSchema(exclude=["identity.password"])}
 
 
 @resource(
@@ -43,12 +43,12 @@ class AuthSessionResource(BaseResource):
 
         validated = self.request.validated["body"]
 
-        username = validated["username"]
-        password = validated["password"]
+        username = validated["identity"]["username"]
+        password = validated["identity"]["password"]
 
         registry = self.request.registry.settings["keyloop_adapters"]
 
-        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.realm)
+        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.context.realm)
 
         if not identity_provider:
             # realm not found

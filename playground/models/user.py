@@ -11,7 +11,7 @@ from keyloop.interfaces.identity import IIdentity, IIdentitySource
 class User:
     username: str
     password: str
-    name: str
+    name: str = None
 
     def login(self, username, password):
         if password == self.password:
@@ -20,8 +20,8 @@ class User:
 
     @classmethod
     def  get(cls, username):
-        return cls(username, password="1234567a")
-    
+        return cls(username, password="1234567a", name=f"{username} {username}")
+
     @classmethod
     def create(cls, username, password, name, contacts):
         import json
