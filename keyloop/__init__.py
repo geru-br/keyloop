@@ -1,7 +1,5 @@
 from zope.interface.adapter import AdapterRegistry
 
-
-
 from pyramid.config import Configurator
 from pyramid.response import Response
 
@@ -16,13 +14,13 @@ from keyloop import interfaces
 
 
 def _register_adapters(config):
-
     settings = config.registry.settings
     adapter_registry = AdapterRegistry()
 
     realm, identity_source_name = settings["keyloop.identity_source"].split(":")
 
-    adapter_registry.register([interfaces.IIdentitySource], interfaces.IIdentity, realm, config.maybe_dotted(identity_source_name))
+    adapter_registry.register([interfaces.IIdentitySource], interfaces.IIdentity, realm,
+                              config.maybe_dotted(identity_source_name))
 
     config.registry.settings["keyloop_adapters"] = adapter_registry
 
