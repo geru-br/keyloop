@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 from http import HTTPStatus
 
-def test_post_auth_session(pyramid_app, mock_module):
 
+def test_post_auth_session(pyramid_app, mock_module):
     payload = {
         "data": {
             "type": "auth-session",
@@ -24,11 +24,11 @@ def test_post_auth_session(pyramid_app, mock_module):
     }
 
     user = Mock(
-        uuid = lambda: uuid.uuid4(),
-        username = lambda :"",
-        password = lambda: "",
+        uuid=lambda: uuid.uuid4(),
+        username=lambda: "",
+        password=lambda: "",
     )
-    user_getter=Mock(return_value=user)
+    user_getter = Mock(return_value=user)
     mock_module.MockUser.get.return_value = user_getter
 
     res = pyramid_app.post_json("/api/v1/realms/REALM/auth-session", payload, content_type="application/vnd.api+json")

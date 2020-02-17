@@ -7,6 +7,7 @@ from unittest.mock import Mock
 
 PY3K = sys.version_info >= (3, 0)
 
+
 @pytest.fixture
 def mock_module():
     """Creates a fake "testing_mock" module
@@ -25,9 +26,9 @@ def mock_module():
     TestingModule.MockUser.reset_mock()
     return TestingModule
 
+
 @pytest.fixture
 def pyramid_config(mock_module):
-
     config = testing.setUp(
         settings={
 
@@ -37,7 +38,6 @@ def pyramid_config(mock_module):
 
     config.include("keyloop")
     config.include("grip")
-    # config.scan('.')
 
     return config
 
@@ -45,5 +45,3 @@ def pyramid_config(mock_module):
 @pytest.fixture
 def pyramid_app(pyramid_config):
     return TestApp(pyramid_config.make_wsgi_app())
-
-
