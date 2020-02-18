@@ -57,7 +57,8 @@ class AuthSessionResource(BaseResource):
 
         if identity.login(username, password):
             session = AuthSession(username, password, identity)
-            remember(self.request, username, policy_name='kloop')
+            headers = remember(self.request, username, policy_name='kloop')
+            self.request.response.headers.extend(headers)
             return session
 
         raise HTTPUnauthorized("Incorrect username or password")
