@@ -46,21 +46,12 @@ class AuthSessionResource(BaseResource):
         username = validated["identity"]["username"]
         password = validated["identity"]["password"]
 
-        registry = self.request.registry.settings["keyloop_adapters"]
+        session = AuthSession(username, password)
 
-        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.context.realm)
-        if not identity_provider:
-            # realm not found
-            raise HTTPNotFound("No such realm")
+        headers = remember(self.request, username)
+        self.request.response.headers.extend(headers)
+        return session
 
-        identity = identity_provider.get(username)
-
-        if identity.login(username, password):
-            session = AuthSession(username, password, identity)
-            remember(self.request, username, policy_name='kloop')
-            return session
-
-        raise HTTPUnauthorized("Incorrect username or password")
 
 
     def get(self):

@@ -5,7 +5,7 @@ class SimpleBaseFactory:
 
     @property
     def realm(self):
-        return self.request.validated["path"]["realm_slug"]
+        return self.request.matchdict["realm_slug"]
 
     @property
     def validated(self):

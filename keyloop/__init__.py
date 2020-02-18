@@ -46,8 +46,8 @@ def includeme(config):
     config.include("keyloop.api.v1", route_prefix="/api/v1")
 
     # Security policies
-    authn_policy = KeyLoopAuthenticationPolicy(
-        "sekret",
+    authn_policy = AuthTktAuthenticationPolicy(
+        config.registry.settings["keyloop.authpolicysecret"],
         max_age=30,
         # hashalg="sha512",
         # wild_domain=False,

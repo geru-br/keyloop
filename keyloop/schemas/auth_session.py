@@ -4,6 +4,7 @@ import marshmallow
 from .identity import IdentitySchema
 
 
+
 class AuthSessionSchema(marshmallow_jsonapi.Schema):
     class Meta:
         type_ = "auth-session"

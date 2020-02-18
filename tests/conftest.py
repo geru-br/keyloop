@@ -7,31 +7,32 @@ from unittest.mock import Mock
 
 PY3K = sys.version_info >= (3, 0)
 
-@pytest.fixture
-def mock_module():
-    """Creates a fake "testing_mock" module
-    that can be "imported" by parts of the app being tested.
+#@pytest.fixture
+#def mock_module():
+    #"""Creates a fake "testing_mock" module
+    #that can be "imported" by parts of the app being tested.
 
-    The classes that are intended to be tested (if they are instantiated/methods calles, etc),
-    are created as permanent attributes on the fake module (Currently only MockUser)
+    #The classes that are intended to be tested (if they are instantiated/methods calles, etc),
+    #are created as permanent attributes on the fake module (Currently only MockUser)
 
 
-    """
-    import sys
-    if not "testing_mock" in sys.modules:
-        sys.modules["testing_mock"] = Mock()
+    #"""
+    #import sys
+    #if not "testing_mock" in sys.modules:
+        #sys.modules["testing_mock"] = Mock()
 
-    TestingModule = sys.modules["testing_mock"]
-    TestingModule.MockUser.reset_mock()
-    return TestingModule
+    #TestingModule = sys.modules["testing_mock"]
+    #TestingModule.MockUser.reset_mock()
+    #return TestingModule
 
-@pytest.fixture
-def pyramid_config(mock_module):
+@pytest.fixture(scope="session")
+def pyramid_config():
 
     config = testing.setUp(
         settings={
 
-            "keyloop.identity_sources": "REALM:testing_mock.MockUser"
+            "keyloop.identity_sources": "REALM:tests.fake_user.DummyUser",
+            "keyloop.authpolicysecret": "sekret"
         }
     )
 
