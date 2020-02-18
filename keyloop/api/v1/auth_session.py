@@ -53,7 +53,6 @@ class AuthSessionResource(BaseResource):
         return session
 
 
-
     def get(self):
         """ Return identity info + permissions """
 
