@@ -16,7 +16,7 @@ def pyramid_config(mock_module):
     config = testing.setUp(
         settings={
 
-            "keyloop.identity_sources": "REALM:tests.fake_user.DummyUser",
+            "keyloop.identity_sources": "REALM:tests.fake_user.FakeUser",
             "keyloop.authpolicysecret": "sekret"
         }
     )
