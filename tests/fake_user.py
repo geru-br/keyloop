@@ -23,4 +23,4 @@ class FakeUser:
 
     def login(self, username, password):
         self.__class__.test_login_called = True
-        return True
+        return self.__class__.test_login_result

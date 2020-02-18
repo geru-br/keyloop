@@ -8,6 +8,7 @@ requires = [
     "pyramid-tm==2.4",
     "gunicorn==20.0.4",
     "marshmallow==2.19.5",
+    "marshmallow-enum==1.5.1",
     "cornice==4.0.1",
     "SQLAlchemy[postgresql_psycopg2binary]==1.3.13",
     "zope.sqlalchemy==1.2",

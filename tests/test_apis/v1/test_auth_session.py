@@ -40,8 +40,10 @@ def test_post_auth_session_fails_on_incorrect_credentials(pyramid_app, login_pay
 
     FakeUser.test_reset()
     FakeUser.test_login_result = False
+    login_payload["data"]["attributes"]["identity"]["data"]["attributes"]["password"] = "wrongpassword"
+
     res = pyramid_app.post_json("/api/v1/realms/REALM/auth-session", login_payload, content_type="application/vnd.api+json")
 
-    assert res.status_code != HTTPStatus.OK
+    assert res.status_code == HTTPStatus.UNAUTHORIZED
     # assert res.headers["Set-Cookie"]
     # assert user.get.called_once()
