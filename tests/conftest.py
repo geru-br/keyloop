@@ -31,7 +31,7 @@ def pyramid_config():
     config = testing.setUp(
         settings={
 
-            "keyloop.identity_sources": "REALM:tests.fake_user.DummyUser",
+            "keyloop.identity_sources": "REALM:tests.fake_user.FakeUser",
             "keyloop.authpolicysecret": "sekret"
         }
     )

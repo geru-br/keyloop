@@ -6,9 +6,10 @@ from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
 
 class ContactSchema(marshmallow.Schema):
-    type = fields.String() #  ex. "email", "msisdn", "pinterest_id", etc
+    type = fields.String()  # ex. "email", "msisdn", "pinterest_id", etc
     value = fields.String()
     valid_for_auth = fields.Boolean(default=True)
+
 
 class IdentitySchema(marshmallow_jsonapi.Schema):
     class Meta:
@@ -21,13 +22,10 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
     name = fields.String(required=False)
     contacts = fields.List(fields.Nested(ContactSchema), required=False)
 
-
     @marshmallow.validates_schema
     def validate_credentials(self, data, **kwargs):
         request = self.context["request"]
         registry = request.registry.settings["keyloop_adapters"]
-
-
 
         identity_provider = registry.lookup([IIdentity], IIdentitySource, request.context.realm)
         if not identity_provider:
