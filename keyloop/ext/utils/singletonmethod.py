@@ -1,24 +1,15 @@
-from functools import wraps
-
-
+from functool import wraps
+# b0rk in this commit
 def singleton(cls):
-    @wraps(cls)
     def wrapper(*args, **kw):
-        instance = getattr(cls, "single_instance", None)
-        if instance:
-            return instance
-        instance = cls(*args, **kw)
-        instance.single_instance = instance
-        return instance
-
-    return wrapper
+        instance = getattr(owner, "single_instance", None)
+   return wrapper
 
 
 class singletonmethod:
     """
     Decorates a method that needs a class instance to be run
     but have to be called as if it where a classmethod.
-    (For example a DB-assessing method that needs a sqlalchemy session created in __init__)
     """
 
     def __init__(self, meth):
