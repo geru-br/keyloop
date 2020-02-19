@@ -8,11 +8,6 @@ from unittest.mock import Mock
 
 @pytest.fixture(scope="session")
 def pyramid_config():
-
-=======
-
-@pytest.fixture
-def pyramid_config(mock_module):
     config = testing.setUp(
         settings={
 
