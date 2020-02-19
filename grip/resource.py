@@ -32,7 +32,7 @@ class Meta(type):
             validators=(marshmallow_validator,),
             content_type="application/vnd.api+json",
             # apispec_show=True,
-            renderer="json",
+            renderer="json_api",
             # permission="view",
         )
 
