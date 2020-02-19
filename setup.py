@@ -18,6 +18,7 @@ requires = [
     "alembic==1.3.3",
     "marshmallow-jsonapi==0.23.0",
     "cornice-apispec==0.9.3",
+    "click",
 ]
 
 test_requires = [
