@@ -22,3 +22,16 @@ def pyramid_config():
 @pytest.fixture
 def pyramid_app(pyramid_config):
     return TestApp(pyramid_config.make_wsgi_app())
+
+
+@pytest.fixture
+def fakeUserClass():
+    from tests.fake_user import FakeUser
+
+    FakeUser.test_reset()
+
+    yield FakeUser
+
+
+
+
