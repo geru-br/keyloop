@@ -17,7 +17,7 @@ requires = [
     "pyramid-ipython==0.2",
     "alembic==1.3.3",
     "marshmallow-jsonapi==0.23.0",
-    "cornice-apispec==0.9.3"
+    "cornice-apispec==0.9.3",
 ]
 
 test_requires = [
@@ -38,10 +38,14 @@ dev_requires = [
     "pylint",
 ]
 
+sqla = ["sqlalchemy"]
+
+
 extras_require = {
-    "test": test_requires,
-    "dev": test_requires + dev_requires,
-    "ci": test_requires + ci_requires,
+    "sqla": sqla,
+    "test": sqla + test_requires,
+    "dev": sqla + test_requires + dev_requires,
+    "ci": sqla + test_requires + ci_requires,
 }
 
 setup(
