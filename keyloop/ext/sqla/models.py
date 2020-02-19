@@ -5,6 +5,7 @@ import sqlalchemy as sa
 from keyloop.ext.utils.singletonmethod import singletonmethod, singleton
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
+from keyloop.ext.util.decoratos import singleton, singletonmethod
 
 @implementer(IIdentity)
 class Identity:
@@ -25,22 +26,23 @@ class Identity:
 
 
 @implementer(IIdentitySource)
+@singleton
 class IdentitySource:
     model = None
     session = None
 
-    # def __init__(self, session, model):
-    #     self.model = model
-    #     self.session = session
+    def __init__(self, session, model):
+        self.model = model
+        self.session = session
 
-    @classmethod
-    def get(cls, username):
+    @singletonmethod
+    def get(self, username):
         from playground.models import RealIdentity
 
-        return cls.session.query(cls.model).filter(cls.model.username == username).one()
+        return self.session.query(self.model).filter(self.model.username == username).one()
 
-    @classmethod
-    def create(cls, username, password, name=None, contacts=None):
-        return cls.model(
+    @singletonmethod
+    def create(self, username, password, name=None, contacts=None):
+        return self.model(
             username=username, password=password, name=name, contacts=contacts
         )

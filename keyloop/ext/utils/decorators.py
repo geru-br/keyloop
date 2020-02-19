@@ -1,4 +1,4 @@
-from functool import wraps
+from functools import wraps
 
 def singleton(cls):
     original_new = cls.__new__
@@ -22,12 +22,6 @@ class singletonmethod:
     """
 
     def __init__(self, meth):
-        if isinstance(singletonmethod, type):
-            cls = singletonmethod
-            def wrapper(*args, **kw):
-                instance = cls(*args, **kw)
-                instance.single_instance = cls
-
         self.meth = meth
 
     def __get__(self, instance, owner):
