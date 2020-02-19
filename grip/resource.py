@@ -152,3 +152,5 @@ class BaseResource(metaclass=Meta):
             return self.request.context.get()
         except NoResultFound:
             raise HTTPNotFound()
+
+
