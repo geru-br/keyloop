@@ -1,9 +1,18 @@
 from functool import wraps
-# b0rk in this commit
+
 def singleton(cls):
-    def wrapper(*args, **kw):
-        instance = getattr(owner, "single_instance", None)
-   return wrapper
+    original_new = cls.__new__
+    @wraps(cls.__new__)
+    def wrapper(cls, *args, **kw):
+        instance = getattr(cls, "single_instance", None)
+        if instance:
+            return instance
+        instance = original_new(cls)
+        instance.__init__(*args, **kw)
+        cls.single_instance = instance
+        return instance
+    cls.__new__ = wrapper
+    return cls
 
 
 class singletonmethod:
