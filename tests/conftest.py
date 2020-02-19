@@ -1,9 +1,6 @@
-import sys
 import pytest
 from pyramid import testing
 from webtest import TestApp
-
-from unittest.mock import Mock
 
 
 @pytest.fixture(scope="session")

@@ -69,10 +69,12 @@ def test_collection_post_should_return_not_found_for_invalid_realm(pyramid_app, 
 @pytest.mark.xfail
 def test_collection_post_should_return_bad_request_for_invalid_payload(pyramid_app, identity_payload):
 
-    identity_payload["data"]["attributes"].pop("username")
+    import copy
+    local_identity_payload = copy.deepcopy(identity_payload)
+    local_identity_payload["data"]["attributes"].pop("username")
 
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities",
-                                identity_payload, content_type="application/vnd.api+json",
+                                local_identity_payload, content_type="application/vnd.api+json",
                                 status=400)
 
     assert res.content_type == "application/vnd.api+json"
