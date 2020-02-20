@@ -81,8 +81,6 @@ class KeyLoopAuthenticationPolicy(CallbackAuthenticationPolicy):
 
     def remember(self, request, principal, **kw):
 
-        guarranteed_name_Error
-
         cookie_profile = self.profiles.get_profile(request.context.realm)
 
         signed = create_signed(principal, self.secret)
