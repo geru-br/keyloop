@@ -24,19 +24,41 @@ def test_post_auth_session_calls_registered_identity_source(
     )
 
     assert res.status_code == HTTPStatus.OK
-    assert res.headers["Set-Cookie"]
+    # TODO: check the returned cookie to assert that it checks with the current session id
+    assert "Set-Cookie" in res.headers
     assert fakeUserClass.test_login_called
-    # FIXME: We must resturn identity data at the same resquest
+    # FIXME: We must return identity data at the same resquest
+
+    
+    import json
+    print(json.dumps(res.json, indent=4))
+    import pytest; pytest.set_trace()
     assert res.json == {
         "data": {
             "type": "auth-session",
             "attributes": {"username": "test@test.com.br"},
-            "relationships": {"identity": {"data": {"type": "identity", "id": "2"}}},
+            "relationships": {"identity": {"data": {"type": "identity", "username": "test@test.com.br"}}},
         }
     }
 
 
-@pytest.mark.xfail
+def test_post_auth_session_fails_on_non_existing_user(
+    pyramid_app, login_payload, fakeUserClass
+):
+
+    fakeUserClass.test_login_result = False
+    login_payload["data"]["attributes"]["username"] = "wrongusername"
+
+    res = pyramid_app.post_json(
+        "/api/v1/realms/REALM/auth-session",
+        login_payload,
+        content_type="application/vnd.api+json",
+        status=400,
+    )
+    assert res.status_code == HTTPStatus.BAD_REQUEST
+    assert "Set-Cookie" not in res.headers
+
+
 def test_post_auth_session_fails_on_incorrect_credentials(
     pyramid_app, login_payload, fakeUserClass
 ):
@@ -50,6 +72,6 @@ def test_post_auth_session_fails_on_incorrect_credentials(
         content_type="application/vnd.api+json",
         status=400,
     )
-    assert res.status_code == HTTPStatus.UNAUTHORIZED
-    # assert res.headers["Set-Cookie"]
-    # assert user.get.called_once()
+    assert res.status_code == HTTPStatus.BAD_REQUEST
+    assert "Set-Cookie" not in res.headers
+

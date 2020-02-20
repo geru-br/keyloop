@@ -28,6 +28,8 @@ class JsonApi(JSON):
                 response.content_type = "application/vnd.api+json"
                 schema.context = {"request": request}
 
+            import pytest 
+            pytest.set_trace()
             return schema.dumps(value).data
 
         return _render

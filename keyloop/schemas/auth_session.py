@@ -17,8 +17,11 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     # TODO: how to return the URL for retrieving the related identity here?
     identity = marshmallow_jsonapi.fields.Relationship(
         type_="identity",
+        related_url='/realms/{realm_slug}/identities/{identity_id}',
+        related_url_kwargs={'realm_slug': 'REALM', "identity_id": "<identity.id>"},
         include_resource_linkage=True,
-        include_data=True,
+        # adiciona chave 'included'?
+        # include_data=True,
         id_field="id",
         # define a schema for rendering included data
         schema="IdentitySchema",
