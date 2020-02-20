@@ -29,7 +29,6 @@ def test_post_auth_session_calls_registered_identity_source(
     assert fakeUserClass.test_login_called
     # FIXME: We must return identity data at the same resquest
 
-    
     assert res.json == {
         "data": {
             "type": "auth-session",
@@ -39,7 +38,7 @@ def test_post_auth_session_calls_registered_identity_source(
             "relationships": {
                 "identity": {
                     "links": {
-                        "related": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
+                        "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
                     },
                     "data": {
                         "type": "identity",
@@ -94,4 +93,3 @@ def test_post_auth_session_fails_on_incorrect_credentials(
     )
     assert res.status_code == HTTPStatus.BAD_REQUEST
     assert "Set-Cookie" not in res.headers
-

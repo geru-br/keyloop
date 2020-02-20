@@ -2,7 +2,6 @@ import marshmallow_jsonapi
 import marshmallow
 
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
-from .identity import IdentitySchema
 
 
 class AuthSessionSchema(marshmallow_jsonapi.Schema):
@@ -14,22 +13,13 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     username = marshmallow.fields.String()
     password = marshmallow.fields.String()
 
-    # TODO: how to return the URL for retrieving the related identity here?
     identity = marshmallow_jsonapi.fields.Relationship(
         type_="identity",
-        related_url='/realms/{realm_slug}/identities/{identity_id}',
-        related_url_kwargs={'realm_slug': 'REALM', "identity_id": "<identity.id>"},
-        include_resource_linkage=True,
-        # adiciona chave 'included'?
-        # include_data=True,
-        id_field="id",
-        # define a schema for rendering included data
+        self_url='/realms/{realm_slug}/identities/{identity_id}',
+        self_url_kwargs={'realm_slug': 'REALM', "identity_id": "<identity.id>"},
         schema="IdentitySchema",
     )
 
-    # identity = marshmallow.fields.Nested(IdentitySchema)
-
-    #@marshmallow.validates_schema
     @marshmallow.post_load
     def validate_credentials(self, data, **kwargs):
 
