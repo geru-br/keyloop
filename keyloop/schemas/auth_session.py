@@ -14,6 +14,7 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     username = marshmallow.fields.String()
     password = marshmallow.fields.String()
 
+    # TODO: how to return the URL for retrieving the related identity here?
     identity = marshmallow_jsonapi.fields.Relationship(
         type_="identity",
         include_resource_linkage=True,
@@ -25,8 +26,10 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
 
     # identity = marshmallow.fields.Nested(IdentitySchema)
 
-    @marshmallow.validates_schema
+    #@marshmallow.validates_schema
+    @marshmallow.post_load
     def validate_credentials(self, data, **kwargs):
+
         request = self.context["request"]
         registry = request.registry.settings["keyloop_adapters"]
 

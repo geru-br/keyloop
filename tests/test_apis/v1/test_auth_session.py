@@ -30,9 +30,11 @@ def test_post_auth_session_calls_registered_identity_source(
     assert res.json == {
         "data": {
             "type": "auth-session",
+            "attributes": {"username": "test@test.com.br"},
             "relationships": {"identity": {"data": {"type": "identity", "id": "2"}}},
         }
     }
+
 
 
 @pytest.mark.xfail
@@ -41,9 +43,7 @@ def test_post_auth_session_fails_on_incorrect_credentials(
 ):
 
     fakeUserClass.test_login_result = False
-    login_payload["data"]["attributes"]["identity"]["data"]["attributes"][
-        "password"
-    ] = "wrongpassword"
+    login_payload["data"]["attributes"]["password"] = "wrongpassword"
 
     res = pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",

@@ -25,7 +25,7 @@ class CollectionPostSchema(marshmallow.Schema):
 
 
 collection_response_schemas = {
-    200: AuthSessionSchema(exclude=["password", "username", "identity.password"])
+    200: AuthSessionSchema(exclude=["password", "identity.password"])
 }
 
 
