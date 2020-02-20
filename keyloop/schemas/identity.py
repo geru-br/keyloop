@@ -35,8 +35,8 @@ class ContactSchema(marshmallow.Schema):
 
     @marshmallow.pre_load
     def check_valid_contact_type_and_value(self, data, **kwargs):
-        if contact_type_validation_map[data['type'].upper()](data['value']):
-            data['valid_for_auth'] = True
+        if contact_type_validation_map[data["type"].upper()](data["value"]):
+            data["valid_for_auth"] = True
 
         return data
 
@@ -51,20 +51,3 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
     password = fields.String(required=True)
     name = fields.String(required=False)
     contacts = fields.List(fields.Nested(ContactSchema), required=False)
-
-    # @marshmallow.validates_schema
-    @marshmallow.post_load
-    def validate_credentials(self, data, **kwargs):
-        request = self.context["request"]
-        registry = request.registry.settings["keyloop_adapters"]
-
-        identity_provider = registry.lookup([IIdentity], IIdentitySource, request.context.realm)
-        if not identity_provider:
-            # need to find a way to return a 404 instead of a 400
-            raise marshmallow.ValidationError("Realm failed")
-
-        identity = identity_provider.get(data["username"])
-
-        if not identity.login(data["username"], data["password"]):
-            # need to find a way to return a 401 instead of a 400
-            raise marshmallow.ValidationError("credentials failed")

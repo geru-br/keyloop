@@ -16,15 +16,17 @@ from keyloop.schemas.path import BasePathSchema
 class AuthSessionContext(SimpleBaseFactory):
     def __acl__(self):
         # TODO: implement access permission (fixed token?)
-        return [(Allow, Everyone, 'edit')]
+        return [(Allow, Everyone, "edit")]
 
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema)
+    body = marshmallow.fields.Nested(AuthSessionSchema(exclude="identity"))
 
 
-collection_response_schemas = {200: AuthSessionSchema(exclude=["identity.password"])}
+collection_response_schemas = {
+    200: AuthSessionSchema(exclude=["password", "identity.password"])
+}
 
 
 @resource(
@@ -43,15 +45,14 @@ class AuthSessionResource(BaseResource):
 
         validated = self.request.validated["body"]
 
-        username = validated["identity"]["username"]
-        password = validated["identity"]["password"]
-
-        session = AuthSession(username, password)
+        username = validated["username"]
+        password = validated["password"]
 
         headers = remember(self.request, username)
+        session = AuthSession(username, password, identity=self.request.identity)
+
         self.request.response.headers.extend(headers)
         return session
-
 
     def get(self):
         """ Return identity info + permissions """
