@@ -8,7 +8,7 @@ def login_payload():
     return {
         "data": {
             "type": "auth-session",
-            "attributes": {"username": "test@test.com.br", "password": "1234567a",},
+            "attributes": {"username": "test@test.com.br", "password": "1234567a"},
         }
     }
 
@@ -34,7 +34,6 @@ def test_post_auth_session_calls_registered_identity_source(
             "relationships": {"identity": {"data": {"type": "identity", "id": "2"}}},
         }
     }
-
 
 
 @pytest.mark.xfail

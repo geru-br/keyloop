@@ -1,13 +1,10 @@
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPUnauthorized, HTTPNotFound
-from pyramid.config import Configurator
+from pyramid.httpexceptions import HTTPAccepted
 from pyramid.security import remember, forget, Everyone, Allow
-from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
-from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
