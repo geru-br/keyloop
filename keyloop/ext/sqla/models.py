@@ -2,10 +2,9 @@ from sqlalchemy.ext.declarative import declared_attr
 from zope.interface import implementer
 import sqlalchemy as sa
 
-from keyloop.ext.utils.singletonmethod import singletonmethod, singleton
+from keyloop.ext.utils.decorators import singleton, singletonmethod
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
-from keyloop.ext.util.decoratos import singleton, singletonmethod
 
 @implementer(IIdentity)
 class Identity:
