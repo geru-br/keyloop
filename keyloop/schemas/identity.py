@@ -45,7 +45,7 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
     class Meta:
         type_ = "identity"
 
-    id = fields.UUID(dump_only=True, attribute="uuid")
+    id = fields.UUID(dump_only=True, attribute="id")
 
     username = fields.String(required=True)
     password = fields.String(required=True)

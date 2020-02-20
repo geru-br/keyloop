@@ -3,7 +3,7 @@ class FakeUser:
     test_login_called = False
 
     def __init__(self, username, password, name=None, contacts=None):
-        self.id = 2
+        self.id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
         self.username = username
         self.password = password
         self.name = name

@@ -30,15 +30,35 @@ def test_post_auth_session_calls_registered_identity_source(
     # FIXME: We must return identity data at the same resquest
 
     
-    import json
-    print(json.dumps(res.json, indent=4))
-    import pytest; pytest.set_trace()
     assert res.json == {
         "data": {
             "type": "auth-session",
-            "attributes": {"username": "test@test.com.br"},
-            "relationships": {"identity": {"data": {"type": "identity", "username": "test@test.com.br"}}},
-        }
+            "attributes": {
+                "username": "test@test.com.br"
+            },
+            "relationships": {
+                "identity": {
+                    "links": {
+                        "related": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
+                    },
+                    "data": {
+                        "type": "identity",
+                        "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
+                    }
+                }
+            }
+        },
+        "included": [
+            {
+                "type": "identity",
+                "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
+                "attributes": {
+                    "name": None,
+                    "username": "test@test.com.br",
+                    "contacts": None
+                }
+            }
+        ]
     }
 
 

@@ -15,6 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class IdentityContext(SimpleBaseFactory):
     def __acl__(self):
         # TODO: implement access permission (fixed token?)
