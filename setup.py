@@ -27,6 +27,7 @@ test_requires = [
     "WebTest==2.0.33",
     "freezegun==0.3.13",
     "factory-boy==2.12.0",
+    "pyresttest==1.7.1",
 ]
 
 ci_requires = [
@@ -64,9 +65,9 @@ setup(
     install_requires=requires,
     extras_require=extras_require,
     url="https://github.com/debonzi/keyloop",
-    packages=["keyloop",],
+    packages=["keyloop", ],
     entry_points={
-        "paste.app_factory": ["main = keyloop:main",],
+        "paste.app_factory": ["main = keyloop:main", ],
         "console_scripts": [
             "kloop = keyloop.command.main:main",
             "initialize_keyloop_db = keyloop.models.initialize_db:main",
