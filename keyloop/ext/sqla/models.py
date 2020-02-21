@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from zope.interface import implementer
 import sqlalchemy as sa
 
-from keyloop.ext.utils.singletonmethod import singletonmethod, singleton
+from keyloop.ext.utils.decorators import singleton, singletonmethod
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
 
@@ -25,22 +25,21 @@ class Identity:
 
 
 @implementer(IIdentitySource)
+@singleton
 class IdentitySource:
     model = None
     session = None
 
-    # def __init__(self, session, model):
-    #     self.model = model
-    #     self.session = session
+    def __init__(self, session, model):
+        self.model = model
+        self.session = session
 
-    @classmethod
-    def get(cls, username):
-        from playground.models import RealIdentity
+    @singletonmethod
+    def get(self, username):
+        return self.session.query(self.model).filter(self.model.username == username).one()
 
-        return cls.session.query(cls.model).filter(cls.model.username == username).one()
-
-    @classmethod
-    def create(cls, username, password, name=None, contacts=None):
-        return cls.model(
+    @singletonmethod
+    def create(self, username, password, name=None, contacts=None):
+        return self.model(
             username=username, password=password, name=name, contacts=contacts
         )

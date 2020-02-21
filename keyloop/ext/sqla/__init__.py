@@ -3,8 +3,8 @@ import keyloop.ext.sqla.models
 
 
 def setup_session(config, session, model):
-    IdentitySource.session = session
-    IdentitySource.model = model
+    # Instantiates singleton class with the needed attrs
+    IdentitySource(session=session, model=model)
 
 
 def includeme(config):
