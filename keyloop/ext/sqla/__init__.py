@@ -1,11 +1,12 @@
-from keyloop.ext.sqla.models import IdentitySource
-import keyloop.ext.sqla.models
+from keyloop.ext.sqla.models import IdentitySource, ContactSource
 
 
-def setup_session(config, session, model):
-    # Instantiates singleton class with the needed attrs
+def setup_identity(config, session, model):
     IdentitySource(session=session, model=model)
 
+def setup_contact(config, session, model):
+    ContactSource(session=session, model=model)
 
 def includeme(config):
-    config.add_directive("key_loop_setup_session", setup_session)
+    config.add_directive("key_loop_setup_identity", setup_identity)
+    config.add_directive("key_loop_setup_contact", setup_contact)
