@@ -36,8 +36,6 @@ class IdentitySource:
 
     @singletonmethod
     def get(self, username):
-        from playground.models import RealIdentity
-
         return self.session.query(self.model).filter(self.model.username == username).one()
 
     @singletonmethod
