@@ -4,7 +4,14 @@ import sqlalchemy as sa
 
 from keyloop.ext.utils.singletonmethod import singletonmethod, singleton
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
+import uuid
 
+def generate_uuid():
+    """Generate an hex representation of an uuid
+
+       :returns: str
+    """
+    return uuid.uuid4().hex
 
 @implementer(IIdentity)
 class Identity:
@@ -13,7 +20,7 @@ class Identity:
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.Integer, autoincrement=True, primary_key=True)
+        return sa.Column(sa.String, primary_key=True, default=generate_uuid)
 
     @declared_attr
     def username(self):
@@ -22,6 +29,9 @@ class Identity:
     @declared_attr
     def password(self):
         return sa.Column(sa.String, index=True)
+
+    def login(self, username, password):
+        return self.username == username and self.password == password
 
 
 @implementer(IIdentitySource)
