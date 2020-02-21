@@ -1,10 +1,11 @@
 import sqlalchemy as sa
 import transaction
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship, backref
 from zope.interface import implementer
 
-from keyloop.ext.utils.decorators import singleton, singletonmethod
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
+from playground.ext.utils.decorators import singleton, singletonmethod
 
 
 @implementer(IContact)
@@ -28,13 +29,17 @@ class Contact:
         return sa.Column(sa.Boolean, default=False)
 
     @declared_attr
-    def user_id(self):
-        return sa.Column(sa.Integer, sa.ForeignKey('user.id'))
+    def identity_id(self):
+        return sa.Column(sa.Integer, sa.ForeignKey('identity.id'))
+
+    def contacts(self):
+        return relationship('Identity', backref=backref('contact', lazy='dynamic'), foreign_keys=[self.identity_id])
 
 
 @implementer(IIdentity)
-class Identity:
-    __tablename__ = "user"
+@singleton
+class Identity():
+    __tablename__ = "identity"
 
     @declared_attr
     def id(self):
@@ -52,8 +57,8 @@ class Identity:
     def name(self):
         return sa.Column(sa.String)
 
-    @classmethod
-    def login(cls, username, password):
+    @singletonmethod
+    def login(self, username, password):
         return IdentitySource.get(username)
 
 
@@ -75,11 +80,11 @@ class IdentitySource:
         self.session.flush()
 
         for contact in contacts:
-            breakpoint()
             ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity.id)
 
         transaction.commit()
         return self.get(username)
+
 
 @singleton
 class ContactSource:
@@ -88,6 +93,6 @@ class ContactSource:
         self.session = session
 
     @singletonmethod
-    def create(self, type, value, valid_for_auth, user_id):
-        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, user_id=user_id)
+    def create(self, type, value, valid_for_auth, identity_id):
+        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity_id=identity_id)
         self.session.add(contact)

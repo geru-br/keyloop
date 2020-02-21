@@ -1,4 +1,4 @@
-from keyloop.ext.sqla.models import IdentitySource, ContactSource
+from playground.ext.sqla.models import IdentitySource, ContactSource
 
 
 def setup_identity(config, session, model):

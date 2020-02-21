@@ -5,7 +5,7 @@ from sqlalchemy.orm import (
 )
 from zope.sqlalchemy import register
 
-from keyloop.ext.sqla.models import Identity, Contact
+from playground.ext.sqla.models import Identity, Contact
 
 DBSession = scoped_session(sessionmaker())
 register(DBSession)
