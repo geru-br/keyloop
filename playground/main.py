@@ -20,7 +20,7 @@ def main():
 
         config.include("keyloop")
         config.include("grip")
-        config.include("playground.ext.sqla")
+        config.include("keyloop.ext.sqla")
 
         config.key_loop_setup_identity(DBSession, RealIdentity)
         config.key_loop_setup_contact(DBSession, RealContact)
