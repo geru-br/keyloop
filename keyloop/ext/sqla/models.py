@@ -34,7 +34,7 @@ class Contact:
 
     # TODO: Make this attribute available on response schema
     def contacts(self):
-        return relationship('Identity', backref=backref('contact', lazy='dynamic'), foreign_keys=[self.identity_id])
+        return relationship('Identity', backref=backref('contacts', lazy='dynamic'), foreign_keys=[self.identity_id])
 
 
 @implementer(IIdentity)
