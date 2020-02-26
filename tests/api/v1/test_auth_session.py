@@ -1,62 +1,19 @@
+from datetime import datetime
 from http import HTTPStatus
-
+import arrow
 import pytest
+from freezegun import freeze_time
 
 
 @pytest.fixture
 def login_payload():
-    # return {
-    #     "data": {
-    #         "type": "auth-session",
-    #         "attributes": {
-    #             "username": "test@test.com.br",
-    #             "password": "1234567a"
-    #         }
-    #     }
-    # }
-    # return {
-    #     "data": {
-    #         "type": "auth-session",
-    #         "relationships": {
-    #             "identity": {
-    #                 "data": {
-    #                     "type": "identity",
-    #                     "attributes": {
-    #                         "username": "test@test.com.br",
-    #                         "password": "1234567a"
-    #                     }
-    #                 }
-    #             }
-    #         }
-    #     }
-    # }
-
     return {
         "data": {
             "type": "auth-session",
             "attributes": {
-                "active": True,
-                # "identity": {
-                #     "data": {
-                #         "type": "identity",
-                #         "attributes": {
-                #             "username": "test@test.com.br",
-                #             "password": "1234567a"
-                #         }
-                #     }
-                # }
-            },
-            # "relationships": {
-            #     "identity": {
-            #         "links": {
-            #             "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
-            #         },
-            #         "data": {
-            #             "type": "identity",
-            #             "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
-            #         }
-            #     }
-            # }
+                "username": "test@test.com.br",
+                "password": "1234567a"
+            }
         }
     }
 
@@ -65,52 +22,55 @@ def test_post_auth_session_calls_registered_identity_source(
     pyramid_app, login_payload, fakeUserClass
 ):
 
-    res = pyramid_app.post_json(
-        "/api/v1/realms/REALM/auth-session",
-        login_payload,
-        content_type="application/vnd.api+json",
-    )
+    with freeze_time(datetime.utcnow()):
+        res = pyramid_app.post_json(
+            "/api/v1/realms/REALM/auth-session",
+            login_payload,
+            content_type="application/vnd.api+json",
+        )
 
-    assert res.status_code == HTTPStatus.OK
-    # TODO: check the returned cookie to assert that it checks with the current session id
-    assert "Set-Cookie" in res.headers
-    assert fakeUserClass.test_login_called
-    # FIXME: We must return identity data at the same resquest
+        assert res.status_code == HTTPStatus.OK
+        # TODO: check the returned cookie to assert that it checks with the current session id
+        assert "Set-Cookie" in res.headers
+        assert fakeUserClass.test_login_called
+        # FIXME: We must return identity data at the same resquest
 
-    expected_result = {
-        "data": {
-            "type": "auth-session",
-            "attributes": {
-                "username": "test@test.com.br"
-            },
-            "relationships": {
-                "identity": {
-                    "links": {
-                        "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
-                    },
-                    "data": {
-                        "type": "identity",
-                        "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
+        expected_result = {
+            "data": {
+                "type": "auth-session",
+                "attributes": {
+                    'active': True,
+                    'start': arrow.utcnow().datetime.isoformat(),
+                    'ttl': 600
+                },
+                "relationships": {
+                    "identity": {
+                        "links": {
+                            "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
+                        },
+                        "data": {
+                            "type": "identity",
+                            "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
+                        }
                     }
                 }
-            }
-        },
-        "included": [
-            {
-                "type": "identity",
-                "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
-                "attributes": {
-                    "name": None,
-                    "username": "test@test.com.br",
-                    "contacts": None
+            },
+            "included": [
+                {
+                    "type": "identity",
+                    "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
+                    "attributes": {
+                        "name": None,
+                        "username": "test@test.com.br",
+                        "contacts": None
+                    }
                 }
-            }
-        ]
-    }
+            ]
+        }
 
-    import pdb
-    pdb.set_trace()
-    assert res.json == expected_result
+        import pdb
+        pdb.set_trace()
+        assert res.json == expected_result
 
 
 def test_post_auth_session_fails_on_non_existing_user(
