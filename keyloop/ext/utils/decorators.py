@@ -1,7 +1,9 @@
 from functools import wraps
 
+
 def singleton(cls):
     original_new = cls.__new__
+
     @wraps(cls.__new__)
     def wrapper(cls, *args, **kw):
         instance = getattr(cls, "single_instance", None)
@@ -11,6 +13,7 @@ def singleton(cls):
         instance.__init__(*args, **kw)
         cls.single_instance = instance
         return instance
+
     cls.__new__ = wrapper
     return cls
 

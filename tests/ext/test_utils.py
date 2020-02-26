@@ -1,5 +1,6 @@
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
+
 def test_singleton_decorator():
     @singleton
     class A:
