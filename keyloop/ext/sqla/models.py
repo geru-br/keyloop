@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, backref
 from zope.interface import implementer
 
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
-from playground.ext.utils.decorators import singleton, singletonmethod
+from keyloop.ext.utils.decorators import singleton, singletonmethod
 
 
 @implementer(IContact)

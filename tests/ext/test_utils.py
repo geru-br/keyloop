@@ -1,4 +1,4 @@
-from playground.ext.utils.decorators import singleton, singletonmethod
+from keyloop.ext.utils.decorators import singleton, singletonmethod
 
 
 def test_singleton_decorator():

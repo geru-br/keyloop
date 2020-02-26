@@ -8,7 +8,7 @@ from playground.models import Base, DBSession, RealIdentity, RealContact
 def main():
     settings = {
         "sqlalchemy.url": "sqlite:///keyloop.dev",
-        "keyloop.identity_sources": "PLAYGROUND:playground.ext.sqla.models.IdentitySource",
+        "keyloop.identity_sources": "PLAYGROUND:keyloop.ext.sqla.models.IdentitySource",
         "keyloop.authpolicysecret": "sekret",
     }
 
