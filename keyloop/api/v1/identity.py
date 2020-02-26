@@ -49,8 +49,9 @@ class IdentityResource(BaseResource):
         if not identity_provider:
             self.request.errors.add(location='body',
                                     name='identity',
-                                    description=f'Realm failed')
+                                    description='Realm failed')
             self.request.errors.status = 404
+            logger.info('Realm %s is not valid.', self.request.context.realm)
             return self.request
 
         return identity_provider.create(
