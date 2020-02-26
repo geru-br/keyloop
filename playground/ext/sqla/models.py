@@ -32,6 +32,7 @@ class Contact:
     def identity_id(self):
         return sa.Column(sa.Integer, sa.ForeignKey('identity.id'))
 
+    # TODO: Make this attribute available on response schema
     def contacts(self):
         return relationship('Identity', backref=backref('contact', lazy='dynamic'), foreign_keys=[self.identity_id])
 
