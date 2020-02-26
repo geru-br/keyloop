@@ -1,9 +1,10 @@
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted
+from pyramid.httpexceptions import HTTPAccepted, HTTPOk
 from pyramid.security import remember, forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
+from grip.decorators import view_modifier
 from grip.resource import BaseResource
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
@@ -24,6 +25,10 @@ collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
 }
 
+def validate_collection_post(*args, **kwargs):
+
+    return True
+
 
 @resource(
     collection_path="/realms/{realm_slug}/auth-session",
@@ -34,7 +39,9 @@ collection_response_schemas = {
 class AuthSessionResource(BaseResource):
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
+    #resource_get_schema = collection_response_schemas
 
+    @view_modifier(validator=validate_collection_post, schema=collection_post_schema)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
@@ -64,7 +71,7 @@ class AuthSessionResource(BaseResource):
         # return session
 
         # TODO: fetch permisionn
-        return {}
+        return HTTPOk()
 
     def delete(self):
         """ Logout """
