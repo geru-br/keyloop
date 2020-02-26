@@ -5,7 +5,6 @@ from pyramid.security import remember, forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
 from grip.resource import BaseResource
-from keyloop.models.auth_session import AuthSession
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
 
@@ -18,11 +17,11 @@ class AuthSessionContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude="identity"))
+    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
 
 
 collection_response_schemas = {
-    200: AuthSessionSchema(exclude=["password", "identity.password"], include_data=["identity"])
+    200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
 }
 
 
@@ -42,22 +41,21 @@ class AuthSessionResource(BaseResource):
 
         validated = self.request.validated["body"]
 
+        import pdb
+        pdb.set_trace()
         username = validated["username"]
-        password = validated["password"]
 
         headers = remember(self.request, username)
-        session = AuthSession(username, password, identity=self.request.identity)
-
         self.request.response.headers.extend(headers)
-        return session
+
+        return self.request.auth_session
 
     def get(self):
         """ Return identity info + permissions """
 
-        # realm = self.request.validated["path"]["realm_slug"]
-        # id = self.request.validated["path"]["id"]
+        # auth_session_id = self.request.validated["path"]["id"]
 
-        # # session = AuthSession.get_session(id, realm)
+        # session = AuthSession.get_session(id, realm)
 
         # identity = Identity.get_identity(realm, username)
 

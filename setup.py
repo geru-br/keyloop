@@ -4,6 +4,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 requires = [
+    "arrow==0.15.5",
     "pyramid==1.10.4",
     "pyramid-tm==2.4",
     "gunicorn==20.0.4",
@@ -28,6 +29,8 @@ test_requires = [
     "freezegun==0.3.13",
     "factory-boy==2.12.0",
     "pyresttest==1.7.1",
+    "locust==0.0.0",
+    "locustio==0.14.4",
 ]
 
 ci_requires = [

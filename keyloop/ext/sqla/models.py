@@ -20,7 +20,7 @@ class Identity:
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.String, primary_key=True, default=generate_uuid)
+        return sa.Column(sa.String, primary_key=True, default=uuid.uuid4)
 
     @declared_attr
     def username(self):

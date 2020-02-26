@@ -2,18 +2,13 @@ import logging
 
 from zope.interface.adapter import AdapterRegistry
 
-from pyramid.config import Configurator
-from pyramid.response import Response
 from pyramid.settings import aslist
 
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
-from grip.renderers import json_api_renderer
 
-from keyloop.security import KeyLoopAuthenticationPolicy
-
-from keyloop.interfaces import identity
+from keyloop.interfaces import auth_session, identity
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +27,17 @@ def _register_adapters(config):
             identity.IIdentitySource,
             realm,
             config.maybe_dotted(identity_source_name)
+        )
+
+    list_of_auth_session_adapters = aslist(settings["keyloop.auth_session_sources"])
+    for adapter_description in list_of_auth_session_adapters:
+        realm, auth_session_source_name = adapter_description.split(":")
+
+        adapter_registry.register(
+            [auth_session.IAuthSession],
+            auth_session.IAuthSessionSource,
+            realm,
+            config.maybe_dotted(auth_session_source_name)
         )
 
         logger.info("Registered IIdentitySource adapter for realm '%s'", realm)

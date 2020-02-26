@@ -1,0 +1,28 @@
+---
+- test:
+    - name: "User Login"
+    - group: "auth-session"
+    - url: "/api/v1/realms/PLAYGROUND/auth-session"
+    - method: "POST"
+    - body: '{"data": {"type": "auth-session","attributes": {"username": "test@test.com.br", "password": "1234567a"}}}'
+    - headers: {Content-Type: application/vnd.api+json}
+    # - validators:
+    # -   - compare: {jsonpath_mini: "data.type", comparator: "eq", expected: "auth-session"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.type", comparator: "eq", expected: "identity"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.attributes.name", comparator: "eq", expected: "test@test.com.br test@test.com.br"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.attributes.email", comparator: "eq", expected: "test@test.com.br"}
+    - # - expected_status: [200]
+
+- test:
+    - name: "Create Identity"
+    - group: "auth-session"
+    - url: "/api/v1/realms/PLAYGROUND/identities"
+    - method: "POST"
+    - body: '{"data": {"type": "identity", "attributes": {"username": "test@test.com", "password": "blablabla", "name": "xablau", "contacts": [{"type": "EMAIL", "value": "mail@mail.com"}, {"type": "MSISDN", "value": "11999999999"}]}}}'
+    - headers: {Content-Type: application/vnd.api+json}
+    # - validators:
+    # -   - compare: {jsonpath_mini: "data.type", comparator: "eq", expected: "auth-session"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.type", comparator: "eq", expected: "identity"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.attributes.name", comparator: "eq", expected: "test@test.com.br test@test.com.br"}
+    # -   - compare: {jsonpath_mini: "data.atttributes.identity.data.attributes.email", comparator: "eq", expected: "test@test.com.br"}
+    - expected_status: [200]

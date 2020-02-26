@@ -5,10 +5,58 @@ import pytest
 
 @pytest.fixture
 def login_payload():
+    # return {
+    #     "data": {
+    #         "type": "auth-session",
+    #         "attributes": {
+    #             "username": "test@test.com.br",
+    #             "password": "1234567a"
+    #         }
+    #     }
+    # }
+    # return {
+    #     "data": {
+    #         "type": "auth-session",
+    #         "relationships": {
+    #             "identity": {
+    #                 "data": {
+    #                     "type": "identity",
+    #                     "attributes": {
+    #                         "username": "test@test.com.br",
+    #                         "password": "1234567a"
+    #                     }
+    #                 }
+    #             }
+    #         }
+    #     }
+    # }
+
     return {
         "data": {
             "type": "auth-session",
-            "attributes": {"username": "test@test.com.br", "password": "1234567a"},
+            "attributes": {
+                "active": True,
+                # "identity": {
+                #     "data": {
+                #         "type": "identity",
+                #         "attributes": {
+                #             "username": "test@test.com.br",
+                #             "password": "1234567a"
+                #         }
+                #     }
+                # }
+            },
+            # "relationships": {
+            #     "identity": {
+            #         "links": {
+            #             "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
+            #         },
+            #         "data": {
+            #             "type": "identity",
+            #             "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
+            #         }
+            #     }
+            # }
         }
     }
 
@@ -29,7 +77,7 @@ def test_post_auth_session_calls_registered_identity_source(
     assert fakeUserClass.test_login_called
     # FIXME: We must return identity data at the same resquest
 
-    assert res.json == {
+    expected_result = {
         "data": {
             "type": "auth-session",
             "attributes": {
@@ -59,6 +107,10 @@ def test_post_auth_session_calls_registered_identity_source(
             }
         ]
     }
+
+    import pdb
+    pdb.set_trace()
+    assert res.json == expected_result
 
 
 def test_post_auth_session_fails_on_non_existing_user(

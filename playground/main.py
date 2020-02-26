@@ -9,6 +9,7 @@ def main():
     settings = {
         "sqlalchemy.url": "sqlite:///keyloop.dev",
         "keyloop.identity_sources": "PLAYGROUND:keyloop.ext.sqla.models.IdentitySource",
+        "keyloop.auth_session_sources": "PLAYGROUND:keyloop.ext.sqla.auth_session.AuthSessionSource",
         "keyloop.authpolicysecret": "sekret",
     }
 
