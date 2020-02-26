@@ -61,9 +61,17 @@ class Meta(type):
         else:
             collection_response_schemas = None
 
+        if hasattr(collection_post, 'grip_schema'):
+            collection_post_schema = collection_post.grip_schema
+
+        collection_post_validator = (marshmallow_validator,)
+
+        if hasattr(collection_post, 'grip_validators'):
+            collection_post_validator = (collection_post.grip_validators, )
+
         namespace["collection_post"] = add_view(
             collection_post,
-            validators=(marshmallow_validator,),
+            validators=collection_post_validator,
             # apispec_show=True,
             content_type="application/vnd.api+json",
             renderer="json_api",
@@ -94,13 +102,23 @@ class Meta(type):
         else:
             resource_get_schema = None
 
+        if hasattr(get, 'grip_schema'):
+            resource_get_schema = get.grip_schema
+
+        resource_get_validators = (marshmallow_validator,)
+
+        if hasattr(get, 'grip_validators'):
+            import pytest; pytest.set_trace()
+            resource_get_validators = (get.grip_validators,)
+
         namespace["get"] = add_view(
             get,
             # apispec_show=True,
             schema=resource_get_schema,
-            validators=(marshmallow_validator,),
-            # apispec_response_schemas=resource_response_schemas,
+            validators=resource_get_validators,
+            apispec_response_schemas=resource_response_schemas,
             renderer="json_api",
+            content_type="application/vnd.api+json",
             # permission="view",
         )
 

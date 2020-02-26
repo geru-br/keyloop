@@ -1,6 +1,6 @@
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPOk
+from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound
 from pyramid.security import remember, forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
@@ -22,12 +22,17 @@ class CollectionPostSchema(marshmallow.Schema):
 
 
 collection_response_schemas = {
-    200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
+    200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
 }
 
-def validate_collection_post(*args, **kwargs):
 
-    return True
+def validate_get(request, **kwargs):
+
+    import pytest; pytest.set_trace()
+    request.errors.add("body", "realm_slug", "Realm does not exist")
+    request.errors.status = 404
+    pass
 
 
 @resource(
@@ -39,9 +44,8 @@ def validate_collection_post(*args, **kwargs):
 class AuthSessionResource(BaseResource):
     collection_post_schema = CollectionPostSchema
     collection_response_schemas = collection_response_schemas
-    #resource_get_schema = collection_response_schemas
+    resource_get_schema = marshmallow.Schema
 
-    @view_modifier(validator=validate_collection_post, schema=collection_post_schema)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
@@ -57,6 +61,7 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
+    @view_modifier(validators=validate_get)
     def get(self):
         """ Return identity info + permissions """
 

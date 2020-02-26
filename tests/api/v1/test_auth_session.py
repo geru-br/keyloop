@@ -119,7 +119,7 @@ def test_get_auth_session(
     identity_id = res.json['data']['relationships']['identity']['data']['id']
 
     res = pyramid_app.get(
-        "/api/v1/realms/REALM/auth-session/{}".format(identity_id),
+        "/api/v1/realms/REALM/auth-session/{}".format(identity_id), status=404
     )
 
     import pytest; pytest.set_trace()

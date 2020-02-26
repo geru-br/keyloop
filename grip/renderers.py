@@ -10,12 +10,14 @@ from sqlalchemy.ext.associationproxy import _AssociationList
 
 class JsonApi(JSON):
     def _get_schema(self, system):
-
+        import pytest; pytest.set_trace()
         schema = system["view"].__views__[0]["apispec_response_schemas"][200]
         return schema
 
     def __call__(self, info):
         def _render(value, system):
+
+            import pytest; pytest.set_trace()
             schema = self._get_schema(system)
 
             # If schema is not an instance lets initialize it
