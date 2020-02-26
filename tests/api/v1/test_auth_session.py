@@ -105,3 +105,23 @@ def test_post_auth_session_fails_on_incorrect_credentials(
     )
     assert res.status_code == HTTPStatus.BAD_REQUEST
     assert "Set-Cookie" not in res.headers
+
+
+def test_get_auth_session(
+    pyramid_app, login_payload, fakeUserClass
+):
+    res = pyramid_app.post_json(
+        "/api/v1/realms/REALM/auth-session",
+        login_payload,
+        content_type="application/vnd.api+json",
+    )
+
+    identity_id = res.json['data']['relationships']['identity']['data']['id']
+
+    res = pyramid_app.get(
+        "/api/v1/realms/REALM/auth-session/{}".format(identity_id),
+    )
+
+    import pytest; pytest.set_trace()
+
+    assert res.status_code == HTTPStatus.OK
