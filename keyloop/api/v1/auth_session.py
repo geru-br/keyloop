@@ -6,7 +6,7 @@ from pyramid.security import remember, forget, Everyone, Allow
 from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
-from grip.decorator import grip_view
+from grip.decorator import view as grip_view
 from grip.resource import BaseResource
 from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession

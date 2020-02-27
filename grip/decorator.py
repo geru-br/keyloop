@@ -1,9 +1,11 @@
 import functools
 
 
-def grip_view(validators=None, schema=None, response_schema=None, error_handler=None):
+def view(validators=None, schema=None, response_schema=None, error_handler=None, factory=None):
 
     def wrapper(func):
+
+        #TODO adjust for single entity containing all functions
 
         if schema:
             func.grip_schema = schema
@@ -16,6 +18,10 @@ def grip_view(validators=None, schema=None, response_schema=None, error_handler=
 
         if validators:
             func.grip_validators = validators
+
+        if factory:
+            func.grip_factory = factory
+
         return func
 
     return wrapper

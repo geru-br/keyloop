@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPAccepted, HTTPNotFound
 from pyramid.security import forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
-from grip.decorator import grip_view
+from grip.decorator import view as grip_view
 from grip.resource import BaseResource
 from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.schemas.error import ErrorSchema
