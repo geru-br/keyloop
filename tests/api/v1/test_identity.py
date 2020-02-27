@@ -60,6 +60,16 @@ def test_collection_post_nonexistent_realm(pyramid_app, identity_payload, fakeUs
                                 identity_payload, content_type="application/vnd.api+json",
                                 status=404)
 
+    assert res.json == {
+        "status": "error",
+        "errors": [
+            {
+                "location": "path",
+                "name": "realm_slug",
+                "description": "Invalid realm"
+            }
+        ]
+    }
     assert res.content_type == "application/vnd.api+json"
 
 
@@ -73,4 +83,21 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
                                 local_identity_payload, content_type="application/vnd.api+json",
                                 status=400)
 
+    assert res.json == {
+        "status": "error",
+        "errors": [
+            {
+                "location": "body",
+                "name": "errors",
+                "description": [
+                    {
+                        "detail": "Missing data for required field.",
+                        "source": {
+                            "pointer": "/data/attributes/username"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
     assert res.content_type == "application/vnd.api+json"
