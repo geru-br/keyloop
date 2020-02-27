@@ -1,10 +1,12 @@
+import json
+
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound
+from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound, HTTPBadRequest
 from pyramid.security import remember, forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
-from grip.decorators import view_modifier
+from grip.decorators import grip_view
 from grip.resource import BaseResource
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
@@ -28,11 +30,20 @@ collection_response_schemas = {
 
 
 def validate_get(request, **kwargs):
-
-    import pytest; pytest.set_trace()
-    request.errors.add("body", "realm_slug", "Realm does not exist")
-    request.errors.status = 404
+    #raise HTTPNotFound()
+    #request.errors.add("body", "realm_slug", "Realm does not exist")
     pass
+
+
+def get_error_handler(request):
+
+    response = request.response
+
+    import json
+    response.body = json.dumps(request.errors[0]).encode("utf-8")
+    response.status_code = request.errors.status
+    response.content_type = 'application/vnd.api+json'
+    return response
 
 
 @resource(
@@ -42,18 +53,17 @@ def validate_get(request, **kwargs):
     factory=AuthSessionContext,
 )
 class AuthSessionResource(BaseResource):
-    collection_post_schema = CollectionPostSchema
-    collection_response_schemas = collection_response_schemas
+    # collection_post_schema = CollectionPostSchema
+    # collection_response_schemas = collection_response_schemas
     resource_get_schema = marshmallow.Schema
 
+    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
-
+        import pytest; pytest.set_trace()
         validated = self.request.validated["body"]
 
-        import pdb
-        pdb.set_trace()
         username = validated["username"]
 
         headers = remember(self.request, username)
@@ -61,7 +71,7 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
-    @view_modifier(validators=validate_get)
+    @grip_view(validators=validate_get, error_handler=get_error_handler)
     def get(self):
         """ Return identity info + permissions """
 
