@@ -2,7 +2,7 @@ from wsgiref.simple_server import make_server
 
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
-from playground.models import Base, DBSession, RealIdentity
+from playground.models import Base, DBSession, RealIdentity, RealContact
 
 
 def main():
@@ -23,7 +23,8 @@ def main():
         config.include("grip")
         config.include("keyloop.ext.sqla")
 
-        config.key_loop_setup_session(DBSession, RealIdentity)
+        config.key_loop_setup_identity(DBSession, RealIdentity)
+        config.key_loop_setup_contact(DBSession, RealContact)
 
         app = config.make_wsgi_app()
     return app

@@ -1,17 +1,18 @@
+import logging
+
 import marshmallow
+import marshmallow_jsonapi
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPUnauthorized, HTTPNotFound
-from pyramid.config import Configurator
-from pyramid.security import remember, forget, Everyone, Allow
-from zope.interface.adapter import AdapterRegistry
+from pyramid.httpexceptions import HTTPAccepted, HTTPNotFound
+from pyramid.security import forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
+from grip.decorator import view as grip_view
 from grip.resource import BaseResource
 from keyloop.interfaces.identity import IIdentitySource, IIdentity
+from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.identity import IdentitySchema
 from keyloop.schemas.path import BasePathSchema
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,17 @@ class CollectionPostSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
-collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
+collection_response_schemas = {
+    200: IdentitySchema(exclude=["password"]),
+    404: ErrorSchema()
+}
+
+
+def identity_collection_post_error_handler(request):
+
+    response = request.response
+    response.content_type = 'application/vnd.api+json'
+    return response
 
 
 @resource(
@@ -37,34 +48,29 @@ collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
     factory=IdentityContext,
 )
 class IdentityResource(BaseResource):
-    collection_post_schema = CollectionPostSchema
-    collection_response_schemas = collection_response_schemas
 
+    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas, error_handler=identity_collection_post_error_handler)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
-
         validated = self.request.validated["body"]
-
-        username = validated["username"]
-        password = validated["password"]
-        name = validated["name"]
-        contacts = validated["contacts"]
-
         registry = self.request.registry.settings["keyloop_adapters"]
 
-        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.context.realm)
+        identity_provider = registry.lookup([IIdentity], IIdentitySource, self.request.context.realm)
 
         if not identity_provider:
-            # realm not found
-            raise HTTPNotFound("No such realm")
+            self.request.errors.add(
+                location='body',
+                name='identity',
+                description='Realm failed'
+            )
+            self.request.errors.status = 404
+            logger.info('Realm %s is not valid.', self.request.context.realm)
+            return self.request
 
-        try:
-            identity = identity_provider.create(username, password, name, contacts)
-            return identity
-        except Exception as e:
-            logger.error("Could not create new Identity: '%s'", e)
-            raise
+        return identity_provider.create(
+            validated["username"], validated["password"], validated["name"], validated["contacts"]
+        )
 
     def get(self):
         """ Return identity info + permissions """

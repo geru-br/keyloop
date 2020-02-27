@@ -10,8 +10,9 @@ from sqlalchemy.ext.associationproxy import _AssociationList
 
 class JsonApi(JSON):
     def _get_schema(self, system):
-        import pytest; pytest.set_trace()
-        schema = system["view"].__views__[0]["apispec_response_schemas"][200]
+
+        status_code = system['request'].response.status_code
+        schema = system["view"].__views__[0]["apispec_response_schemas"][status_code]
         return schema
 
     def __call__(self, info):

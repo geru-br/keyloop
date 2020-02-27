@@ -1,11 +1,9 @@
-import marshmallow_jsonapi
 from enum import Enum
+
 import marshmallow
+import marshmallow_jsonapi
 from marshmallow import fields
 from marshmallow_enum import EnumField
-
-
-from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
 
 class ContactType(Enum):

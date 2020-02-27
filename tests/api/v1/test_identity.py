@@ -28,7 +28,6 @@ def identity_payload():
 
 
 def test_collection_post_identity_creates_identity(pyramid_app, identity_payload, fakeUserClass):
-
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload, content_type="application/vnd.api+json")
     expected_result = {
         "data": {
@@ -55,20 +54,17 @@ def test_collection_post_identity_creates_identity(pyramid_app, identity_payload
     assert sorted(res.json) == sorted(expected_result)
 
 
-@pytest.mark.xfail
-def test_collection_post_should_return_not_found_for_invalid_realm(pyramid_app, identity_payload, fakeUserClass):
-
+@pytest.mark.xfail(reason="res.content_type should be application/vnd.api+json")
+def test_collection_post_nonexistent_realm(pyramid_app, identity_payload, fakeUserClass):
     res = pyramid_app.post_json("/api/v1/realms/INVALID-REALM/identities",
                                 identity_payload, content_type="application/vnd.api+json",
-                                status=400)
+                                status=404)
 
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.NOT_FOUND
 
 
-@pytest.mark.xfail
-def test_collection_post_should_return_bad_request_for_invalid_payload(pyramid_app, identity_payload, fakeUserClass):
-
+@pytest.mark.xfail(reason="res.content_type should be application/vnd.api+json")
+def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUserClass):
     import copy
     local_identity_payload = copy.deepcopy(identity_payload)
     local_identity_payload["data"]["attributes"].pop("username")
@@ -78,4 +74,3 @@ def test_collection_post_should_return_bad_request_for_invalid_payload(pyramid_a
                                 status=400)
 
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.BAD_REQUEST

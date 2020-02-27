@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound, HTTPBadRe
 from pyramid.security import remember, forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
-from grip.decorators import grip_view
+from grip.decorator import view as grip_view
 from grip.resource import BaseResource
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
@@ -53,15 +53,12 @@ def get_error_handler(request):
     factory=AuthSessionContext,
 )
 class AuthSessionResource(BaseResource):
-    # collection_post_schema = CollectionPostSchema
-    # collection_response_schemas = collection_response_schemas
-    resource_get_schema = marshmallow.Schema
 
     @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
-        import pytest; pytest.set_trace()
+
         validated = self.request.validated["body"]
 
         username = validated["username"]

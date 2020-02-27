@@ -26,8 +26,8 @@ def _unpack_decorated_args(func):
     response_schema = func.grip_response_schema if hasattr(func, 'grip_response_schema') else None
     validators = func.grip_validators if hasattr(func, 'grip_validators') else marshmallow_validator
     error_handler = func.grip_error_handler if hasattr(func, 'grip_error_handler') else None
-
-    return schema, response_schema, validators, error_handler
+    factory = func.grip_factory if hasattr(func, 'grip_factory') else None
+    return schema, response_schema, validators, error_handler, factory
 
 
 class Meta(type):
@@ -42,10 +42,9 @@ class Meta(type):
         else:
             collection_get = namespace["collection_get"]
 
-        if "collection_get_schema" in namespace and namespace["collection_get_schema"]:
-            collection_get_schema = namespace["collection_get_schema"]
-        else:
-            collection_get_schema = None
+        collection_get_schema, collection_get_response_schemas, collection_get_validator, collection_get_error_handler, factory = _unpack_decorated_args(
+            collection_get
+        )
 
         namespace["collection_get"] = add_view(
             collection_get,
@@ -54,6 +53,7 @@ class Meta(type):
             content_type="application/vnd.api+json",
             # apispec_show=True,
             renderer="json_api",
+            factory=factory
             # permission="view",
         )
 
@@ -66,7 +66,8 @@ class Meta(type):
         else:
             collection_post = namespace["collection_post"]
 
-        collection_post_schema, collection_post_response_schemas, collection_post_validator, collection_post_error_handler = _unpack_decorated_args(
+
+        collection_post_schema, collection_post_response_schemas, collection_post_validator, collection_post_error_handler, factory = _unpack_decorated_args(
             collection_post
         )
 
@@ -78,6 +79,7 @@ class Meta(type):
             renderer="json_api",
             schema=collection_post_schema,
             apispec_response_schemas=collection_post_response_schemas,
+            factory=factory
             # permission="edit",
         )
 
@@ -98,7 +100,7 @@ class Meta(type):
         else:
             get = namespace["get"]
 
-        resource_get_schema, resource_get_response_schemas, resource_get_validators, resource_get_error_handler = _unpack_decorated_args(
+        resource_get_schema, resource_get_response_schemas, resource_get_validators, resource_get_error_handler, factory = _unpack_decorated_args(
             get
         )
 
@@ -111,6 +113,7 @@ class Meta(type):
             error_handler=resource_get_error_handler,
             renderer="json_api",
             content_type="application/vnd.api+json",
+            factory=factory
             # permission="view",
         )
 
@@ -123,7 +126,7 @@ class Meta(type):
         else:
             post = namespace["post"]
 
-        resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler = _unpack_decorated_args(
+        resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler, factory = _unpack_decorated_args(
             get
         )
 
@@ -135,6 +138,7 @@ class Meta(type):
             apispec_response_schemas=resource_response_schemas,
             error_handler=resource_post_error_handler,
             renderer="json_api",
+            factory=factory
             # permission="edit",
         )
 
@@ -162,5 +166,3 @@ class BaseResource(metaclass=Meta):
             return self.request.context.get()
         except NoResultFound:
             raise HTTPNotFound()
-
-
