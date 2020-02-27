@@ -9,6 +9,27 @@ from sqlalchemy.orm.exc import NoResultFound
 # from cornice_apispec import validators
 
 
+def default_error_handler(request):
+
+    response = request.response
+
+    import json
+    response.body = json.dumps(request.errors[0]).encode("utf-8")
+    response.status_code = request.errors.status
+    response.content_type = 'application/vnd.api+json'
+    return response
+
+
+def _unpack_decorated_args(func):
+
+    schema = func.grip_schema if hasattr(func, 'grip_schema') else None
+    response_schema = func.grip_response_schema if hasattr(func, 'grip_response_schema') else None
+    validators = func.grip_validators if hasattr(func, 'grip_validators') else marshmallow_validator
+    error_handler = func.grip_error_handler if hasattr(func, 'grip_error_handler') else None
+
+    return schema, response_schema, validators, error_handler
+
+
 class Meta(type):
     def __new__(mcs, name, bases, namespace):
 
@@ -45,30 +66,18 @@ class Meta(type):
         else:
             collection_post = namespace["collection_post"]
 
-        if (
-            "collection_post_schema" in namespace
-            and namespace["collection_post_schema"]
-        ):
-            collection_post_schema = namespace["collection_post_schema"]
-        else:
-            collection_post_schema = None
-
-        if (
-            "collection_response_schemas" in namespace
-            and namespace["collection_response_schemas"]
-        ):
-            collection_response_schemas = namespace["collection_response_schemas"]
-        else:
-            collection_response_schemas = None
+        collection_post_schema, collection_post_response_schemas, collection_post_validator, collection_post_error_handler = _unpack_decorated_args(
+            collection_post
+        )
 
         namespace["collection_post"] = add_view(
             collection_post,
-            validators=(marshmallow_validator,),
+            validators=collection_post_validator,
             # apispec_show=True,
             content_type="application/vnd.api+json",
             renderer="json_api",
             schema=collection_post_schema,
-            apispec_response_schemas=collection_response_schemas,
+            apispec_response_schemas=collection_post_response_schemas,
             # permission="edit",
         )
 
@@ -89,18 +98,19 @@ class Meta(type):
         else:
             get = namespace["get"]
 
-        if "resource_get_schema" in namespace and namespace["resource_get_schema"]:
-            resource_get_schema = namespace["resource_get_schema"]
-        else:
-            resource_get_schema = None
+        resource_get_schema, resource_get_response_schemas, resource_get_validators, resource_get_error_handler = _unpack_decorated_args(
+            get
+        )
 
         namespace["get"] = add_view(
             get,
             # apispec_show=True,
             schema=resource_get_schema,
-            validators=(marshmallow_validator,),
-            # apispec_response_schemas=resource_response_schemas,
+            validators=resource_get_validators,
+            apispec_response_schemas=resource_get_response_schemas,
+            error_handler=resource_get_error_handler,
             renderer="json_api",
+            content_type="application/vnd.api+json",
             # permission="view",
         )
 
@@ -113,17 +123,17 @@ class Meta(type):
         else:
             post = namespace["post"]
 
-        if "resource_post_schema" in namespace and namespace["resource_post_schema"]:
-            resource_post_schema = namespace["resource_post_schema"]
-        else:
-            resource_post_schema = None
+        resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler = _unpack_decorated_args(
+            get
+        )
 
         namespace["post"] = add_view(
             post,
-            validators=(marshmallow_validator,),
+            validators=(resource_post_validators,),
             # apispec_show=True,
             schema=resource_post_schema,
-            # apispec_response_schemas=resource_response_schemas,
+            apispec_response_schemas=resource_response_schemas,
+            error_handler=resource_post_error_handler,
             renderer="json_api",
             # permission="edit",
         )
@@ -152,5 +162,3 @@ class BaseResource(metaclass=Meta):
             return self.request.context.get()
         except NoResultFound:
             raise HTTPNotFound()
-
-
