@@ -6,6 +6,7 @@ from pyramid.security import remember, forget, Everyone, Allow
 from zope.interface.adapter import AdapterRegistry
 
 from grip.context import SimpleBaseFactory
+from grip.decorator import grip_view
 from grip.resource import BaseResource
 from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.models.auth_session import AuthSession
@@ -36,13 +37,11 @@ collection_response_schemas = {
     factory=AuthSessionContext,
 )
 class AuthSessionResource(BaseResource):
-    collection_post_schema = CollectionPostSchema
-    collection_response_schemas = collection_response_schemas
 
+    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
-
         validated = self.request.validated["body"]
 
         username = validated["username"]

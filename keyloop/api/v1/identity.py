@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPAccepted
 from pyramid.security import forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
+from grip.decorator import grip_view
 from grip.resource import BaseResource
 from keyloop.interfaces.identity import IIdentitySource, IIdentity
 from keyloop.schemas.identity import IdentitySchema
@@ -35,9 +36,8 @@ collection_response_schemas = {200: IdentitySchema(exclude=["password"])}
     factory=IdentityContext,
 )
 class IdentityResource(BaseResource):
-    collection_post_schema = CollectionPostSchema
-    collection_response_schemas = collection_response_schemas
 
+    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas)
     def collection_post(self):
         # where is this property being set?
         # should we define a property direct on the factory context
