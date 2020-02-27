@@ -46,8 +46,6 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
             # need to find a way to return a 404 instead of a 400
             raise marshmallow.ValidationError("Realm failed")
 
-        import pdb
-        pdb.set_trace()
         identity = identity_provider.get(data["username"])
 
         if not identity.login(data["username"], data["password"]):

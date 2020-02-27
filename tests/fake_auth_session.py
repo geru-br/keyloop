@@ -14,7 +14,10 @@ class FakeAuthSession:
         self.start = start
 
     @classmethod
-    def get(cls, identity):
+    def get(cls, uuid):
+        from tests.fake_user import FakeUser
+        identity = FakeUser(username='teste@fakeauthsession.com', password='1234567a')
+        identity.uuid = uuid
         return cls(identity, True, 600, arrow.utcnow().datetime)
 
     @classmethod
