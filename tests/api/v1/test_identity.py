@@ -34,25 +34,27 @@ def test_collection_post_identity_creates_identity(pyramid_app, identity_payload
         "data": {
             "type": "identity",
             "attributes": {
-                "name": "xablau",
                 "username": "test@test.com",
                 "contacts": [
                     {
-                        "value": "11999999999",
-                        "type": "MSISDN"
+                        "type": "EMAIL",
+                        "value": "mail@mail.com"
                     },
                     {
-                        "value": "mail@mail.com",
-                        "type": "EMAIL"
-                    },
-                ]
+                        "type": "MSISDN",
+                        "value": "11999999999"
+                    }
+                ],
+                "name": "xablau"
             }
         }
     }
 
+    expected_result['data']['id'] = res.json['data']['id']
+
     assert res.status_code == HTTPStatus.OK
     assert res.content_type == "application/vnd.api+json"
-    assert sorted(res.json) == sorted(expected_result)
+    assert res.json == expected_result
 
 
 @pytest.mark.xfail(reason="res.content_type should be application/vnd.api+json")
@@ -105,8 +107,28 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
 
 
 def test_delete_identity(pyramid_app, fakeUserClass):
-    res = pyramid_app.delete_json("/api/v1/realms/REALM/identities/2", content_type="application/vnd.api+json",
-                                status=204)
+    pyramid_app.delete_json("/api/v1/realms/REALM/identities/2", content_type="application/vnd.api+json",
+                            status=204)
 
-    assert res.status_code == HTTPStatus.NO_CONTENT
     assert fakeUserClass.test_delete_called
+
+
+def test_get_identity(pyramid_app, fakeUserClass):
+    res = pyramid_app.get("/api/v1/realms/REALM/identities/d298694ccf6a496e95f9f4a4835e69a2", status=200)
+
+    assert res.json == {
+        "data": {
+            "type": "identity",
+            "attributes": {
+                "permissions": [
+                    "perm_a",
+                    "perm_b",
+                    "perm_c"
+                ],
+                "contacts": None,
+                "name": None,
+                "username": "teste@email.com.br"
+            },
+            "id": "d298694c-cf6a-496e-95f9-f4a4835e69a2"
+        }
+    }
