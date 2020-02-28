@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+
 class FakeUser:
     test_login_result = True
     test_login_called = False
@@ -7,10 +10,12 @@ class FakeUser:
 
     def __init__(self, username, password, name=None, contacts=None):
         self.id = 2
+        self.uuid = uuid4().hex
         self.username = username
         self.password = password
         self.name = name
         self.contacts = contacts
+        self.permissions = ['perm_a', 'perm_b', 'perm_c']
 
     @classmethod
     def test_reset(cls):
@@ -18,8 +23,10 @@ class FakeUser:
         cls.test_login_called = False
 
     @classmethod
-    def get(cls, username):
-        return cls(username, password="1234567a")
+    def get(cls, uuid):
+        identity = cls('teste@email.com.br', password="1234567a")
+        identity.uuid = uuid
+        return identity
 
     @classmethod
     def create(cls, username, password, name, contacts):
@@ -33,4 +40,3 @@ class FakeUser:
     def delete(cls, id):
         cls.test_delete_called = True
         return cls.test_delete_result
-
