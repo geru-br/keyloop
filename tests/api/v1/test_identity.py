@@ -107,9 +107,10 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
 
 
 def test_delete_identity(pyramid_app, fakeUserClass):
-    pyramid_app.delete_json("/api/v1/realms/REALM/identities/2", content_type="application/vnd.api+json",
-                            status=204)
+    res = pyramid_app.delete_json("/api/v1/realms/REALM/identities/2", content_type="application/vnd.api+json",
+                                  status=204)
 
+    assert res.status_code == HTTPStatus.NO_CONTENT
     assert fakeUserClass.test_delete_called
 
 
@@ -131,4 +132,48 @@ def test_get_identity(pyramid_app, fakeUserClass):
             },
             "id": "d298694c-cf6a-496e-95f9-f4a4835e69a2"
         }
+    }
+
+
+def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
+    res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
+                                content_type="application/vnd.api+json")
+
+    assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
+
+    import copy
+    local_identity_payload = copy.deepcopy(identity_payload)
+    local_identity_payload["data"]["attributes"]["name"] = "updated user"
+
+    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/2", local_identity_payload,
+                                            content_type="application/vnd.api+json")
+
+    assert updated_identity.status_code == HTTPStatus.NO_CONTENT
+    assert fakeUserClass.IDENTITIES[0]['name'] == local_identity_payload["data"]["attributes"]["name"]
+
+
+def test_update_error_identity(pyramid_app, identity_payload, fakeUserClass):
+    res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
+                                content_type="application/vnd.api+json")
+
+    assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
+
+    import copy
+    local_identity_payload = copy.deepcopy(identity_payload)
+    local_identity_payload["data"]["attributes"]["name"] = "updated user"
+    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/1",
+                                            local_identity_payload,
+                                            content_type="application/vnd.api+json",
+                                            status=404)
+
+    assert fakeUserClass.IDENTITIES[0]['name'] != local_identity_payload["data"]["attributes"]["name"]
+    assert updated_identity.json == {
+        "status": "error",
+        "errors": [
+            {
+                "location": "path",
+                "name": "identity_update",
+                "description": "Identity not found"
+            }
+        ]
     }
