@@ -132,6 +132,7 @@ def test_get_identity(pyramid_app, fakeUserClass):
             },
             "id": "d298694c-cf6a-496e-95f9-f4a4835e69a2"
         }
+    }
 
 
 def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
@@ -144,8 +145,7 @@ def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
     local_identity_payload = copy.deepcopy(identity_payload)
     local_identity_payload["data"]["attributes"]["name"] = "updated user"
 
-    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/2",
-                                            local_identity_payload,
+    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/2", local_identity_payload,
                                             content_type="application/vnd.api+json")
 
     assert updated_identity.status_code == HTTPStatus.NO_CONTENT
