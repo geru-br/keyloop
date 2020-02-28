@@ -108,7 +108,6 @@ class Meta(type):
             schema=resource_get_schema,
             validators=resource_get_validators,
             apispec_response_schemas=resource_get_response_schemas,
-            error_handler=resource_get_error_handler,
             renderer="json_api",
             content_type="application/vnd.api+json",
             factory=factory
@@ -134,7 +133,6 @@ class Meta(type):
             # apispec_show=True,
             schema=resource_post_schema,
             apispec_response_schemas=resource_post_response_schemas,
-            error_handler=resource_post_error_handler,
             renderer="json_api",
             factory=factory
             # permission="edit",
@@ -161,9 +159,34 @@ class Meta(type):
             # apispec_show=True,
             schema=resource_delete_schema,
             apispec_response_schemas=resource_delete_response_schemas,
-            error_handler=resource_delete_error_handler,
             renderer="json_api",
             factory=factory_delete
+            # permission="edit",
+        )
+
+        # put
+        if "put" not in namespace:
+
+            def put(self):
+                return super(cls, self).put()
+
+        else:
+            put = namespace["put"]
+
+        resource_put_schema, \
+        resource_put_response_schemas, \
+        resource_put_validators, \
+        resource_put_error_handler, \
+        factory_put = _unpack_decorated_args(put)
+
+        namespace["put"] = add_view(
+            put,
+            validators=(resource_put_validators,),
+            # apispec_show=True,
+            schema=resource_put_schema,
+            apispec_response_schemas=resource_put_response_schemas,
+            renderer="json_api",
+            factory=factory_put
             # permission="edit",
         )
 

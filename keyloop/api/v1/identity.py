@@ -2,12 +2,13 @@ import logging
 
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPNoContent
-from pyramid.security import Everyone, Allow
+from pyramid.httpexceptions import HTTPNoContent, HTTPNotFound 
+from pyramid.security import forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource
+from keyloop.api.v1.exceptions import NotFound
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.identity import IdentitySchema
 from keyloop.schemas.path import BasePathSchema
@@ -21,7 +22,7 @@ class IdentityContext(SimpleBaseFactory):
         return [(Allow, Everyone, 'edit')]
 
 
-class CollectionPostSchema(marshmallow.Schema):
+class CollectionPostAndPutSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(IdentitySchema)
 
@@ -32,23 +33,13 @@ class GetAndDeleteSchema(marshmallow.Schema):
 
 collection_response_schemas = {
     200: IdentitySchema(exclude=["password", "permissions"]),
+    204: {},
     404: ErrorSchema()
 }
 
 get_response_schemas = {
     200: IdentitySchema(exclude=["password"]),
 }
-
-collection_delete_response_schemas = {
-    204: {},
-    404: ErrorSchema()
-}
-
-
-def identity_collection_post_error_handler(request):
-    response = request.response
-    response.content_type = 'application/vnd.api+json'
-    return response
 
 
 @resource(
@@ -59,8 +50,7 @@ def identity_collection_post_error_handler(request):
 )
 class IdentityResource(BaseResource):
 
-    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas,
-               error_handler=identity_collection_post_error_handler)
+    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_response_schemas)
     def collection_post(self):
         validated = self.request.validated["body"]
         identity = self.request.identity_provider.create(
@@ -73,10 +63,27 @@ class IdentityResource(BaseResource):
         """ Return identity info + permissions """
         return self.request.identity_provider.get(self.request.matchdict['id'])
 
-    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_response_schemas)
     def delete(self):
         """Remove the identity"""
 
         self.request.identity_provider.delete(self.request.matchdict['id'])
 
         return HTTPNoContent()
+
+    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_response_schemas)
+    def put(self):
+        """Update an identity"""
+        validated = self.request.validated["body"]
+
+        try:
+            self.request.identity_provider.update(self.request.matchdict['id'], params=validated)
+
+            return HTTPNoContent()
+        except NotFound:
+            self.request.errors.add(
+                location='path',
+                name='identity_update',
+                description='Identity not found'
+            )
+            self.request.errors.status = 404
