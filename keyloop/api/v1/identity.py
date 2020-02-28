@@ -2,8 +2,8 @@ import logging
 
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPNoContent, HTTPNotFound 
-from pyramid.security import forget, Everyone, Allow
+from pyramid.httpexceptions import HTTPNoContent
+from pyramid.security import Everyone, Allow
 
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
@@ -31,15 +31,20 @@ class GetAndDeleteSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
 
 
-collection_response_schemas = {
+collection_post_response_schemas = {
     200: IdentitySchema(exclude=["password", "permissions"]),
-    204: {},
     404: ErrorSchema()
 }
 
 get_response_schemas = {
     200: IdentitySchema(exclude=["password"]),
 }
+
+collection_delete_put_response_schemas = {
+    204: {},
+    404: ErrorSchema()
+}
+
 
 
 @resource(
@@ -50,7 +55,7 @@ get_response_schemas = {
 )
 class IdentityResource(BaseResource):
 
-    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_response_schemas)
+    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_post_response_schemas)
     def collection_post(self):
         validated = self.request.validated["body"]
         identity = self.request.identity_provider.create(
@@ -63,7 +68,7 @@ class IdentityResource(BaseResource):
         """ Return identity info + permissions """
         return self.request.identity_provider.get(self.request.matchdict['id'])
 
-    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_put_response_schemas)
     def delete(self):
         """Remove the identity"""
 
@@ -71,7 +76,7 @@ class IdentityResource(BaseResource):
 
         return HTTPNoContent()
 
-    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_response_schemas)
+    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_delete_put_response_schemas)
     def put(self):
         """Update an identity"""
         validated = self.request.validated["body"]
