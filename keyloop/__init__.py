@@ -1,20 +1,12 @@
 import logging
 
-from zope.interface.adapter import AdapterRegistry
-
-from pyramid.config import Configurator
-from pyramid.response import Response
-from pyramid.settings import aslist
-
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-
-from grip.renderers import json_api_renderer
-
-from keyloop.security import KeyLoopAuthenticationPolicy
+from pyramid.settings import aslist
+from zope.interface.adapter import AdapterRegistry
 
 from keyloop.interfaces import identity
-
+from keyloop.security import KeyLoopAuthenticationPolicy
 
 logger = logging.getLogger(__name__)
 

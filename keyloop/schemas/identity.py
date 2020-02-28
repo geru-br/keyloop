@@ -49,3 +49,4 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
     password = fields.String(required=True)
     name = fields.String(required=False)
     contacts = fields.List(fields.Nested(ContactSchema), required=False)
+    permissions = fields.List(fields.String(), dump_only=True)

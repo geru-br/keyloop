@@ -30,7 +30,3 @@ def fakeUserClass():
     FakeUser.test_reset()
 
     yield FakeUser
-
-
-
-
