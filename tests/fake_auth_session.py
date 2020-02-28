@@ -23,3 +23,6 @@ class FakeAuthSession:
     @classmethod
     def create(cls, identity, active, ttl, start):
         return cls(identity, active, ttl, start)
+
+    def delete(self, uuid):
+        pass
