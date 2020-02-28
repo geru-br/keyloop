@@ -10,7 +10,7 @@ from grip.decorator import view as grip_view
 from grip.resource import BaseResource
 from keyloop.api.v1.exceptions import NotFound
 from keyloop.schemas.error import ErrorSchema
-from keyloop.schemas.identity import IdentitySchema
+from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema
 from keyloop.schemas.path import BasePathSchema
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,11 @@ class IdentityContext(SimpleBaseFactory):
 class CollectionPostAndPutSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(IdentitySchema)
+
+
+class PutSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+    body = marshmallow.fields.Nested(IdentityUpdateSchema)
 
 
 class GetAndDeleteSchema(marshmallow.Schema):
@@ -44,7 +49,6 @@ collection_delete_put_response_schemas = {
     204: {},
     404: ErrorSchema()
 }
-
 
 
 @resource(
@@ -76,7 +80,7 @@ class IdentityResource(BaseResource):
 
         return HTTPNoContent()
 
-    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_delete_put_response_schemas)
+    @grip_view(schema=PutSchema, response_schema=collection_delete_put_response_schemas)
     def put(self):
         """Update an identity"""
         validated = self.request.validated["body"]

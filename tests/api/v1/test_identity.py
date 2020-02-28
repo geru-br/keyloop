@@ -144,6 +144,7 @@ def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
     import copy
     local_identity_payload = copy.deepcopy(identity_payload)
     local_identity_payload["data"]["attributes"]["name"] = "updated user"
+    local_identity_payload["data"]["attributes"].pop("username")
 
     updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/2", local_identity_payload,
                                             content_type="application/vnd.api+json")
