@@ -36,3 +36,6 @@ class IIdentitySource(Interface):
 
     def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
         pass
+
+    def delete(id: str):
+        pass

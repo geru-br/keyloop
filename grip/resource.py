@@ -5,6 +5,7 @@ from urllib.parse import unquote
 from pyramid.httpexceptions import HTTPNotFound
 from sqlalchemy.orm.exc import NoResultFound
 
+
 # Do not remove this line. Its is important for swagger
 # from cornice_apispec import validators
 
@@ -21,7 +22,6 @@ def default_error_handler(request):
 
 
 def _unpack_decorated_args(func):
-
     schema = func.grip_schema if hasattr(func, 'grip_schema') else None
     response_schema = func.grip_response_schema if hasattr(func, 'grip_response_schema') else None
     validators = func.grip_validators if hasattr(func, 'grip_validators') else marshmallow_validator
@@ -85,8 +85,8 @@ class Meta(type):
         )
 
         if (
-            "resource_response_schemas" in namespace
-            and namespace["resource_response_schemas"]
+                "resource_response_schemas" in namespace
+                and namespace["resource_response_schemas"]
         ):
             resource_response_schemas = namespace["resource_response_schemas"]
         else:
@@ -136,7 +136,7 @@ class Meta(type):
             validators=(resource_post_validators,),
             # apispec_show=True,
             schema=resource_post_schema,
-            apispec_response_schemas=resource_response_schemas,
+            apispec_response_schemas=resource_post_response_schemas,
             error_handler=resource_post_error_handler,
             renderer="json_api",
             factory=factory
@@ -152,9 +152,11 @@ class Meta(type):
         else:
             delete = namespace["delete"]
 
-        resource_delete_schema, resource_delete_response_schemas, resource_delete_validators, resource_delete_error_handler, factory = _unpack_decorated_args(
-            delete
-        )
+        resource_delete_schema, \
+        resource_delete_response_schemas, \
+        resource_delete_validators, \
+        resource_delete_error_handler, \
+        factory = _unpack_decorated_args(delete)
 
         namespace["delete"] = add_view(
             delete,
@@ -173,7 +175,6 @@ class Meta(type):
 
 
 class BaseResource(metaclass=Meta):
-
     collection_post_schema = None
     collection_response_schemas = None
     resource_post_schema = None
