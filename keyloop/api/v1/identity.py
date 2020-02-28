@@ -26,11 +26,7 @@ class CollectionPostSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
-class GetSchema(marshmallow.Schema):
-    path = marshmallow.fields.Nested(BasePathSchema)
-
-
-class CollectionDeleteSchema(marshmallow.Schema):
+class GetAndDeleteSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
 
 
@@ -72,12 +68,12 @@ class IdentityResource(BaseResource):
         )
         return identity
 
-    @grip_view(schema=GetSchema, response_schema=get_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=get_response_schemas)
     def get(self):
         """ Return identity info + permissions """
         return self.request.identity_provider.get(self.request.matchdict['id'])
 
-    @grip_view(schema=CollectionDeleteSchema, response_schema=collection_delete_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_response_schemas)
     def delete(self):
         """Remove the identity"""
 
