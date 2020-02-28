@@ -12,6 +12,9 @@ class IAuthSession(Interface):
     ttl = Attribute('Time that the session should be valid.')
     start = Attribute("Session's start timestamp.")
 
+    def delete(self):
+        pass
+
 
 class IAuthSessionSource(Interface):
     """Marker interface for callables that retrieve an AuthSession object given it's id."""

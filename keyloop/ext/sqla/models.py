@@ -68,7 +68,7 @@ class Identity():
 
     @singletonmethod
     def login(self, username, password):
-        return IdentitySource.get(username)
+        raise NotImplementedError()
 
 
 @implementer(IIdentitySource)

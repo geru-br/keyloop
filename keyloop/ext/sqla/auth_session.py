@@ -37,6 +37,9 @@ class AuthSession:
     def start(self):
         return sa.Column(sa.DatetTime, index=True)
 
+    def delete(self):
+        self.active=False
+
 
 @implementer(IAuthSessionSource)
 class AuthSessionSource:

@@ -31,3 +31,12 @@ def fakeUserClass():
     FakeUser.test_reset()
 
     yield FakeUser
+
+
+@pytest.fixture
+def fakeAuthSessionClass():
+    from tests.fake_auth_session import FakeAuthSession
+
+    FakeAuthSession.test_reset()
+
+    yield FakeAuthSession

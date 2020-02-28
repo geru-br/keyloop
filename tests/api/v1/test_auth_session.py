@@ -101,6 +101,7 @@ def test_post_auth_session_fails_on_incorrect_credentials(
         content_type="application/vnd.api+json",
         status=400,
     )
+
     assert res.status_code == HTTPStatus.BAD_REQUEST
     assert "Set-Cookie" not in res.headers
 
@@ -119,12 +120,12 @@ def test_get_auth_session(
     res = pyramid_app.get(
         "/api/v1/realms/REALM/auth-session/{}".format(identity_id), status=200
     )
-
+    assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.OK
 
 
 def test_delete_auth_session(
-    pyramid_app, login_payload, fakeUserClass
+    pyramid_app, login_payload, fakeUserClass, fakeAuthSessionClass
 ):
     res = pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
@@ -137,5 +138,6 @@ def test_delete_auth_session(
     res = pyramid_app.delete_json(
         "/api/v1/realms/REALM/auth-session/{}".format(identity_id), content_type="application/vnd.api+json", status=200
     )
-
+    assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.OK
+    assert fakeAuthSessionClass.test_delete_called == True

@@ -31,6 +31,7 @@ class ResourceGetSchema(marshmallow.Schema):
 
 collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
     404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
 }
 
@@ -100,5 +101,4 @@ class AuthSessionResource(BaseResource):
         # Should we trigger notifications to other services?
         auth_session = self.request.auth_session
         forget(self.request)
-        auth_session.active = False
-        return HTTPOk()
+        auth_session.delete()
