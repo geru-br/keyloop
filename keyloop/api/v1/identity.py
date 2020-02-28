@@ -3,7 +3,7 @@ import logging
 import marshmallow
 from cornice.resource import resource
 from pyramid.httpexceptions import HTTPNoContent
-from pyramid.security import forget, Everyone, Allow
+from pyramid.security import Everyone, Allow
 
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
@@ -26,13 +26,21 @@ class CollectionPostSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
+class GetSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+
+
 class CollectionDeleteSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
 
 
 collection_response_schemas = {
-    200: IdentitySchema(exclude=["password"]),
+    200: IdentitySchema(exclude=["password", "permissions"]),
     404: ErrorSchema()
+}
+
+get_response_schemas = {
+    200: IdentitySchema(exclude=["password"]),
 }
 
 collection_delete_response_schemas = {
@@ -59,27 +67,15 @@ class IdentityResource(BaseResource):
                error_handler=identity_collection_post_error_handler)
     def collection_post(self):
         validated = self.request.validated["body"]
-
-        return self.request.identity_provider.create(
+        identity = self.request.identity_provider.create(
             validated["username"], validated["password"], validated["name"], validated["contacts"]
         )
+        return identity
 
+    @grip_view(schema=GetSchema, response_schema=get_response_schemas)
     def get(self):
         """ Return identity info + permissions """
-
-        # realm = self.request.validated["path"]["realm_slug"]
-        # id = self.request.validated["path"]["id"]
-
-        # # session = AuthSession.get_session(id, realm)
-
-        # identity = Identity.get_identity(realm, username)
-
-        # session = AuthSession(username, password, identity)
-
-        # return session
-
-        # TODO: fetch permisionn
-        return {}
+        return self.request.identity_provider.get(self.request.matchdict['id'])
 
     @grip_view(schema=CollectionDeleteSchema, response_schema=collection_delete_response_schemas)
     def delete(self):
