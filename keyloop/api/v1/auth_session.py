@@ -35,11 +35,7 @@ collection_response_schemas = {
 }
 
 
-def validate_get(request, **kwargs):
-    #raise HTTPNotFound()
-    #request.errors.add("body", "realm_slug", "Realm does not exist")
-
-    import pytest; pytest.set_trace()
+def validate_realm_and_id(request, **kwargs):
     id = request.matchdict['id']
     realm_slug = request.matchdict['realm_slug']
 
@@ -58,19 +54,6 @@ def validate_get(request, **kwargs):
     auth_session = session_provider.get(id)
 
     request.auth_session = auth_session
-
-    # identity = identity_provider.get(data["username"])
-    #
-    # if not identity.login(data["username"], data["password"]):
-    #     # need to find a way to return a 401 instead of a 400
-    #     raise marshmallow.ValidationError("credentials failed")
-    #
-    # session_provider = registry.lookup(
-    #     [IAuthSession], IAuthSessionSource, request.context.realm
-    # )
-
-
-    pass
 
 
 def get_error_handler(request):
@@ -106,15 +89,16 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
-    @grip_view(validators=validate_get, error_handler=get_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_realm_and_id, error_handler=get_error_handler, response_schema=collection_response_schemas)
     def get(self):
         """ Return identity info + permissions """
         return self.request.auth_session
 
+    @grip_view(validators=validate_realm_and_id, error_handler=get_error_handler, response_schema=collection_response_schemas)
     def delete(self):
         """ Logout """
-
         # Should we trigger notifications to other services?
+        auth_session = self.request.auth_session
         forget(self.request)
-
-        return HTTPAccepted()
+        auth_session.active = False
+        return HTTPOk()

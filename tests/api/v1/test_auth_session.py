@@ -33,7 +33,7 @@ def test_post_auth_session_calls_registered_identity_source(
         # TODO: check the returned cookie to assert that it checks with the current session id
         assert "Set-Cookie" in res.headers
         assert fakeUserClass.test_login_called
-        # FIXME: We must return identity data at the same resquest
+        # FIXME: We must return identity data at the same request
 
         expected_result = {
             "data": {
@@ -68,8 +68,6 @@ def test_post_auth_session_calls_registered_identity_source(
             ]
         }
 
-        import pdb
-        pdb.set_trace()
         assert res.json == expected_result
 
 
@@ -122,6 +120,22 @@ def test_get_auth_session(
         "/api/v1/realms/REALM/auth-session/{}".format(identity_id), status=200
     )
 
-    import pytest; pytest.set_trace()
+    assert res.status_code == HTTPStatus.OK
+
+
+def test_delete_auth_session(
+    pyramid_app, login_payload, fakeUserClass
+):
+    res = pyramid_app.post_json(
+        "/api/v1/realms/REALM/auth-session",
+        login_payload,
+        content_type="application/vnd.api+json",
+    )
+
+    identity_id = res.json['data']['relationships']['identity']['data']['id']
+
+    res = pyramid_app.delete_json(
+        "/api/v1/realms/REALM/auth-session/{}".format(identity_id), content_type="application/vnd.api+json", status=200
+    )
 
     assert res.status_code == HTTPStatus.OK

@@ -127,7 +127,7 @@ class Meta(type):
             post = namespace["post"]
 
         resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler, factory = _unpack_decorated_args(
-            get
+            post
         )
 
         namespace["post"] = add_view(
@@ -156,7 +156,7 @@ class Meta(type):
         )
 
         namespace["delete"] = add_view(
-            post,
+            delete,
             validators=(resource_delete_validators,),
             # apispec_show=True,
             schema=resource_delete_schema,
