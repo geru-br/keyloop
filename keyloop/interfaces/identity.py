@@ -25,11 +25,14 @@ class IIdentitySource(Interface):
     """Marker interface for callables that retrieve an Identity object given a username
     """
 
-    def get(identity_id) -> IIdentity:
+    def get(identity_id: str) -> IIdentity:
         pass
 
     def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
         pass
 
-    def delete(id: str):
+    def delete(identity_id: str):
+        pass
+
+    def update(identity_id: str, **kwargs: dict):
         pass
