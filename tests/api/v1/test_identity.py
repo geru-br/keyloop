@@ -28,7 +28,8 @@ def identity_payload():
 
 
 def test_collection_post_identity_creates_identity(pyramid_app, identity_payload, fakeUserClass):
-    res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload, content_type="application/vnd.api+json")
+    res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
+                                content_type="application/vnd.api+json")
     expected_result = {
         "data": {
             "type": "identity",
@@ -101,3 +102,11 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
         ]
     }
     assert res.content_type == "application/vnd.api+json"
+
+
+def test_delete_identity(pyramid_app, fakeUserClass):
+    res = pyramid_app.delete_json("/api/v1/realms/REALM/identities/2", content_type="application/vnd.api+json",
+                                status=204)
+
+    assert res.status_code == HTTPStatus.NO_CONTENT
+    assert fakeUserClass.test_delete_called

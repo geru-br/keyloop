@@ -2,6 +2,9 @@ class FakeUser:
     test_login_result = True
     test_login_called = False
 
+    test_delete_result = True
+    test_delete_called = False
+
     def __init__(self, username, password, name=None, contacts=None):
         self.id = 2
         self.username = username
@@ -25,3 +28,9 @@ class FakeUser:
     def login(self, username, password):
         self.__class__.test_login_called = True
         return self.__class__.test_login_result
+
+    @classmethod
+    def delete(cls, id):
+        cls.test_delete_called = True
+        return cls.test_delete_result
+

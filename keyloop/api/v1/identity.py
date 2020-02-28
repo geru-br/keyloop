@@ -2,7 +2,7 @@ import logging
 
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted
+from pyramid.httpexceptions import HTTPNoContent
 from pyramid.security import forget, Everyone, Allow
 
 from grip.context import SimpleBaseFactory
@@ -26,8 +26,17 @@ class CollectionPostSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
+class CollectionDeleteSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+
+
 collection_response_schemas = {
     200: IdentitySchema(exclude=["password"]),
+    404: ErrorSchema()
+}
+
+collection_delete_response_schemas = {
+    204: {},
     404: ErrorSchema()
 }
 
@@ -72,10 +81,10 @@ class IdentityResource(BaseResource):
         # TODO: fetch permisionn
         return {}
 
+    @grip_view(schema=CollectionDeleteSchema, response_schema=collection_delete_response_schemas)
     def delete(self):
-        """ Logout """
+        """Remove the identity"""
 
-        # Should we trigger notifications to other services?
-        forget(self.request)
+        self.request.identity_provider.delete(self.request.matchdict['id'])
 
-        return HTTPAccepted()
+        return HTTPNoContent()
