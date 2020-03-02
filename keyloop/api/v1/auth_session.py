@@ -60,8 +60,7 @@ def validate_realm_and_id(request, **kwargs):
 
 
 def auth_session_error_handler(request):
-    import pytest;
-    pytest.set_trace()
+
     response = request.response
 
     import json
@@ -71,7 +70,7 @@ def auth_session_error_handler(request):
     return response
 
 
-def validate_login(request, arrow=None, **kwargs):
+def validate_login(request, **kwargs):
 
     registry = request.registry.settings["keyloop_adapters"]
 
@@ -121,12 +120,9 @@ class AuthSessionResource(BaseResource):
 
     @grip_view(validators= validate_login, error_handler=auth_session_error_handler, response_schema=collection_response_schemas)
     def collection_post(self):
-        # where is this property being set?
-        # should we define a property direct on the factory context
 
-        validated = self.request.validated["body"]
-
-        username = validated["username"]
+        auth_session = self.request.auth_session
+        username = auth_session.identity.username
 
         headers = remember(self.request, username)
         self.request.response.headers.extend(headers)
