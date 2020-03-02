@@ -21,15 +21,6 @@ class AuthSessionContext(SimpleBaseFactory):
         return [(Allow, Everyone, "edit")]
 
 
-class CollectionPostSchema(marshmallow.Schema):
-    path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
-
-
-class ResourceGetSchema(marshmallow.Schema):
-    path = marshmallow.fields.Nested(BasePathSchema)
-
-
 collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
     204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
