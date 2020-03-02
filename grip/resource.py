@@ -79,6 +79,7 @@ class Meta(type):
             renderer="json_api",
             schema=collection_post_schema,
             apispec_response_schemas=collection_post_response_schemas,
+            error_handler=collection_post_error_handler,
             factory=factory
             # permission="edit",
         )

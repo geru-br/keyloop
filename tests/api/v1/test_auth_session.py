@@ -71,6 +71,24 @@ def test_post_auth_session_calls_registered_identity_source(
         assert res.json == expected_result
 
 
+def test_post_auth_session_fails_on_non_existing_realm(
+    pyramid_app, login_payload, fakeUserClass
+):
+
+    fakeUserClass.test_login_result = False
+    login_payload["data"]["attributes"]["username"] = "wrongusername"
+
+    res = pyramid_app.post_json(
+        "/api/v1/realms/WRONGREALM/auth-session",
+        login_payload,
+        content_type="application/vnd.api+json",
+        status=404,
+    )
+
+    assert res.status_code == HTTPStatus.NOT_FOUND
+    assert "Set-Cookie" not in res.headers
+
+
 def test_post_auth_session_fails_on_non_existing_user(
     pyramid_app, login_payload, fakeUserClass
 ):
@@ -84,7 +102,7 @@ def test_post_auth_session_fails_on_non_existing_user(
         content_type="application/vnd.api+json",
         status=401,
     )
-
+    assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
@@ -103,6 +121,7 @@ def test_post_auth_session_fails_on_incorrect_credentials(
         status=401,
     )
 
+    assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
@@ -123,6 +142,24 @@ def test_get_auth_session(
     )
     assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.OK
+
+
+def test_get_auth_session_wrong_realm(
+    pyramid_app, login_payload, fakeUserClass
+):
+    res = pyramid_app.post_json(
+        "/api/v1/realms/REALM/auth-session",
+        login_payload,
+        content_type="application/vnd.api+json",
+    )
+
+    identity_id = res.json['data']['relationships']['identity']['data']['id']
+
+    res = pyramid_app.get(
+        "/api/v1/realms/WRONGREALM/auth-session/{}".format(identity_id), status=404
+    )
+    assert res.content_type == "application/vnd.api+json"
+    assert res.status_code == HTTPStatus.NOT_FOUND
 
 
 def test_delete_auth_session(

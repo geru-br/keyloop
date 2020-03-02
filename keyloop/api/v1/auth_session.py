@@ -33,11 +33,13 @@ class ResourceGetSchema(marshmallow.Schema):
 collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
     204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
-    404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"])
+    401: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
 }
 
 
 def validate_realm_and_id(request, **kwargs):
+
     id = request.matchdict['id']
     realm_slug = request.matchdict['realm_slug']
 
@@ -62,7 +64,6 @@ def validate_realm_and_id(request, **kwargs):
 def auth_session_error_handler(request):
 
     response = request.response
-
     import json
     response.body = json.dumps(request.errors[0]).encode("utf-8")
     response.status_code = request.errors.status
