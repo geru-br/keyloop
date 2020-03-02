@@ -13,7 +13,6 @@ requires = [
     "cornice==4.0.1",
     "SQLAlchemy[postgresql_psycopg2binary]==1.3.13",
     "zope.sqlalchemy==1.2",
-    "arrow==0.15.5",
     "SQLAlchemy-Utils==0.36.1",
     "pyramid-ipython==0.2",
     "alembic==1.3.3",
