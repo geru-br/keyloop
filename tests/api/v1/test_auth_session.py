@@ -82,9 +82,10 @@ def test_post_auth_session_fails_on_non_existing_user(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
-        status=400,
+        status=401,
     )
-    assert res.status_code == HTTPStatus.BAD_REQUEST
+
+    assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
 
@@ -99,10 +100,10 @@ def test_post_auth_session_fails_on_incorrect_credentials(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
-        status=400,
+        status=401,
     )
 
-    assert res.status_code == HTTPStatus.BAD_REQUEST
+    assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
 
@@ -140,4 +141,4 @@ def test_delete_auth_session(
     )
     assert res.content_type == "application/vnd.api+json"
     assert res.status_code == HTTPStatus.OK
-    assert fakeAuthSessionClass.test_delete_called == True
+    assert fakeAuthSessionClass.test_delete_called

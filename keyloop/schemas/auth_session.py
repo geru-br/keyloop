@@ -36,7 +36,7 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     @marshmallow.post_load
     def validate_credentials(self, data, **kwargs):
 
-        request = self.context["request"]
+        request = self.context.request
         registry = request.registry.settings["keyloop_adapters"]
 
         identity_provider = registry.lookup(
