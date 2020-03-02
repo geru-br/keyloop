@@ -10,11 +10,11 @@ from sqlalchemy.orm.exc import NoResultFound
 
 
 def default_error_handler(request):
+    import json
 
     response = request.response
-
-    import json
-    response.body = json.dumps(request.errors[0]).encode("utf-8")
+    params = {'status': 'error', 'errors': request.errors}
+    response.body = json.dumps(params).encode("utf-8")
     response.status_code = request.errors.status
     response.content_type = 'application/vnd.api+json'
     return response

@@ -8,7 +8,7 @@ from pyramid.security import remember, forget, Everyone, Allow
 import arrow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
-from grip.resource import BaseResource
+from grip.resource import BaseResource, default_error_handler
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.schemas.auth_session import AuthSessionSchema
@@ -50,18 +50,6 @@ def validate_realm_and_id(request, **kwargs):
     auth_session = session_provider.get(id)
 
     request.auth_session = auth_session
-
-
-def auth_session_error_handler(request):
-
-    response = request.response
-    import json
-    params = {'status': 'error', 'errors': request.errors}
-    import json
-    response.body = json.dumps(params).encode("utf-8")
-    response.status_code = request.errors.status
-    response.content_type = 'application/vnd.api+json'
-    return response
 
 
 def validate_login(request, **kwargs):
@@ -112,7 +100,7 @@ def validate_login(request, **kwargs):
 )
 class AuthSessionResource(BaseResource):
 
-    @grip_view(validators= validate_login, error_handler=auth_session_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators= validate_login, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def collection_post(self):
 
         auth_session = self.request.auth_session
@@ -123,12 +111,12 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, error_handler=auth_session_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def get(self):
         """ Return identity info + permissions """
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, error_handler=auth_session_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def delete(self):
         """ Logout """
         # Should we trigger notifications to other services?
