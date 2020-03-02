@@ -1,4 +1,3 @@
-from uuid import uuid4
 from keyloop.api.v1.exceptions import NotFound
 
 
@@ -11,8 +10,7 @@ class FakeUser:
     test_delete_called = False
 
     def __init__(self, username, password, name=None, contacts=None):
-        self.id = 2
-        self.uuid = uuid4().hex
+        self.id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
         self.username = username
         self.password = password
         self.name = name
@@ -27,7 +25,7 @@ class FakeUser:
 
     @classmethod
     def get(cls, uuid):
-        identity = cls('teste@email.com.br', password="1234567a")
+        identity = cls('test@test.com.br', password="1234567a")
         identity.uuid = uuid
         return identity
 
@@ -56,7 +54,6 @@ class FakeUser:
     @classmethod
     def update(cls, id, params):
         identity = [i for i in cls.IDENTITIES if int(id) == i['id']]
-
         if not identity:
             raise NotFound()
 

@@ -62,7 +62,8 @@ def test_post_auth_session_calls_registered_identity_source(
                     "attributes": {
                         "name": None,
                         "username": "test@test.com.br",
-                        "contacts": None
+                        "contacts": None,
+                        "permissions": ['perm_a', 'perm_b', 'perm_c']
                     }
                 }
             ]

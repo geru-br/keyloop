@@ -25,7 +25,7 @@ def _unpack_decorated_args(func):
     schema = func.grip_schema if hasattr(func, 'grip_schema') else None
     response_schema = func.grip_response_schema if hasattr(func, 'grip_response_schema') else None
     validators = func.grip_validators if hasattr(func, 'grip_validators') else marshmallow_validator
-    error_handler = func.grip_error_handler if hasattr(func, 'grip_error_handler') else None
+    error_handler = func.grip_error_handler if hasattr(func, 'grip_error_handler') else default_error_handler
     factory = func.grip_factory if hasattr(func, 'grip_factory') else None
     return schema, response_schema, validators, error_handler, factory
 
@@ -42,9 +42,11 @@ class Meta(type):
         else:
             collection_get = namespace["collection_get"]
 
-        collection_get_schema, collection_get_response_schemas, collection_get_validator, collection_get_error_handler, factory = _unpack_decorated_args(
-            collection_get
-        )
+        collection_get_schema, \
+        collection_get_response_schemas, \
+        collection_get_validator, \
+        collection_get_error_handler, \
+        factory = _unpack_decorated_args(collection_get)
 
         namespace["collection_get"] = add_view(
             collection_get,
@@ -66,10 +68,11 @@ class Meta(type):
         else:
             collection_post = namespace["collection_post"]
 
-
-        collection_post_schema, collection_post_response_schemas, collection_post_validator, collection_post_error_handler, factory = _unpack_decorated_args(
-            collection_post
-        )
+        collection_post_schema, \
+        collection_post_response_schemas, \
+        collection_post_validator, \
+        collection_post_error_handler, \
+        factory = _unpack_decorated_args(collection_post)
 
         namespace["collection_post"] = add_view(
             collection_post,
@@ -101,9 +104,11 @@ class Meta(type):
         else:
             get = namespace["get"]
 
-        resource_get_schema, resource_get_response_schemas, resource_get_validators, resource_get_error_handler, factory = _unpack_decorated_args(
-            get
-        )
+        resource_get_schema, \
+        resource_get_response_schemas, \
+        resource_get_validators, \
+        resource_get_error_handler, \
+        factory = _unpack_decorated_args(get)
 
         namespace["get"] = add_view(
             get,
@@ -113,6 +118,7 @@ class Meta(type):
             apispec_response_schemas=resource_get_response_schemas,
             renderer="json_api",
             content_type="application/vnd.api+json",
+            error_handler=resource_get_error_handler,
             factory=factory
             # permission="view",
         )
@@ -126,9 +132,11 @@ class Meta(type):
         else:
             post = namespace["post"]
 
-        resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler, factory = _unpack_decorated_args(
-            post
-        )
+        resource_post_schema, \
+        resource_post_response_schemas, \
+        resource_post_validators, \
+        resource_post_error_handler, \
+        factory = _unpack_decorated_args(post)
 
         namespace["post"] = add_view(
             post,
@@ -137,6 +145,7 @@ class Meta(type):
             schema=resource_post_schema,
             apispec_response_schemas=resource_post_response_schemas,
             renderer="json_api",
+            error_handler=resource_post_error_handler,
             factory=factory
             # permission="edit",
         )
@@ -163,6 +172,7 @@ class Meta(type):
             schema=resource_delete_schema,
             apispec_response_schemas=resource_delete_response_schemas,
             renderer="json_api",
+            error_handler=resource_delete_error_handler,
             factory=factory
             # permission="edit",
         )
@@ -189,6 +199,7 @@ class Meta(type):
             schema=resource_put_schema,
             apispec_response_schemas=resource_put_response_schemas,
             renderer="json_api",
+            error_handler=resource_put_error_handler,
             factory=factory_put
             # permission="edit",
         )

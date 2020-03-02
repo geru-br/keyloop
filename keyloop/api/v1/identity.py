@@ -7,7 +7,7 @@ from pyramid.security import Everyone, Allow
 
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
-from grip.resource import BaseResource
+from grip.resource import BaseResource, default_error_handler
 from keyloop.api.v1.exceptions import NotFound
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema
@@ -59,7 +59,8 @@ collection_delete_put_response_schemas = {
 )
 class IdentityResource(BaseResource):
 
-    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_post_response_schemas)
+    @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_post_response_schemas,
+               error_handler=default_error_handler)
     def collection_post(self):
         validated = self.request.validated["body"]
         identity = self.request.identity_provider.create(

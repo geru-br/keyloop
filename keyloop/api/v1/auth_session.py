@@ -2,7 +2,6 @@ import json
 
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound, HTTPBadRequest
 from pyramid.security import remember, forget, Everyone, Allow
 
 import arrow
@@ -12,7 +11,6 @@ from grip.resource import BaseResource, default_error_handler
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.schemas.auth_session import AuthSessionSchema
-from keyloop.schemas.path import BasePathSchema
 
 
 class AuthSessionContext(SimpleBaseFactory):
@@ -30,7 +28,6 @@ collection_response_schemas = {
 
 
 def validate_realm_and_id(request, **kwargs):
-
     id = request.matchdict['id']
     realm_slug = request.matchdict['realm_slug']
 
@@ -53,7 +50,6 @@ def validate_realm_and_id(request, **kwargs):
 
 
 def validate_login(request, **kwargs):
-
     registry = request.registry.settings["keyloop_adapters"]
 
     login_schema = AuthSessionSchema(exclude=['ttl', 'active'])
@@ -72,7 +68,6 @@ def validate_login(request, **kwargs):
     identity = identity_provider.get(data["username"])
 
     if not identity.login(data["username"], data["password"]):
-
         request.errors.add("body", "login", "User name or password are incorrect")
         request.errors.status = 401
         return
@@ -100,9 +95,9 @@ def validate_login(request, **kwargs):
 )
 class AuthSessionResource(BaseResource):
 
-    @grip_view(validators= validate_login, error_handler=default_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_login, response_schema=collection_response_schemas,
+               error_handler=default_error_handler)
     def collection_post(self):
-
         auth_session = self.request.auth_session
         username = auth_session.identity.username
 
@@ -111,12 +106,14 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_realm_and_id, response_schema=collection_response_schemas,
+               error_handler=default_error_handler)
     def get(self):
         """ Return identity info + permissions """
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
+    @grip_view(validators=validate_realm_and_id, response_schema=collection_response_schemas,
+               error_handler=default_error_handler)
     def delete(self):
         """ Logout """
         # Should we trigger notifications to other services?

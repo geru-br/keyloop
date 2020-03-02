@@ -57,7 +57,6 @@ def test_collection_post_identity_creates_identity(pyramid_app, identity_payload
     assert res.json == expected_result
 
 
-@pytest.mark.xfail(reason="res.content_type should be application/vnd.api+json")
 def test_collection_post_nonexistent_realm(pyramid_app, identity_payload, fakeUserClass):
     res = pyramid_app.post_json("/api/v1/realms/INVALID-REALM/identities",
                                 identity_payload, content_type="application/vnd.api+json",
@@ -76,7 +75,6 @@ def test_collection_post_nonexistent_realm(pyramid_app, identity_payload, fakeUs
     assert res.content_type == "application/vnd.api+json"
 
 
-@pytest.mark.xfail(reason="res.content_type should be application/vnd.api+json")
 def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUserClass):
     import copy
     local_identity_payload = copy.deepcopy(identity_payload)
@@ -115,7 +113,7 @@ def test_delete_identity(pyramid_app, fakeUserClass):
 
 
 def test_get_identity(pyramid_app, fakeUserClass):
-    res = pyramid_app.get("/api/v1/realms/REALM/identities/d298694ccf6a496e95f9f4a4835e69a2", status=200)
+    res = pyramid_app.get("/api/v1/realms/REALM/identities/1bed6e9974d8484aa650fab8f4f80506", status=200)
 
     assert res.json == {
         "data": {
@@ -128,9 +126,9 @@ def test_get_identity(pyramid_app, fakeUserClass):
                 ],
                 "contacts": None,
                 "name": None,
-                "username": "teste@email.com.br"
+                "username": "test@test.com.br"
             },
-            "id": "d298694c-cf6a-496e-95f9-f4a4835e69a2"
+            "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
         }
     }
 
