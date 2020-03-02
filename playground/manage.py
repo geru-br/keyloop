@@ -86,5 +86,31 @@ def initialize_db(ctx, force):
     click.echo("All tables created")
 
 
+
+@app.command("create-identity")
+@click.option(
+    "--force",
+    is_flag=True,
+    default=False,
+    help="Create a new test user.",
+)
+@click.pass_context
+def create_identity(ctx, force):
+    """
+    Create new identity
+    """
+
+    ctx.obj["force-commit"] = True
+    from playground.models import DBSession, RealIdentity
+
+    identity = RealIdentity(
+        username="test@test.com.br",
+        password="1234567a"
+    )
+
+    DBSession.add(identity)
+
+
+
 if __name__ == "__main__":
     cli()

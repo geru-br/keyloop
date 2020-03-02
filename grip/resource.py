@@ -10,11 +10,11 @@ from sqlalchemy.orm.exc import NoResultFound
 
 
 def default_error_handler(request):
+    import json
 
     response = request.response
-
-    import json
-    response.body = json.dumps(request.errors[0]).encode("utf-8")
+    params = {'status': 'error', 'errors': request.errors}
+    response.body = json.dumps(params).encode("utf-8")
     response.status_code = request.errors.status
     response.content_type = 'application/vnd.api+json'
     return response
@@ -66,6 +66,7 @@ class Meta(type):
         else:
             collection_post = namespace["collection_post"]
 
+
         collection_post_schema, collection_post_response_schemas, collection_post_validator, collection_post_error_handler, factory = _unpack_decorated_args(
             collection_post
         )
@@ -78,6 +79,7 @@ class Meta(type):
             renderer="json_api",
             schema=collection_post_schema,
             apispec_response_schemas=collection_post_response_schemas,
+            error_handler=collection_post_error_handler,
             factory=factory
             # permission="edit",
         )
@@ -126,7 +128,7 @@ class Meta(type):
             post = namespace["post"]
 
         resource_post_schema, resource_post_response_schemas, resource_post_validators, resource_post_error_handler, factory = _unpack_decorated_args(
-            get
+            post
         )
 
         namespace["post"] = add_view(
@@ -136,6 +138,31 @@ class Meta(type):
             schema=resource_post_schema,
             apispec_response_schemas=resource_response_schemas,
             error_handler=resource_post_error_handler,
+            renderer="json_api",
+            factory=factory
+            # permission="edit",
+        )
+
+        # delete
+        if "delete" not in namespace:
+
+            def delete(self):
+                return super(cls, self).delete()
+
+        else:
+            delete = namespace["delete"]
+
+        resource_delete_schema, resource_delete_response_schemas, resource_delete_validators, resource_delete_error_handler, factory = _unpack_decorated_args(
+            delete
+        )
+
+        namespace["delete"] = add_view(
+            delete,
+            validators=(resource_delete_validators,),
+            # apispec_show=True,
+            schema=resource_delete_schema,
+            apispec_response_schemas=resource_delete_response_schemas,
+            error_handler=resource_delete_error_handler,
             renderer="json_api",
             factory=factory
             # permission="edit",

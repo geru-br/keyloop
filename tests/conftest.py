@@ -7,8 +7,8 @@ from webtest import TestApp
 def pyramid_config():
     config = testing.setUp(
         settings={
-
             "keyloop.identity_sources": "REALM:tests.fake_user.FakeUser",
+            "keyloop.auth_session_sources": "REALM:tests.fake_auth_session.FakeAuthSession",
             "keyloop.authpolicysecret": "sekret"
         }
     )
@@ -33,5 +33,10 @@ def fakeUserClass():
     yield FakeUser
 
 
+@pytest.fixture
+def fakeAuthSessionClass():
+    from tests.fake_auth_session import FakeAuthSession
 
+    FakeAuthSession.test_reset()
 
+    yield FakeAuthSession

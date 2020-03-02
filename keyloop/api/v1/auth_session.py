@@ -1,15 +1,16 @@
+import json
+
 import marshmallow
 from cornice.resource import resource
-from pyramid.httpexceptions import HTTPAccepted, HTTPUnauthorized, HTTPNotFound
-from pyramid.config import Configurator
+from pyramid.httpexceptions import HTTPAccepted, HTTPOk, HTTPNotFound, HTTPBadRequest
 from pyramid.security import remember, forget, Everyone, Allow
-from zope.interface.adapter import AdapterRegistry
 
+import arrow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
-from grip.resource import BaseResource
-from keyloop.interfaces.identity import IIdentitySource, IIdentity
-from keyloop.models.auth_session import AuthSession
+from grip.resource import BaseResource, default_error_handler
+from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
+from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
 
@@ -20,60 +21,105 @@ class AuthSessionContext(SimpleBaseFactory):
         return [(Allow, Everyone, "edit")]
 
 
-class CollectionPostSchema(marshmallow.Schema):
-    path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude="identity"))
-
-
 collection_response_schemas = {
-    200: AuthSessionSchema(exclude=["password", "identity.password"])
+    200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    401: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
 }
+
+
+def validate_realm_and_id(request, **kwargs):
+
+    id = request.matchdict['id']
+    realm_slug = request.matchdict['realm_slug']
+
+    registry = request.registry.settings["keyloop_adapters"]
+
+    identity_provider = registry.lookup(
+        [IIdentity], IIdentitySource, realm_slug
+    )
+    if not identity_provider:
+        request.errors.add("body", "realm_slug", "Realm does not exist")
+        request.errors.status = 404
+        return
+
+    session_provider = registry.lookup(
+        [IAuthSession], IAuthSessionSource, realm_slug
+    )
+    auth_session = session_provider.get(id)
+
+    request.auth_session = auth_session
+
+
+def validate_login(request, **kwargs):
+
+    registry = request.registry.settings["keyloop_adapters"]
+
+    login_schema = AuthSessionSchema(exclude=['ttl', 'active'])
+    login_schema.context = request.context
+    data = login_schema.load(request.json)[0]
+
+    identity_provider = registry.lookup(
+        [IIdentity], IIdentitySource, request.context.realm
+    )
+
+    if not identity_provider:
+        request.errors.add("body", "realm_slug", "Realm does not exist")
+        request.errors.status = 404
+        return
+
+    identity = identity_provider.get(data["username"])
+
+    if not identity.login(data["username"], data["password"]):
+
+        request.errors.add("body", "login", "User name or password are incorrect")
+        request.errors.status = 401
+        return
+
+    session_provider = registry.lookup(
+        [IAuthSession], IAuthSessionSource, request.context.realm
+    )
+
+    auth_session = session_provider.create(
+        identity=identity,
+        ttl=600,
+        active=True,
+        start=arrow.utcnow().datetime
+    )
+
+    request.identity = identity
+    request.auth_session = auth_session
 
 
 @resource(
     collection_path="/realms/{realm_slug}/auth-session",
     path="/realms/{realm_slug}/auth-session/{id}",
     content_type="application/vnd.api+json",
-    factory=AuthSessionContext,
+    factory=AuthSessionContext
 )
 class AuthSessionResource(BaseResource):
 
-    @grip_view(schema=CollectionPostSchema, response_schema=collection_response_schemas)
+    @grip_view(validators= validate_login, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def collection_post(self):
-        # where is this property being set?
-        # should we define a property direct on the factory context
-        validated = self.request.validated["body"]
 
-        username = validated["username"]
-        password = validated["password"]
+        auth_session = self.request.auth_session
+        username = auth_session.identity.username
 
         headers = remember(self.request, username)
-        session = AuthSession(username, password, identity=self.request.identity)
-
         self.request.response.headers.extend(headers)
-        return session
 
+        return self.request.auth_session
+
+    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def get(self):
         """ Return identity info + permissions """
+        return self.request.auth_session
 
-        # realm = self.request.validated["path"]["realm_slug"]
-        # id = self.request.validated["path"]["id"]
-
-        # # session = AuthSession.get_session(id, realm)
-
-        # identity = Identity.get_identity(realm, username)
-
-        # session = AuthSession(username, password, identity)
-
-        # return session
-
-        # TODO: fetch permisionn
-        return {}
-
+    @grip_view(validators=validate_realm_and_id, error_handler=default_error_handler, response_schema=collection_response_schemas)
     def delete(self):
         """ Logout """
-
         # Should we trigger notifications to other services?
+        auth_session = self.request.auth_session
         forget(self.request)
-
-        return HTTPAccepted()
+        auth_session.delete()

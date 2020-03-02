@@ -4,9 +4,17 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, backref
 from zope.interface import implementer
 
+import uuid
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
+
+def generate_uuid():
+    """Generate an hex representation of an uuid
+
+       :returns: str
+    """
+    return uuid.uuid4().hex
 
 @implementer(IContact)
 class Contact:
@@ -44,7 +52,7 @@ class Identity():
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.Integer, autoincrement=True, primary_key=True)
+        return sa.Column(sa.String, primary_key=True, default=uuid.uuid4)
 
     @declared_attr
     def username(self):
@@ -60,7 +68,7 @@ class Identity():
 
     @singletonmethod
     def login(self, username, password):
-        return IdentitySource.get(username)
+        raise NotImplementedError()
 
 
 @implementer(IIdentitySource)

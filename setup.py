@@ -4,6 +4,7 @@ with open("README.md") as f:
     long_description = f.read()
 
 requires = [
+    "arrow==0.15.5",
     "pyramid==1.10.4",
     "pyramid-tm==2.4",
     "gunicorn==20.0.4",
@@ -12,7 +13,6 @@ requires = [
     "cornice==4.0.1",
     "SQLAlchemy[postgresql_psycopg2binary]==1.3.13",
     "zope.sqlalchemy==1.2",
-    "arrow==0.15.5",
     "SQLAlchemy-Utils==0.36.1",
     "pyramid-ipython==0.2",
     "alembic==1.3.3",
@@ -27,6 +27,9 @@ test_requires = [
     "WebTest==2.0.33",
     "freezegun==0.3.13",
     "factory-boy==2.12.0",
+    "pyresttest==1.7.1",
+    "locust==0.0.0",
+    "locustio==0.14.4",
 ]
 
 ci_requires = [
@@ -64,9 +67,9 @@ setup(
     install_requires=requires,
     extras_require=extras_require,
     url="https://github.com/debonzi/keyloop",
-    packages=["keyloop",],
+    packages=["keyloop", ],
     entry_points={
-        "paste.app_factory": ["main = keyloop:main",],
+        "paste.app_factory": ["main = keyloop:main", ],
         "console_scripts": [
             "kloop = keyloop.command.main:main",
             "initialize_keyloop_db = keyloop.models.initialize_db:main",
