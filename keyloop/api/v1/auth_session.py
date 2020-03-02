@@ -56,7 +56,9 @@ def auth_session_error_handler(request):
 
     response = request.response
     import json
-    response.body = json.dumps(request.errors[0]).encode("utf-8")
+    params = {'status': 'error', 'errors': request.errors}
+    import json
+    response.body = json.dumps(params).encode("utf-8")
     response.status_code = request.errors.status
     response.content_type = 'application/vnd.api+json'
     return response
