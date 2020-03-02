@@ -33,14 +33,13 @@ def _register_adapters(config):
     for adapter_description in list_of_auth_session_adapters:
         realm, auth_session_source_name = adapter_description.split(":")
 
+        logger.debug("Registered IIdentitySource adapter for realm '%s'", realm)
         adapter_registry.register(
             [auth_session.IAuthSession],
             auth_session.IAuthSessionSource,
             realm,
             config.maybe_dotted(auth_session_source_name)
         )
-
-        logger.info("Registered IIdentitySource adapter for realm '%s'", realm)
 
     config.registry.settings["keyloop_adapters"] = adapter_registry
 
