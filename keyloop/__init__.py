@@ -10,7 +10,6 @@ from pyramid.authorization import ACLAuthorizationPolicy
 
 from keyloop.interfaces import auth_session, identity
 
-
 logger = logging.getLogger(__name__)
 
 

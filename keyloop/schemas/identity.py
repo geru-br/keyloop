@@ -49,3 +49,17 @@ class IdentitySchema(marshmallow_jsonapi.Schema):
     password = fields.String(required=True)
     name = fields.String(required=False)
     contacts = fields.List(fields.Nested(ContactSchema), required=False)
+    permissions = fields.List(fields.String(), dump_only=True)
+
+
+class IdentityUpdateSchema(marshmallow_jsonapi.Schema):
+    class Meta:
+        type_ = "identity"
+
+    id = fields.UUID(dump_only=True, attribute="uuid")
+
+    username = fields.String(required=False)
+    password = fields.String(required=False)
+    name = fields.String(required=False)
+    contacts = fields.List(fields.Nested(ContactSchema), required=False)
+    permissions = fields.List(fields.String(), required=False)

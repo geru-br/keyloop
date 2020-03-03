@@ -1,11 +1,7 @@
-import functools
-
-
 def view(validators=None, schema=None, response_schema=None, error_handler=None, factory=None):
-
     def wrapper(func):
 
-        #TODO adjust for single entity containing all functions
+        # TODO adjust for single entity containing all functions
 
         if schema:
             func.grip_schema = schema
