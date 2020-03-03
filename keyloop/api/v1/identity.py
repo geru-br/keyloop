@@ -8,7 +8,7 @@ from pyramid.security import Everyone, Allow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import NotFound
+from keyloop.api.v1.exceptions import IdentityNotFound
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema
 from keyloop.schemas.path import BasePathSchema
@@ -46,7 +46,6 @@ get_response_schemas = {
 }
 
 collection_delete_put_response_schemas = {
-    204: {},
     404: ErrorSchema()
 }
 
@@ -90,7 +89,7 @@ class IdentityResource(BaseResource):
             self.request.identity_provider.update(self.request.matchdict['id'], params=validated)
 
             return HTTPNoContent()
-        except NotFound:
+        except IdentityNotFound:
             self.request.errors.add(
                 location='path',
                 name='identity_update',

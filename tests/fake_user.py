@@ -1,8 +1,8 @@
-from keyloop.api.v1.exceptions import NotFound
+from keyloop.api.v1.exceptions import IdentityNotFound
 
 
 class FakeUser:
-    IDENTITIES = []
+    IDENTITIES = {}
     test_login_result = True
     test_login_called = False
 
@@ -21,7 +21,7 @@ class FakeUser:
     def test_reset(cls):
         cls.test_login_result = True
         cls.test_login_called = False
-        cls.IDENTITIES = []
+        cls.IDENTITIES = {}
 
     @classmethod
     def get(cls, uuid):
@@ -32,14 +32,13 @@ class FakeUser:
     @classmethod
     def create(cls, username, password, name, contacts):
         params = {
-            'id': 2,
             'username': username,
             'password': password,
             'name': name,
             'contacts': contacts
         }
 
-        cls.IDENTITIES.append(params)
+        cls.IDENTITIES.update({'1bed6e99-74d8-484a-a650-fab8f4f80506': params})
         return cls(username, password, name, contacts)
 
     def login(self, username, password):
@@ -53,8 +52,8 @@ class FakeUser:
 
     @classmethod
     def update(cls, id, params):
-        identity = [i for i in cls.IDENTITIES if int(id) == i['id']]
+        identity = cls.IDENTITIES.get(id)
         if not identity:
-            raise NotFound()
+            raise IdentityNotFound()
 
-        identity[0]['name'] = params['name']
+        identity['name'] = params['name']

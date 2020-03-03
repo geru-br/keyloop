@@ -1,3 +1,3 @@
-class NotFound(Exception):
-    """Send a error if not find as identity"""
+class IdentityNotFound(Exception):
+    """Raise an error if identity has not been found"""
     pass

@@ -76,12 +76,10 @@ def test_collection_post_nonexistent_realm(pyramid_app, identity_payload, fakeUs
 
 
 def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUserClass):
-    import copy
-    local_identity_payload = copy.deepcopy(identity_payload)
-    local_identity_payload["data"]["attributes"].pop("username")
+    identity_payload["data"]["attributes"].pop("username")
 
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities",
-                                local_identity_payload, content_type="application/vnd.api+json",
+                                identity_payload, content_type="application/vnd.api+json",
                                 status=400)
 
     assert res.json == {
@@ -139,16 +137,16 @@ def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
 
     assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
 
-    import copy
-    local_identity_payload = copy.deepcopy(identity_payload)
-    local_identity_payload["data"]["attributes"]["name"] = "updated user"
-    local_identity_payload["data"]["attributes"].pop("username")
+    identity_payload["data"]["attributes"]["name"] = "updated user"
+    identity_payload["data"]["attributes"].pop("username")
 
-    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/2", local_identity_payload,
+    updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506",
+                                            identity_payload,
                                             content_type="application/vnd.api+json")
 
     assert updated_identity.status_code == HTTPStatus.NO_CONTENT
-    assert fakeUserClass.IDENTITIES[0]['name'] == local_identity_payload["data"]["attributes"]["name"]
+    assert fakeUserClass.IDENTITIES['1bed6e99-74d8-484a-a650-fab8f4f80506']['name'] == \
+           identity_payload["data"]["attributes"]["name"]
 
 
 def test_update_error_identity(pyramid_app, identity_payload, fakeUserClass):
@@ -157,15 +155,12 @@ def test_update_error_identity(pyramid_app, identity_payload, fakeUserClass):
 
     assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
 
-    import copy
-    local_identity_payload = copy.deepcopy(identity_payload)
-    local_identity_payload["data"]["attributes"]["name"] = "updated user"
+    identity_payload["data"]["attributes"]["name"] = "updated user"
     updated_identity = pyramid_app.put_json("/api/v1/realms/REALM/identities/1",
-                                            local_identity_payload,
+                                            identity_payload,
                                             content_type="application/vnd.api+json",
                                             status=404)
 
-    assert fakeUserClass.IDENTITIES[0]['name'] != local_identity_payload["data"]["attributes"]["name"]
     assert updated_identity.json == {
         "status": "error",
         "errors": [
