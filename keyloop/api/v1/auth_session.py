@@ -28,22 +28,18 @@ collection_response_schemas = {
 
 
 def validate_realm_and_id(request, **kwargs):
-    id = request.matchdict['id']
-    realm_slug = request.matchdict['realm_slug']
+    id = request.matchdict["id"]
+    realm_slug = request.matchdict["realm_slug"]
 
     registry = request.registry.settings["keyloop_adapters"]
 
-    identity_provider = registry.lookup(
-        [IIdentity], IIdentitySource, realm_slug
-    )
+    identity_provider = registry.lookup([IIdentity], IIdentitySource, realm_slug)
     if not identity_provider:
         request.errors.add("body", "realm_slug", "Realm does not exist")
         request.errors.status = 404
         return
 
-    session_provider = registry.lookup(
-        [IAuthSession], IAuthSessionSource, realm_slug
-    )
+    session_provider = registry.lookup([IAuthSession], IAuthSessionSource, realm_slug)
     auth_session = session_provider.get(id)
 
     request.auth_session = auth_session
@@ -52,7 +48,7 @@ def validate_realm_and_id(request, **kwargs):
 def validate_login(request, **kwargs):
     registry = request.registry.settings["keyloop_adapters"]
 
-    login_schema = AuthSessionSchema(exclude=['ttl', 'active'])
+    login_schema = AuthSessionSchema(exclude=["ttl", "active"])
     login_schema.context = request.context
     data = login_schema.load(request.json)[0]
 
@@ -77,10 +73,7 @@ def validate_login(request, **kwargs):
     )
 
     auth_session = session_provider.create(
-        identity=identity,
-        ttl=600,
-        active=True,
-        start=arrow.utcnow().datetime
+        identity=identity, ttl=600, active=True, start=arrow.utcnow().datetime
     )
 
     request.identity = identity
@@ -91,12 +84,14 @@ def validate_login(request, **kwargs):
     collection_path="/realms/{realm_slug}/auth-session",
     path="/realms/{realm_slug}/auth-session/{id}",
     content_type="application/vnd.api+json",
-    factory=AuthSessionContext
+    factory=AuthSessionContext,
 )
 class AuthSessionResource(BaseResource):
-
-    @grip_view(validators=validate_login, response_schema=collection_response_schemas,
-               error_handler=default_error_handler)
+    @grip_view(
+        validators=(validate_login,),
+        response_schema=collection_response_schemas,
+        error_handler=default_error_handler,
+    )
     def collection_post(self):
         auth_session = self.request.auth_session
         username = auth_session.identity.username
@@ -106,14 +101,20 @@ class AuthSessionResource(BaseResource):
 
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, response_schema=collection_response_schemas,
-               error_handler=default_error_handler)
+    @grip_view(
+        validators=(validate_realm_and_id,),
+        response_schema=collection_response_schemas,
+        error_handler=default_error_handler,
+    )
     def get(self):
         """ Return identity info + permissions """
         return self.request.auth_session
 
-    @grip_view(validators=validate_realm_and_id, response_schema=collection_response_schemas,
-               error_handler=default_error_handler)
+    @grip_view(
+        validators=(validate_realm_and_id,),
+        response_schema=collection_response_schemas,
+        error_handler=default_error_handler,
+    )
     def delete(self):
         """ Logout """
         # Should we trigger notifications to other services?
