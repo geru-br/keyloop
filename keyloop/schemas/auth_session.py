@@ -2,13 +2,15 @@ import marshmallow_jsonapi
 import marshmallow
 
 
-class AuthSessionSchema(marshmallow_jsonapi.Schema):
+class BaseAuthSessionSchema(marshmallow_jsonapi.Schema):
     class Meta:
         type_ = "auth-session"
 
     id = marshmallow.fields.UUID(dump_only=True, attribute="uuid")
     username = marshmallow.fields.String(load_only=True)
     password = marshmallow.fields.String(load_only=True)
+
+class AuthSessionSchema(BaseAuthSessionSchema):
     active = marshmallow.fields.Bool(dump_only=True)
     start = marshmallow.fields.DateTime(dump_only=True)
     ttl = marshmallow.fields.Integer(dump_only=True)

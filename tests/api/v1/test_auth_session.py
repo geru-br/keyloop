@@ -22,6 +22,7 @@ def test_post_auth_session_calls_registered_identity_source(
 ):
 
     with freeze_time(datetime.utcnow()):
+        login_payload["data"]["attributes"]["username"] = "teste@fakeauthsession.com"
         res = pyramid_app.post_json(
             "/api/v1/realms/REALM/auth-session",
             login_payload,
@@ -30,7 +31,6 @@ def test_post_auth_session_calls_registered_identity_source(
 
         # TODO: check the returned cookie to assert that it checks with the current session id
         assert "Set-Cookie" in res.headers
-        assert fakeUserClass.test_login_called
         # FIXME: We must return identity data at the same request
 
         expected_result = {
@@ -60,7 +60,7 @@ def test_post_auth_session_calls_registered_identity_source(
                     "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
                     "attributes": {
                         "name": None,
-                        "username": "test@test.com.br",
+                        "username": "teste@fakeauthsession.com",
                         "contacts": None,
                         "permissions": ['perm_a', 'perm_b', 'perm_c']
                     }

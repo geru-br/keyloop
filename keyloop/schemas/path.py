@@ -19,9 +19,9 @@ class BasePathSchema(marshmallow.Schema):
         registry = request.registry.settings["keyloop_adapters"]
 
         identity_provider = registry.lookup([IIdentity], IIdentitySource, value)
-        session_provider = registry.lookup([IAuthSession], IAuthSessionSource, value)
+        auth_session = registry.lookup([IAuthSession], IAuthSessionSource, value)
 
-        if not identity_provider:
+        if not identity_provider and not auth_session:
             request.errors.add(
                 location='path',
                 name='realm_slug',
@@ -31,5 +31,5 @@ class BasePathSchema(marshmallow.Schema):
             logger.info('Realm %s is not valid.', request.context.realm)
             return
 
-        request.auth_session_provider = session_provider
+        request.auth_session = auth_session
         request.identity_provider = identity_provider
