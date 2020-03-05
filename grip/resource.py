@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from cornice.resource import add_view
 from cornice.validators import marshmallow_validator
 from urllib.parse import unquote
@@ -31,6 +33,8 @@ def _unpack_decorated_args(func):
         if hasattr(func, "grip_validators")
         else marshmallow_validator
     )
+    if not isinstance(validators, Sequence):
+        validators = (validators,)
     error_handler = (
         func.grip_error_handler
         if hasattr(func, "grip_error_handler")
@@ -55,7 +59,7 @@ class Meta(type):
         (
             collection_get_schema,
             collection_get_response_schemas,
-            collection_get_validator,
+            collection_get_validators,
             collection_get_error_handler,
             factory,
         ) = _unpack_decorated_args(collection_get)
@@ -63,7 +67,7 @@ class Meta(type):
         namespace["collection_get"] = add_view(
             collection_get,
             schema=collection_get_schema,
-            validators=(marshmallow_validator,),
+            validators=collection_get_validators,
             content_type="application/vnd.api+json",
             apispec_show=True,
             renderer="json_api",
@@ -84,14 +88,14 @@ class Meta(type):
         (
             collection_post_schema,
             collection_post_response_schemas,
-            collection_post_validator,
+            collection_post_validators,
             collection_post_error_handler,
             factory,
         ) = _unpack_decorated_args(collection_post)
 
         namespace["collection_post"] = add_view(
             collection_post,
-            validators=(collection_post_validator,),
+            validators=collection_post_validators,
             apispec_show=True,
             content_type="application/vnd.api+json",
             renderer="json_api",
@@ -131,7 +135,7 @@ class Meta(type):
             get,
             # apispec_show=True,
             schema=resource_get_schema,
-            validators=(resource_get_validators,),
+            validators=resource_get_validators,
             apispec_response_schemas=resource_get_response_schemas,
             renderer="json_api",
             content_type="application/vnd.api+json",
@@ -159,7 +163,7 @@ class Meta(type):
 
         namespace["post"] = add_view(
             post,
-            validators=(resource_post_validators,),
+            validators=resource_post_validators,
             # apispec_show=True,
             schema=resource_post_schema,
             apispec_response_schemas=resource_post_response_schemas,
@@ -188,7 +192,7 @@ class Meta(type):
 
         namespace["delete"] = add_view(
             delete,
-            validators=(resource_delete_validators,),
+            validators=resource_delete_validators,
             # apispec_show=True,
             schema=resource_delete_schema,
             apispec_response_schemas=resource_delete_response_schemas,
@@ -217,7 +221,7 @@ class Meta(type):
 
         namespace["put"] = add_view(
             put,
-            validators=(resource_put_validators,),
+            validators=resource_put_validators,
             # apispec_show=True,
             schema=resource_put_schema,
             apispec_response_schemas=resource_put_response_schemas,
