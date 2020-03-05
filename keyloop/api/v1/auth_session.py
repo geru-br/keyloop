@@ -88,7 +88,7 @@ def validate_login(request, **kwargs):
 )
 class AuthSessionResource(BaseResource):
     @grip_view(
-        validators=(validate_login,),
+        validators=validate_login,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
@@ -102,7 +102,7 @@ class AuthSessionResource(BaseResource):
         return self.request.auth_session
 
     @grip_view(
-        validators=(validate_realm_and_id,),
+        validators=validate_realm_and_id,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
@@ -111,7 +111,7 @@ class AuthSessionResource(BaseResource):
         return self.request.auth_session
 
     @grip_view(
-        validators=(validate_realm_and_id,),
+        validators=validate_realm_and_id,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
