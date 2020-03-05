@@ -23,11 +23,11 @@ class AuthSession:
 
     @declared_attr
     def identity(cls):
-        return sa.relationship("Identity")
+        return sa.orm.relationship("Identity")
 
     @declared_attr
     def active(self):
-        return sa.Column(sa.Bool, index=True)
+        return sa.Column(sa.Boolean, index=True)
 
     @declared_attr
     def ttl(self):
@@ -35,7 +35,7 @@ class AuthSession:
 
     @declared_attr
     def start(self):
-        return sa.Column(sa.DatetTime, index=True)
+        return sa.Column(sa.DateTime, index=True)
 
     def delete(self):
         self.active=False
