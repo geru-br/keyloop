@@ -11,6 +11,7 @@ from grip.resource import BaseResource, default_error_handler
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.schemas.auth_session import AuthSessionSchema
+from keyloop.schemas.path import BasePathSchema
 
 
 class AuthSessionContext(SimpleBaseFactory):
@@ -27,22 +28,8 @@ collection_response_schemas = {
 }
 
 
-def validate_realm_and_id(request, **kwargs):
-    id = request.matchdict["id"]
-    realm_slug = request.matchdict["realm_slug"]
-
-    registry = request.registry.settings["keyloop_adapters"]
-
-    identity_provider = registry.lookup([IIdentity], IIdentitySource, realm_slug)
-    if not identity_provider:
-        request.errors.add("body", "realm_slug", "Realm does not exist")
-        request.errors.status = 404
-        return
-
-    session_provider = registry.lookup([IAuthSession], IAuthSessionSource, realm_slug)
-    auth_session = session_provider.get(id)
-
-    request.auth_session = auth_session
+class BaseValidatedSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
 
 
 def validate_login(request, **kwargs):
@@ -96,28 +83,28 @@ class AuthSessionResource(BaseResource):
         auth_session = self.request.auth_session
         username = auth_session.identity.username
 
-        headers = remember(self.request, username)
+        headers = remember(self.request, username, max_age=600)
         self.request.response.headers.extend(headers)
 
         return self.request.auth_session
 
     @grip_view(
-        validators=validate_realm_and_id,
+        schema=BaseValidatedSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
     def get(self):
         """ Return identity info + permissions """
-        return self.request.auth_session
+        return self.request.auth_session_provider.get(self.request.validated['path']['id'])
 
     @grip_view(
-        validators=validate_realm_and_id,
+        schema=BaseValidatedSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
     def delete(self):
         """ Logout """
         # Should we trigger notifications to other services?
-        auth_session = self.request.auth_session
+        auth_session = self.request.auth_session_provider
         forget(self.request)
         auth_session.delete()

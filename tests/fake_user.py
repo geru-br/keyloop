@@ -47,12 +47,14 @@ class FakeUser:
 
     @classmethod
     def delete(cls, id):
-        cls.test_delete_called = True
-        return cls.test_delete_result
+        if not cls.IDENTITIES.get(str(id)):
+            raise IdentityNotFound()
+
+        del cls.IDENTITIES[str(id)]
 
     @classmethod
     def update(cls, id, params):
-        identity = cls.IDENTITIES.get(id)
+        identity = cls.IDENTITIES.get(str(id))
         if not identity:
             raise IdentityNotFound()
 

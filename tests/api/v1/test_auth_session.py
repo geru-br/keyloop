@@ -1,5 +1,4 @@
 from datetime import datetime
-from http import HTTPStatus
 import arrow
 import pytest
 from freezegun import freeze_time
@@ -29,7 +28,6 @@ def test_post_auth_session_calls_registered_identity_source(
             content_type="application/vnd.api+json",
         )
 
-        assert res.status_code == HTTPStatus.OK
         # TODO: check the returned cookie to assert that it checks with the current session id
         assert "Set-Cookie" in res.headers
         assert fakeUserClass.test_login_called
@@ -43,6 +41,7 @@ def test_post_auth_session_calls_registered_identity_source(
                     'start': arrow.utcnow().datetime.isoformat(),
                     'ttl': 600
                 },
+                "id": res.json['data']['id'],
                 "relationships": {
                     "identity": {
                         "links": {
@@ -86,7 +85,6 @@ def test_post_auth_session_fails_on_non_existing_realm(
         status=404,
     )
 
-    assert res.status_code == HTTPStatus.NOT_FOUND
     assert "Set-Cookie" not in res.headers
 
 
@@ -104,7 +102,6 @@ def test_post_auth_session_fails_on_non_existing_user(
         status=401,
     )
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
 
@@ -123,7 +120,6 @@ def test_post_auth_session_fails_on_incorrect_credentials(
     )
 
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.UNAUTHORIZED
     assert "Set-Cookie" not in res.headers
 
 
@@ -142,7 +138,6 @@ def test_get_auth_session(
         "/api/v1/realms/REALM/auth-session/{}".format(identity_id), status=200
     )
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.OK
 
 
 def test_get_auth_session_wrong_realm(
@@ -160,7 +155,6 @@ def test_get_auth_session_wrong_realm(
         "/api/v1/realms/WRONGREALM/auth-session/{}".format(identity_id), status=404
     )
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.NOT_FOUND
 
 
 def test_delete_auth_session(
@@ -178,5 +172,4 @@ def test_delete_auth_session(
         "/api/v1/realms/REALM/auth-session/{}".format(identity_id), content_type="application/vnd.api+json", status=200
     )
     assert res.content_type == "application/vnd.api+json"
-    assert res.status_code == HTTPStatus.OK
     assert fakeAuthSessionClass.test_delete_called

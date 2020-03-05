@@ -6,9 +6,10 @@ import arrow
 class FakeAuthSession:
 
     test_delete_called = False
+    generated_uuid = uuid.uuid4()
 
-    def __init__(self, identity, active, ttl, start):
-        self.id = uuid.uuid4()
+    def __init__(self, identity, active, ttl, start, id):
+        self.uuid = id
         self.identity = identity
         self.identity_id = identity.id
         self.active = active
@@ -24,12 +25,13 @@ class FakeAuthSession:
         from tests.fake_user import FakeUser
         identity = FakeUser(username='teste@fakeauthsession.com', password='1234567a')
         identity.uuid = session_id
-        return cls(identity, True, 600, arrow.utcnow().datetime)
+        return cls(identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
 
     @classmethod
     def create(cls, identity, active, ttl, start):
-        return cls(identity, active, ttl, start)
+        return cls(identity, active, ttl, start, cls.generated_uuid)
 
-    def delete(self):
-        self.__class__.test_delete_called = True
-        self.active = False
+    @classmethod
+    def delete(cls):
+        cls.test_delete_called = True
+        cls.active = False
