@@ -25,11 +25,11 @@ def test_post_auth_session_calls_registered_identity_source(
             "/api/v1/realms/REALM/auth-session",
             login_payload,
             content_type="application/vnd.api+json",
+            status=200,
         )
 
         # TODO: check the returned cookie to assert that it checks with the current session id
         assert "Set-Cookie" in res.headers
-        # FIXME: We must return identity data at the same request
 
         expected_result = {
             "data": {
@@ -124,6 +124,7 @@ def test_get_auth_session(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
+        status=200,
     )
 
     res = pyramid_app.get("/api/v1/realms/REALM/auth-session")
@@ -137,6 +138,7 @@ def test_get_auth_session_wrong_realm(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
+        status=200,
     )
 
     res = pyramid_app.get("/api/v1/realms/WRONGREALM/auth-session", status=404)
@@ -167,6 +169,7 @@ def test_delete_auth_session(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
+        status=200,
     )
 
     identity_id = res.json['data']['relationships']['identity']['data']['id']

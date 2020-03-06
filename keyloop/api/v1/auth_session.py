@@ -6,7 +6,7 @@ from pyramid.security import remember, forget, Everyone, Allow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthSessionUnauthorized
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
 
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
@@ -59,7 +59,7 @@ class AuthSessionResource(BaseResource):
             )
             self.request.errors.status = 404
 
-        except AuthSessionUnauthorized:
+        except AuthenticationFailed:
             self.request.errors.add(
                 location='body',
                 name='login',

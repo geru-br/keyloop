@@ -2,7 +2,7 @@ import uuid
 
 import arrow
 
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthSessionUnauthorized
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
 
 
 class FakeAuthSession:
@@ -40,6 +40,6 @@ class FakeAuthSession:
             raise IdentityNotFound
 
         if password != cls.identity.password:
-            raise AuthSessionUnauthorized
+            raise AuthenticationFailed
 
         return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)

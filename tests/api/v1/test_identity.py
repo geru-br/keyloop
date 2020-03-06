@@ -27,7 +27,7 @@ def identity_payload():
 
 def test_collection_post_identity_creates_identity(pyramid_app, identity_payload, fakeUserClass):
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
-                                content_type="application/vnd.api+json")
+                                content_type="application/vnd.api+json", status=200,)
     expected_result = {
         "data": {
             "type": "identity",
@@ -101,7 +101,7 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
 
 def test_delete_identity(pyramid_app, identity_payload, fakeUserClass):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
-                          content_type="application/vnd.api+json")
+                          content_type="application/vnd.api+json", status=200,)
 
     assert len(fakeUserClass.IDENTITIES) == 1
 
@@ -114,7 +114,7 @@ def test_delete_identity(pyramid_app, identity_payload, fakeUserClass):
 
 def test_delete_identity_not_found(pyramid_app, identity_payload, fakeUserClass):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
-                          content_type="application/vnd.api+json")
+                          content_type="application/vnd.api+json", status=200,)
 
     assert len(fakeUserClass.IDENTITIES) == 1
 
@@ -158,7 +158,7 @@ def test_get_identity(pyramid_app, fakeUserClass):
 
 def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
-                                content_type="application/vnd.api+json")
+                                content_type="application/vnd.api+json", status=200,)
 
     assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
 
@@ -167,7 +167,7 @@ def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
 
     pyramid_app.put_json("/api/v1/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506",
                          identity_payload,
-                         content_type="application/vnd.api+json")
+                         content_type="application/vnd.api+json", status=204,)
 
     assert fakeUserClass.IDENTITIES['1bed6e99-74d8-484a-a650-fab8f4f80506']['name'] == \
            identity_payload["data"]["attributes"]["name"]
@@ -175,7 +175,7 @@ def test_update_identity(pyramid_app, identity_payload, fakeUserClass):
 
 def test_update_error_identity(pyramid_app, identity_payload, fakeUserClass):
     res = pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
-                                content_type="application/vnd.api+json")
+                                content_type="application/vnd.api+json", status=200,)
 
     assert identity_payload['data']['attributes']['name'] == res.json['data']['attributes']['name']
 
