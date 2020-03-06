@@ -1,14 +1,11 @@
 import logging
 
-from zope.interface.adapter import AdapterRegistry
-
-from pyramid.settings import aslist
-
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.settings import aslist
+from zope.interface.adapter import AdapterRegistry
 
-
-from keyloop.interfaces import auth_session, identity
+from keyloop.interfaces import auth_session, identity, permission
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +14,7 @@ def _register_adapters(config):
     settings = config.registry.settings
     adapter_registry = AdapterRegistry()
 
+    # TODO (Guilherme Pereira): abstract this block of code to avoid its pattern repetition
     list_of_identity_adapters = aslist(settings["keyloop.identity_sources"])
     for adapter_description in list_of_identity_adapters:
         realm, identity_source_name = adapter_description.split(":")
@@ -27,18 +25,31 @@ def _register_adapters(config):
             realm,
             config.maybe_dotted(identity_source_name)
         )
+        logger.debug("Registered IIdentitySource adapter for realm '%s'", realm)
 
     list_of_auth_session_adapters = aslist(settings["keyloop.auth_session_sources"])
     for adapter_description in list_of_auth_session_adapters:
         realm, auth_session_source_name = adapter_description.split(":")
 
-        logger.debug("Registered IIdentitySource adapter for realm '%s'", realm)
         adapter_registry.register(
             [auth_session.IAuthSession],
             auth_session.IAuthSessionSource,
             realm,
             config.maybe_dotted(auth_session_source_name)
         )
+        logger.debug("Registered IAuthSessionSource adapter for realm '%s'", realm)
+
+    list_of_permission_adapters = aslist(settings["keyloop.permission_sources"])
+    for adapter_description in list_of_permission_adapters:
+        realm, permission_source_name = adapter_description.split(":")
+
+        adapter_registry.register(
+            [permission.IPermission],
+            permission.IPermissionSource,
+            realm,
+            config.maybe_dotted(permission_source_name)
+        )
+        logger.debug("Registered IPermissionSource adapter for realm '%s'", realm)
 
     config.registry.settings["keyloop_adapters"] = adapter_registry
 

@@ -1,6 +1,5 @@
-import cryptacular.bcrypt
+import cryptacular
 import sqlalchemy as sa
-import transaction
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, backref
@@ -8,15 +7,13 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils.types.uuid import UUIDType
 from zope.interface import implementer
 
-import uuid
-
 from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
 from keyloop.ext.sqla.auth_session import password_check
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.ext.utils.decorators import singleton, singletonmethod
+from keyloop.utils import generate_uuid
 
 bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
-
 
 
 @implementer(IIdentity)
@@ -25,7 +22,7 @@ class Identity:
 
     @declared_attr
     def id(self):
-        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
+        return sa.Column(UUIDType, primary_key=True, default=generate_uuid)
 
     @declared_attr
     def username(self):

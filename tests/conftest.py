@@ -9,6 +9,7 @@ def pyramid_config():
         settings={
             "keyloop.identity_sources": "REALM:tests.fake_user.FakeUser",
             "keyloop.auth_session_sources": "REALM:tests.fake_auth_session.FakeAuthSession",
+            "keyloop.permission_sources": "REALM:tests.fake_permission.FakePermission",
             "keyloop.authpolicysecret": "sekret"
         }
     )

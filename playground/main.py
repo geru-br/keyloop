@@ -10,6 +10,7 @@ def main():
         "sqlalchemy.url": "sqlite:///keyloop.dev",
         "keyloop.identity_sources": "PLAYGROUND:keyloop.ext.sqla.identity.IdentitySource",
         "keyloop.auth_session_sources": "PLAYGROUND:keyloop.ext.sqla.auth_session.AuthSessionSource",
+        "keyloop.permission_sources": "PLAYGROUND:keyloop.ext.sqla.permission.PermissionSource",
         "keyloop.authpolicysecret": "sekret",
     }
 
@@ -29,6 +30,7 @@ def main():
         })
 
         app = config.make_wsgi_app()
+
     return app
 
 
