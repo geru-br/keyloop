@@ -3,6 +3,6 @@ class IdentityNotFound(Exception):
     pass
 
 
-class AuthSessionUnauthorized(Exception):
+class AuthenticationFailed(Exception):
     """Raise an error if an user pass a wrong password"""
     pass
