@@ -21,7 +21,7 @@ class BasePathSchema(marshmallow.Schema):
         identity_provider = registry.lookup([IIdentity], IIdentitySource, value)
         auth_session = registry.lookup([IAuthSession], IAuthSessionSource, value)
 
-        if not identity_provider and not auth_session:
+        if not (identity_provider or auth_session):
             request.errors.add(
                 location='path',
                 name='realm_slug',
