@@ -39,7 +39,6 @@ class PermissionResource(BaseResource):
     @grip_view(schema=CollectionPostPermissionSchema, response_schema=collection_post_response_schemas,
                error_handler=default_error_handler)
     def collection_post(self):
-        breakpoint()
         validated = self.request.validated["body"]
         permission = self.request.permission_provider.create(validated["name"], validated["description"])
         return permission

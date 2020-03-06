@@ -56,11 +56,10 @@ class PermissionSource:
 
     @singletonmethod
     def get(self, name):
-        return self.session.query(self.model).filter(name=name).one()
+        return self.session.query(self.model).filter_by(name=name).one()
 
     @singletonmethod
     def create(self, name, description):
-        breakpoint()
         permission = self.model(name=name, description=description)
         self.session.add(permission)
 
