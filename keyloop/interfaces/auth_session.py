@@ -15,7 +15,7 @@ class IAuthSession(Interface):
 class IAuthSessionSource(Interface):
     """Marker interface for callables that retrieve an AuthSession object given it's id."""
 
-    def get_identity(session_id) -> IAuthSession:
+    def get_identity(username: str):
         pass
 
     def login(username, password):
