@@ -32,42 +32,29 @@ $ git commit
 
 
 ## Database
-### Create database permission to your system user
-```
-linux_user:~/keyloop$ sudo su postgresql
-postgresql:~/keyloop$ psql
 
-postgres=# create user "linux_user";
-postgres=# alter user "linux_user" CREATEDB;
-postgres=# \q
+Keyloop is a library that does not _directly_ persist the data it uses,
+and therefore, do not use any databases.
+Library users are responsible to register data providers - callables implementing
+the interfaces needed for the various functions - including endpoints
+to work.
 
-postgresql:~/keyloop$ exit
-linux_user:~/keyloop$
-```
+As not all of these interfaces need to be customized, an embedded extension
+for KeyLoop is available at the /keyloop/ext/sqla subtree - those are models
+using SQLAlchemy that can be extended and bound to a concrete database
+by the user.
 
-### Create development and test DBs
-```
-linux_user:~/keyloop$ createdb keyloop.dev
-linux_user:~/keyloop$ createdb keyloop.tests
-```
+There is an example application at the /playground subtree that does exactly that.
+TL;DR: in order to use keyloop without having to reimplement any models, schemas
+or code that implement the needed interfaces, you should check and lift some code from the playground app
+to implement the concrete SQLAlchemy-backed models in your own app.
 
-### Initialize development
-```
-linux_user:~/keyloop$ initialize_keyloop_db development.ini
-```
+### Create testing playground database
 
-### Create migration
-```
-linux_user:~/keyloop$ alembic -c development.ini revision --autogenerate -m "<description>"
-```
+The above being said, for testing and "see it running" purposes, the playground app
+is configured to create a minimal SQLITE database and pre-fill it
+with needed objects.
 
-### Database upgrade to last version
 ```
-linux_user:~/keyloop$ alembic -c development.ini upgrade head
-```
-
-### Database downgrade one version
-###
-```
-linux_user:~/keyloop$ alembic -c development.ini downgrade -1
+linux_user:~/keyloop$ make playground-database
 ```
