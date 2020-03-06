@@ -177,5 +177,4 @@ def test_delete_auth_session(
         content_type="application/vnd.api+json",
         status=204
     )
-    assert fakeAuthSessionClass.test_delete_called
     assert "Set-Cookie" not in res.headers

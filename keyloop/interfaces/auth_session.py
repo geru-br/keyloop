@@ -12,14 +12,10 @@ class IAuthSession(Interface):
     start = Attribute("Session's start timestamp.")
 
 
-
 class IAuthSessionSource(Interface):
     """Marker interface for callables that retrieve an AuthSession object given it's id."""
 
-    def get(session_id) -> IAuthSession:
-        pass
-
-    def delete(self):
+    def get_identity(session_id) -> IAuthSession:
         pass
 
     def login(username, password):

@@ -71,7 +71,16 @@ class IdentityResource(BaseResource):
     @grip_view(schema=GetAndDeleteSchema, response_schema=get_response_schemas)
     def get(self):
         """ Return identity info + permissions """
-        return self.request.identity_provider.get(self.request.validated['path']['id'])
+        try:
+            return self.request.identity_provider.get(self.request.validated['path']['id'])
+
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='path',
+                name='identity_delete',
+                description='Identity not found'
+            )
+            self.request.errors.status = 404
 
     @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_put_response_schemas)
     def delete(self):
@@ -88,8 +97,6 @@ class IdentityResource(BaseResource):
                 description='Identity not found'
             )
             self.request.errors.status = 404
-
-        return HTTPNoContent()
 
     @grip_view(schema=PutSchema, response_schema=collection_delete_put_response_schemas)
     def put(self):

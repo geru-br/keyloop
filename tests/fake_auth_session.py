@@ -24,7 +24,7 @@ class FakeAuthSession:
         cls.test_delete_called = False
 
     @classmethod
-    def get(cls, username):
+    def get_identity(cls, username):
         if not username:
             raise IdentityNotFound
 
@@ -43,10 +43,3 @@ class FakeAuthSession:
             raise AuthSessionUnauthorized
 
         return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
-
-    @classmethod
-    def delete(cls, username):
-        if not username:
-            raise IdentityNotFound
-
-        cls.test_delete_called = True

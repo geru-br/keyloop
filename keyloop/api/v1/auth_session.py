@@ -80,7 +80,7 @@ class AuthSessionResource(BaseResource):
     def collection_get(self):
         """ Return identity info + permissions """
         try:
-            return self.request.auth_session.get(self.request.authenticated_userid)
+            return self.request.auth_session.get_identity(self.request.authenticated_userid)
 
         except IdentityNotFound:
             self.request.errors.add(
@@ -96,19 +96,7 @@ class AuthSessionResource(BaseResource):
         error_handler=default_error_handler,
     )
     def delete(self):
-        """ Logout """
-        try:
-            self.request.auth_session.delete(self.request.authenticated_userid)
-
-            return HTTPNoContent()
-        except IdentityNotFound:
-            self.request.errors.add(
-                location='header',
-                name='retrieve_auth_session',
-                description='Auth session not found'
-            )
-            self.request.errors.status = 404
-
-        else:
-            headers = forget(self.request)
-            self.response.headers.extend(headers)
+        """ Logout"""
+        headers = forget(self.request)
+        self.request.response.headers.extend(headers)
+        return HTTPNoContent()
