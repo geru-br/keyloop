@@ -18,11 +18,9 @@ def login_payload():
 
 
 def test_post_auth_session_calls_registered_identity_source(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-
     with freeze_time(datetime.utcnow()):
-        login_payload["data"]["attributes"]["username"] = "teste@fakeauthsession.com"
         res = pyramid_app.post_json(
             "/api/v1/realms/REALM/auth-session",
             login_payload,
@@ -60,7 +58,7 @@ def test_post_auth_session_calls_registered_identity_source(
                     "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
                     "attributes": {
                         "name": None,
-                        "username": "teste@fakeauthsession.com",
+                        "username": "test@test.com.br",
                         "contacts": None,
                         "permissions": ['perm_a', 'perm_b', 'perm_c']
                     }
@@ -72,11 +70,9 @@ def test_post_auth_session_calls_registered_identity_source(
 
 
 def test_post_auth_session_fails_on_non_existing_realm(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-
     fakeUserClass.test_login_result = False
-    login_payload["data"]["attributes"]["username"] = "wrongusername"
 
     res = pyramid_app.post_json(
         "/api/v1/realms/WRONGREALM/auth-session",
@@ -89,9 +85,8 @@ def test_post_auth_session_fails_on_non_existing_realm(
 
 
 def test_post_auth_session_fails_on_non_existing_user(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-
     fakeUserClass.test_login_result = False
     login_payload["data"]["attributes"]["username"] = "wrongusername"
 
@@ -99,16 +94,15 @@ def test_post_auth_session_fails_on_non_existing_user(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
-        status=401,
+        status=404,
     )
     assert res.content_type == "application/vnd.api+json"
     assert "Set-Cookie" not in res.headers
 
 
 def test_post_auth_session_fails_on_incorrect_credentials(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-
     fakeUserClass.test_login_result = False
     login_payload["data"]["attributes"]["password"] = "wrongpassword"
 
@@ -124,41 +118,50 @@ def test_post_auth_session_fails_on_incorrect_credentials(
 
 
 def test_get_auth_session(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-    res = pyramid_app.post_json(
+    pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
     )
 
-    identity_id = res.json['data']['relationships']['identity']['data']['id']
-
-    res = pyramid_app.get(
-        "/api/v1/realms/REALM/auth-session/{}".format(identity_id), status=200
-    )
+    res = pyramid_app.get("/api/v1/realms/REALM/auth-session")
     assert res.content_type == "application/vnd.api+json"
 
 
 def test_get_auth_session_wrong_realm(
-    pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fakeUserClass
 ):
-    res = pyramid_app.post_json(
+    pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
         login_payload,
         content_type="application/vnd.api+json",
     )
 
-    identity_id = res.json['data']['relationships']['identity']['data']['id']
-
-    res = pyramid_app.get(
-        "/api/v1/realms/WRONGREALM/auth-session/{}".format(identity_id), status=404
-    )
+    res = pyramid_app.get("/api/v1/realms/WRONGREALM/auth-session", status=404)
     assert res.content_type == "application/vnd.api+json"
+
+
+def test_get_auth_session_not_found(
+        pyramid_app, login_payload, fakeUserClass
+):
+    res = pyramid_app.get("/api/v1/realms/REALM/auth-session", status=404)
+    assert res.content_type == "application/vnd.api+json"
+    assert res.json == {
+        "status": "error",
+        "errors": [
+            {
+                "location": "header",
+                "name": "retrieve_auth_session",
+                "description": "Auth session not found"
+            }
+        ]
+    }
 
 
 def test_delete_auth_session(
-    pyramid_app, login_payload, fakeUserClass, fakeAuthSessionClass
+        pyramid_app, login_payload, fakeUserClass, fakeAuthSessionClass
 ):
     res = pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
@@ -167,9 +170,12 @@ def test_delete_auth_session(
     )
 
     identity_id = res.json['data']['relationships']['identity']['data']['id']
+    assert "Set-Cookie" in res.headers
 
     res = pyramid_app.delete_json(
-        "/api/v1/realms/REALM/auth-session/{}".format(identity_id), content_type="application/vnd.api+json", status=200
+        "/api/v1/realms/REALM/auth-session/{}".format(identity_id),
+        content_type="application/vnd.api+json",
+        status=204
     )
-    assert res.content_type == "application/vnd.api+json"
     assert fakeAuthSessionClass.test_delete_called
+    assert "Set-Cookie" not in res.headers

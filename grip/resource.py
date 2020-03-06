@@ -72,6 +72,7 @@ class Meta(type):
             apispec_show=True,
             renderer="json_api",
             factory=factory,
+            error_handler=collection_get_error_handler,
             # permission="view",
             apispec_response_schemas=collection_get_response_schemas,
         )

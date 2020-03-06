@@ -1,15 +1,14 @@
 import marshmallow
 from cornice.resource import resource
+from pyramid.httpexceptions import HTTPNoContent
 from pyramid.security import remember, forget, Everyone, Allow
 
-import arrow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthSessionForbidden
-from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
-from keyloop.interfaces.identity import IIdentity, IIdentitySource
-from keyloop.schemas.auth_session import AuthSessionSchema, BaseAuthSessionSchema
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthSessionUnauthorized
+
+from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
 
 
@@ -21,7 +20,7 @@ class AuthSessionContext(SimpleBaseFactory):
 
 collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
-    204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    204: None,
     401: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
     404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
 }
@@ -33,7 +32,7 @@ class BaseValidatedSchema(marshmallow.Schema):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(BaseAuthSessionSchema)
+    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["active", "start", "ttl", "identity"]))
 
 
 @resource(
@@ -52,12 +51,6 @@ class AuthSessionResource(BaseResource):
         params = self.request.validated['body']
         try:
             new_session = self.request.auth_session.login(params['username'], params['password'])
-
-            if new_session:
-                headers = remember(self.request, params['username'])
-                self.request.response.headers.extend(headers)
-                return new_session
-
         except IdentityNotFound:
             self.request.errors.add(
                 location='body',
@@ -66,7 +59,7 @@ class AuthSessionResource(BaseResource):
             )
             self.request.errors.status = 404
 
-        except AuthSessionForbidden:
+        except AuthSessionUnauthorized:
             self.request.errors.add(
                 location='body',
                 name='login',
@@ -74,14 +67,28 @@ class AuthSessionResource(BaseResource):
             )
             self.request.errors.status = 401
 
+        else:
+            headers = remember(self.request, params['username'])
+            self.request.response.headers.extend(headers)
+            return new_session
+
     @grip_view(
         schema=BaseValidatedSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
-    def get(self):
+    def collection_get(self):
         """ Return identity info + permissions """
-        return self.request.auth_session.get(self.request.validated['path']['id'])
+        try:
+            return self.request.auth_session.get(self.request.authenticated_userid)
+
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='header',
+                name='retrieve_auth_session',
+                description='Auth session not found'
+            )
+            self.request.errors.status = 404
 
     @grip_view(
         schema=BaseValidatedSchema,
@@ -90,7 +97,18 @@ class AuthSessionResource(BaseResource):
     )
     def delete(self):
         """ Logout """
-        # Should we trigger notifications to other services?
-        auth_session = self.request.auth_session
-        forget(self.request)
-        auth_session.delete()
+        try:
+            self.request.auth_session.delete(self.request.authenticated_userid)
+
+            return HTTPNoContent()
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='header',
+                name='retrieve_auth_session',
+                description='Auth session not found'
+            )
+            self.request.errors.status = 404
+
+        else:
+            headers = forget(self.request)
+            self.response.headers.extend(headers)
