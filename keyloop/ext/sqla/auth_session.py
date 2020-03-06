@@ -2,6 +2,7 @@ import datetime as DT
 
 from sqlalchemy.ext.declarative import declared_attr
 from zope.interface import implementer
+from sqlalchemy_utils.types.uuid import UUIDType
 import sqlalchemy as sa
 
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
@@ -15,7 +16,7 @@ class AuthSession:
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.String, primary_key=True, default=uuid.uuid4)
+        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
 
     @declared_attr
     def identity_id(cls):
@@ -23,7 +24,7 @@ class AuthSession:
 
     @declared_attr
     def identity(cls):
-        return sa.orm.relationship("Identity")
+        return sa.orm.relationship("RealIdentity")
 
     @declared_attr
     def active(self):
