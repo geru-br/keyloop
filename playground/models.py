@@ -23,7 +23,7 @@ class RealContact(Contact, Base):
     pass
 
 
-class RealAuthSesion(AuthSession, Base):
+class RealAuthSession(AuthSession, Base):
 
     def delete(self):
         self.active=False
