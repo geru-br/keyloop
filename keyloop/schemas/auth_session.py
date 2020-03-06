@@ -12,7 +12,6 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     active = marshmallow.fields.Bool(dump_only=True)
     start = marshmallow.fields.DateTime(dump_only=True)
     ttl = marshmallow.fields.Integer(dump_only=True)
-
     identity = marshmallow_jsonapi.fields.Relationship(
         type_="identity",
         self_url='/realms/{realm_slug}/identities/{identity_id}',

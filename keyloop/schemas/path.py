@@ -2,13 +2,14 @@ import logging
 
 import marshmallow
 
+from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 
 logger = logging.getLogger(__name__)
 
 
 class BasePathSchema(marshmallow.Schema):
-    id = marshmallow.fields.UUID(required=True, dump_only=True)
+    id = marshmallow.fields.UUID()
 
     realm_slug = marshmallow.fields.String()
 
@@ -18,8 +19,9 @@ class BasePathSchema(marshmallow.Schema):
         registry = request.registry.settings["keyloop_adapters"]
 
         identity_provider = registry.lookup([IIdentity], IIdentitySource, value)
+        auth_session = registry.lookup([IAuthSession], IAuthSessionSource, value)
 
-        if not identity_provider:
+        if not (identity_provider or auth_session):
             request.errors.add(
                 location='path',
                 name='realm_slug',
@@ -29,4 +31,5 @@ class BasePathSchema(marshmallow.Schema):
             logger.info('Realm %s is not valid.', request.context.realm)
             return
 
+        request.auth_session = auth_session
         request.identity_provider = identity_provider

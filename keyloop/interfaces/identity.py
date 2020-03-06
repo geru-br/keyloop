@@ -16,10 +16,6 @@ class IIdentity(Interface):
     username = Attribute('Unique string used for identifying a user party.')
     password = Attribute('The password for verifying the user')
 
-    def login(username, password) -> bool:
-        """Verify the identity."""
-        pass
-
 
 class IIdentitySource(Interface):
     """Marker interface for callables that retrieve an Identity object given a username

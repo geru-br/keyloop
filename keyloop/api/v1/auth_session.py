@@ -1,16 +1,15 @@
-import json
-
 import marshmallow
 from cornice.resource import resource
+from pyramid.httpexceptions import HTTPNoContent
 from pyramid.security import remember, forget, Everyone, Allow
 
-import arrow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
-from keyloop.interfaces.identity import IIdentity, IIdentitySource
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+
 from keyloop.schemas.auth_session import AuthSessionSchema
+from keyloop.schemas.path import BasePathSchema
 
 
 class AuthSessionContext(SimpleBaseFactory):
@@ -21,63 +20,19 @@ class AuthSessionContext(SimpleBaseFactory):
 
 collection_response_schemas = {
     200: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
-    204: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
+    204: None,
     401: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
     404: AuthSessionSchema(exclude=["identity.password"], include_data=["identity"]),
 }
 
 
-def validate_realm_and_id(request, **kwargs):
-    id = request.matchdict["id"]
-    realm_slug = request.matchdict["realm_slug"]
-
-    registry = request.registry.settings["keyloop_adapters"]
-
-    identity_provider = registry.lookup([IIdentity], IIdentitySource, realm_slug)
-    if not identity_provider:
-        request.errors.add("body", "realm_slug", "Realm does not exist")
-        request.errors.status = 404
-        return
-
-    session_provider = registry.lookup([IAuthSession], IAuthSessionSource, realm_slug)
-    auth_session = session_provider.get(id)
-
-    request.auth_session = auth_session
+class BaseValidatedSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
 
 
-def validate_login(request, **kwargs):
-    registry = request.registry.settings["keyloop_adapters"]
-
-    login_schema = AuthSessionSchema(exclude=["ttl", "active"])
-    login_schema.context = request.context
-    data = login_schema.load(request.json)[0]
-
-    identity_provider = registry.lookup(
-        [IIdentity], IIdentitySource, request.context.realm
-    )
-
-    if not identity_provider:
-        request.errors.add("body", "realm_slug", "Realm does not exist")
-        request.errors.status = 404
-        return
-
-    identity = identity_provider.get(data["username"])
-
-    if not identity.login(data["username"], data["password"]):
-        request.errors.add("body", "login", "User name or password are incorrect")
-        request.errors.status = 401
-        return
-
-    session_provider = registry.lookup(
-        [IAuthSession], IAuthSessionSource, request.context.realm
-    )
-
-    auth_session = session_provider.create(
-        identity=identity, ttl=600, active=True, start=arrow.utcnow().datetime
-    )
-
-    request.identity = identity
-    request.auth_session = auth_session
+class CollectionPostSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["active", "start", "ttl", "identity"]))
 
 
 @resource(
@@ -88,36 +43,60 @@ def validate_login(request, **kwargs):
 )
 class AuthSessionResource(BaseResource):
     @grip_view(
-        validators=(validate_login,),
+        schema=CollectionPostSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
     def collection_post(self):
-        auth_session = self.request.auth_session
-        username = auth_session.identity.username
+        params = self.request.validated['body']
+        try:
+            new_session = self.request.auth_session.login(params['username'], params['password'])
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='body',
+                name='login',
+                description='User not found'
+            )
+            self.request.errors.status = 404
 
-        headers = remember(self.request, username)
-        self.request.response.headers.extend(headers)
+        except AuthenticationFailed:
+            self.request.errors.add(
+                location='body',
+                name='login',
+                description='User name or password are incorrect'
+            )
+            self.request.errors.status = 401
 
-        return self.request.auth_session
+        else:
+            headers = remember(self.request, params['username'])
+            self.request.response.headers.extend(headers)
+            return new_session
 
     @grip_view(
-        validators=(validate_realm_and_id,),
+        schema=BaseValidatedSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
-    def get(self):
+    def collection_get(self):
         """ Return identity info + permissions """
-        return self.request.auth_session
+        try:
+            return self.request.auth_session.get_identity(self.request.authenticated_userid)
+
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='header',
+                name='retrieve_auth_session',
+                description='Auth session not found'
+            )
+            self.request.errors.status = 404
 
     @grip_view(
-        validators=(validate_realm_and_id,),
+        schema=BaseValidatedSchema,
         response_schema=collection_response_schemas,
         error_handler=default_error_handler,
     )
     def delete(self):
-        """ Logout """
-        # Should we trigger notifications to other services?
-        auth_session = self.request.auth_session
-        forget(self.request)
-        auth_session.delete()
+        """ Logout"""
+        headers = forget(self.request)
+        self.request.response.headers.extend(headers)
+        return HTTPNoContent()

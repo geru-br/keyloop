@@ -2,13 +2,17 @@ import uuid
 
 import arrow
 
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+
 
 class FakeAuthSession:
 
     test_delete_called = False
+    generated_uuid = uuid.uuid4()
+    identity = {}
 
-    def __init__(self, identity, active, ttl, start):
-        self.id = uuid.uuid4()
+    def __init__(self, identity, active, ttl, start, id):
+        self.uuid = id
         self.identity = identity
         self.identity_id = identity.id
         self.active = active
@@ -20,16 +24,22 @@ class FakeAuthSession:
         cls.test_delete_called = False
 
     @classmethod
-    def get(cls, session_id):
-        from tests.fake_user import FakeUser
-        identity = FakeUser(username='teste@fakeauthsession.com', password='1234567a')
-        identity.uuid = session_id
-        return cls(identity, True, 600, arrow.utcnow().datetime)
+    def get_identity(cls, username):
+        if not username:
+            raise IdentityNotFound
+
+        return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
 
     @classmethod
-    def create(cls, identity, active, ttl, start):
-        return cls(identity, active, ttl, start)
+    def login(cls, username, password):
+        from tests.fake_user import FakeUser
+        cls.identity = FakeUser(username='test@test.com.br', password='1234567a')
+        cls.identity.uuid = uuid.uuid4()
 
-    def delete(self):
-        self.__class__.test_delete_called = True
-        self.active = False
+        if username != cls.identity.username:
+            raise IdentityNotFound
+
+        if password != cls.identity.password:
+            raise AuthenticationFailed
+
+        return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
