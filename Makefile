@@ -19,3 +19,4 @@ test-playground:
 playground-database:
 	python playground/manage.py app initialize-db
 	python playground/manage.py app create-identity
+
