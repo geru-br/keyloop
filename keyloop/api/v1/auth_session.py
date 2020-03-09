@@ -32,7 +32,7 @@ class BaseValidatedSchema(marshmallow.Schema):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["active", "start", "ttl", "identity"]))
+    body = marshmallow.fields.Nested(AuthSessionSchema(exclude=["identity"]))
 
 
 @resource(
@@ -63,7 +63,7 @@ class AuthSessionResource(BaseResource):
             self.request.errors.add(
                 location='body',
                 name='login',
-                description='User name or password are incorrect'
+                description='Username or password are incorrect'
             )
             self.request.errors.status = 401
 

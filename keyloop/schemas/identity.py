@@ -45,6 +45,7 @@ class BaseIdentitySchema(marshmallow_jsonapi.Schema):
     id = fields.UUID(dump_only=True, attribute="id")
     name = fields.String(required=False)
     contacts = fields.List(fields.Nested(ContactSchema), required=False)
+    active = fields.Boolean()
     permissions = fields.List(fields.String(), dump_only=True)
 
 

@@ -2,7 +2,6 @@ import logging
 import click
 import transaction
 
-
 from playground.main import main
 
 logger = logging.getLogger(__name__)
@@ -12,7 +11,6 @@ logger = logging.getLogger(__name__)
 @click.option("--quiet", default=False, is_flag=True)
 @click.pass_context
 def cli(ctx, quiet):
-
     ctx.ensure_object(dict)
 
 
@@ -43,7 +41,6 @@ def app(ctx, force_commit=True):
 
 @app.resultcallback()
 def transaction_commit(result, **kwargs):
-
     context = click.get_current_context(silent=True)
 
     if not context.obj.get("force-commit"):
@@ -86,7 +83,6 @@ def initialize_db(ctx, force):
     click.echo("All tables created")
 
 
-
 @app.command("create-identity")
 @click.option(
     "--force",
@@ -109,7 +105,6 @@ def create_identity(ctx, force):
     )
 
     DBSession.add(identity)
-
 
 
 if __name__ == "__main__":

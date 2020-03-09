@@ -3,24 +3,18 @@ from keyloop.api.v1.exceptions import IdentityNotFound
 
 class FakeUser:
     IDENTITIES = {}
-    test_login_result = True
-    test_login_called = False
 
-    test_delete_result = True
-    test_delete_called = False
-
-    def __init__(self, username, password, name=None, contacts=None):
+    def __init__(self, username, password, active=True, name=None, contacts=None):
         self.id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
         self.username = username
         self.password = password
         self.name = name
         self.contacts = contacts
+        self.active = active
         self.permissions = ['perm_a', 'perm_b', 'perm_c']
 
     @classmethod
     def test_reset(cls):
-        cls.test_login_result = True
-        cls.test_login_called = False
         cls.IDENTITIES = {}
 
     @classmethod
@@ -34,27 +28,24 @@ class FakeUser:
         params = {
             'username': username,
             'password': password,
+            'active': True,
             'name': name,
             'contacts': contacts
         }
 
         cls.IDENTITIES.update({'1bed6e99-74d8-484a-a650-fab8f4f80506': params})
-        return cls(username, password, name, contacts)
-
-    def login(self, username, password):
-        self.__class__.test_login_called = True
-        return self.__class__.test_login_result
+        return cls(username, password, True, name, contacts)
 
     @classmethod
-    def delete(cls, id):
-        if not cls.IDENTITIES.get(str(id)):
+    def delete(cls, identity_id):
+        if not cls.IDENTITIES.get(str(identity_id)):
             raise IdentityNotFound()
 
-        del cls.IDENTITIES[str(id)]
+        cls.IDENTITIES[str(identity_id)]['active'] = False
 
     @classmethod
-    def update(cls, id, params):
-        identity = cls.IDENTITIES.get(str(id))
+    def update(cls, identity_id, params):
+        identity = cls.IDENTITIES.get(str(identity_id))
         if not identity:
             raise IdentityNotFound()
 
