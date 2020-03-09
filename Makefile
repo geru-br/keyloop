@@ -15,3 +15,8 @@ reset-db:
 
 test-playground:
 	pyresttest http://127.0.0.1:6543 playground/tests/pyresttest_api_scenarios.yaml
+
+playground-database:
+	python playground/manage.py app initialize-db
+	python playground/manage.py app create-identity
+
