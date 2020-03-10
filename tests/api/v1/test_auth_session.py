@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import arrow
 import pytest
 from freezegun import freeze_time
@@ -18,7 +19,7 @@ def login_payload():
 
 
 def test_post_auth_session_calls_registered_identity_source(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, user
 ):
     with freeze_time(datetime.utcnow()):
         res = pyramid_app.post_json(
@@ -43,11 +44,11 @@ def test_post_auth_session_calls_registered_identity_source(
                 "relationships": {
                     "identity": {
                         "links": {
-                            "self": "/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506"
+                            "self": f"/realms/REALM/identities/{str(user.id)}"
                         },
                         "data": {
                             "type": "identity",
-                            "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"
+                            "id": str(user.id)
                         }
                     }
                 }
@@ -55,7 +56,7 @@ def test_post_auth_session_calls_registered_identity_source(
             "included": [
                 {
                     "type": "identity",
-                    "id": "1bed6e99-74d8-484a-a650-fab8f4f80506",
+                    "id": str(user.id),
                     "attributes": {
                         "name": None,
                         "username": "test@test.com.br",
@@ -70,9 +71,9 @@ def test_post_auth_session_calls_registered_identity_source(
 
 
 def test_post_auth_session_fails_on_non_existing_realm(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class
 ):
-    fakeUserClass.test_login_result = False
+    fake_user_class.test_login_result = False
 
     res = pyramid_app.post_json(
         "/api/v1/realms/WRONGREALM/auth-session",
@@ -85,9 +86,9 @@ def test_post_auth_session_fails_on_non_existing_realm(
 
 
 def test_post_auth_session_fails_on_non_existing_user(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class
 ):
-    fakeUserClass.test_login_result = False
+    fake_user_class.test_login_result = False
     login_payload["data"]["attributes"]["username"] = "wrongusername"
 
     res = pyramid_app.post_json(
@@ -101,9 +102,9 @@ def test_post_auth_session_fails_on_non_existing_user(
 
 
 def test_post_auth_session_fails_on_incorrect_credentials(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class, user
 ):
-    fakeUserClass.test_login_result = False
+    fake_user_class.test_login_result = False
     login_payload["data"]["attributes"]["password"] = "wrongpassword"
 
     res = pyramid_app.post_json(
@@ -118,7 +119,7 @@ def test_post_auth_session_fails_on_incorrect_credentials(
 
 
 def test_get_auth_session(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class, user
 ):
     pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
@@ -132,7 +133,7 @@ def test_get_auth_session(
 
 
 def test_get_auth_session_wrong_realm(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class, user
 ):
     pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",
@@ -146,7 +147,7 @@ def test_get_auth_session_wrong_realm(
 
 
 def test_get_auth_session_not_found(
-        pyramid_app, login_payload, fakeUserClass
+        pyramid_app, login_payload, fake_user_class
 ):
     res = pyramid_app.get("/api/v1/realms/REALM/auth-session", status=404)
     assert res.content_type == "application/vnd.api+json"
@@ -163,7 +164,7 @@ def test_get_auth_session_not_found(
 
 
 def test_delete_auth_session(
-        pyramid_app, login_payload, fakeUserClass, fakeAuthSessionClass
+        pyramid_app, login_payload, fake_user_class, fake_auth_session_class, user
 ):
     res = pyramid_app.post_json(
         "/api/v1/realms/REALM/auth-session",

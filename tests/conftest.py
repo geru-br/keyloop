@@ -27,20 +27,22 @@ def pyramid_app(pyramid_config):
 
 
 @pytest.fixture
-def fakeUserClass():
+def fake_user_class():
     from tests.fake_user import FakeUser
-
     FakeUser.test_reset()
-
     yield FakeUser
 
 
 @pytest.fixture
-def fakeAuthSessionClass():
+def user(fake_user_class):
+    user = fake_user_class.create('test@test.com.br', '1234567a')
+    return user
+
+
+@pytest.fixture
+def fake_auth_session_class():
     from tests.fake_auth_session import FakeAuthSession
-
     FakeAuthSession.test_reset()
-
     yield FakeAuthSession
 
 

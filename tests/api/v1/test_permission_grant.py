@@ -2,8 +2,8 @@ import pytest
 
 
 @pytest.fixture
-def identity(fakeUserClass):
-    return fakeUserClass.create('test@test.com.br', '1234567a', 'Test', [])
+def identity(fake_user_class):
+    return fake_user_class.create('test@test.com.br', '1234567a', 'Test', [])
 
 
 @pytest.fixture
