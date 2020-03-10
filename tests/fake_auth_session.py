@@ -1,18 +1,15 @@
-import uuid
-
 import arrow
 
 from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.utils import generate_uuid
 
 
 class FakeAuthSession:
-
     test_delete_called = False
-    generated_uuid = uuid.uuid4()
-    identity = {}
+    identity = None
 
-    def __init__(self, identity, active, ttl, start, id):
-        self.uuid = id
+    def __init__(self, identity, active, ttl, start, uuid=None):
+        self.uuid = uuid if uuid else generate_uuid()
         self.identity = identity
         self.identity_id = identity.id
         self.active = active
@@ -28,18 +25,17 @@ class FakeAuthSession:
         if not username:
             raise IdentityNotFound
 
-        return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
+        return cls(cls.identity, True, 600, arrow.utcnow().datetime)
 
     @classmethod
     def login(cls, username, password):
         from tests.fake_user import FakeUser
-        cls.identity = FakeUser(username='test@test.com.br', password='1234567a')
-        cls.identity.uuid = uuid.uuid4()
+        cls.identity = FakeUser.get(username=username)
 
-        if username != cls.identity.username:
+        if not cls.identity:
             raise IdentityNotFound
 
         if password != cls.identity.password:
             raise AuthenticationFailed
 
-        return cls(cls.identity, True, 600, arrow.utcnow().datetime, cls.generated_uuid)
+        return cls(cls.identity, True, 600, arrow.utcnow().datetime)
