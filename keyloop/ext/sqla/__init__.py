@@ -2,11 +2,11 @@ from keyloop.ext.sqla.models import IdentitySource, ContactSource
 from keyloop.ext.sqla.auth_session import AuthSessionSource
 
 
-def setup(config, session, params):
+def setup_models(config, session, params):
     for key, value in params.items():
         merge_model = eval(key)
         merge_model(session=session, model=value)
 
 
 def includeme(config):
-    config.add_directive("key_loop_setup", setup)
+    config.add_directive("key_loop_setup", setup_models)

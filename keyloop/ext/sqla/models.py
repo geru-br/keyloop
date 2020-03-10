@@ -95,8 +95,7 @@ class IdentitySource:
         try:
             return self.session \
                 .query(self.model) \
-                .filter(self.model.id == identity_id) \
-                .filter(self.model.active == True) \
+                .filter(self.model.id == identity_id, self.model.active == True) \
                 .one()
         except NoResultFound:
             raise IdentityNotFound

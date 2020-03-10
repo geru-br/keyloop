@@ -5,7 +5,6 @@ from sqlalchemy.orm import (
 )
 from zope.sqlalchemy import register
 
-# from keyloop.ext.sqla.auth_session import AuthSession
 from keyloop.ext.sqla.models import Identity, Contact
 
 DBSession = scoped_session(sessionmaker())
@@ -19,7 +18,3 @@ class RealIdentity(Identity, Base):
 
 class RealContact(Contact, Base):
     pass
-
-#
-# class RealAuthSession(AuthSession, Base):
-#     pass
