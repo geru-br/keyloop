@@ -21,6 +21,7 @@ def main():
         config.include("keyloop")
         config.include("grip")
         config.include("keyloop.ext.sqla")
+        config.include('pyramid_tm')
 
         config.key_loop_setup(DBSession, {
             'IdentitySource': RealIdentity,

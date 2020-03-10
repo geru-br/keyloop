@@ -8,7 +8,7 @@ from pyramid.security import Everyone, Allow, forget
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema, IdentityUpdatePasswordSchema
 from keyloop.schemas.path import BasePathSchema
@@ -69,11 +69,22 @@ class IdentityResource(BaseResource):
     @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_post_response_schemas,
                error_handler=default_error_handler)
     def collection_post(self):
+        breakpoint()
         validated = self.request.validated["body"]
-        identity = self.request.identity_provider.create(
-            validated["username"], validated["password"], validated["name"], validated["contacts"]
-        )
-        return identity
+        try:
+            identity = self.request.identity_provider.create(
+                validated["username"], validated["password"], validated["name"], validated["contacts"]
+            )
+        except IdentityAlreadyExists:
+            self.request.errors.add(
+                location='path',
+                name='identity_create',
+                description='Username already exists'
+            )
+            self.request.errors.status = 409
+
+        else:
+            return identity
 
     @grip_view(schema=GetAndDeleteSchema, response_schema=get_response_schemas)
     def get(self):

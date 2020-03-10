@@ -1,6 +1,7 @@
 import cryptacular.bcrypt
 import sqlalchemy as sa
 import transaction
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
@@ -9,7 +10,7 @@ from zope.interface import implementer
 
 import uuid
 
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
 from keyloop.ext.sqla.auth_session import password_check
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
@@ -104,14 +105,18 @@ class IdentitySource:
 
     @singletonmethod
     def create(self, username, password, name=None, contacts=None):
+        breakpoint()
         identity = self.model(username=username, password=self._set_password(password), name=name)
         self.session.add(identity)
-        self.session.flush()
+        try:
+            self.session.flush()
+
+        except IntegrityError:
+            raise IdentityAlreadyExists
 
         for contact in contacts:
             ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity.id)
 
-        transaction.commit()
         return self.session.query(self.model).filter(self.model.username == username).one()
 
     @singletonmethod
@@ -120,7 +125,6 @@ class IdentitySource:
 
         identity.active = False
 
-        transaction.commit()
 
     @singletonmethod
     def update(self, identity_id, params):
@@ -139,7 +143,6 @@ class IdentitySource:
 
             setattr(identity, key, value)
 
-        transaction.commit()
 
     @singletonmethod
     def change_password(self, identity_id, last_password, password):
@@ -150,7 +153,6 @@ class IdentitySource:
 
         identity.password = self._set_password(password)
 
-        transaction.commit()
 
 
 @singleton
