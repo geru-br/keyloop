@@ -14,7 +14,6 @@ def main():
     }
 
     with Configurator(settings=settings) as config:
-
         engine = engine_from_config(settings, "sqlalchemy.")
         DBSession.configure(bind=engine)
         Base.metadata.bind = engine
@@ -23,15 +22,17 @@ def main():
         config.include("grip")
         config.include("keyloop.ext.sqla")
 
-        config.key_loop_setup_identity(DBSession, RealIdentity)
-        config.key_loop_setup_contact(DBSession, RealContact)
+        config.key_loop_setup(DBSession, {
+            'IdentitySource': RealIdentity,
+            'ContactSource': RealContact,
+            'AuthSessionSource': RealIdentity
+        })
 
         app = config.make_wsgi_app()
     return app
 
 
 if __name__ == "__main__":
-
     app = main()
     server = make_server("0.0.0.0", 6543, app)
     server.serve_forever()

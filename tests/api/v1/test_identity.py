@@ -33,6 +33,7 @@ def test_collection_post_identity_creates_identity(pyramid_app, identity_payload
             "type": "identity",
             "attributes": {
                 "username": "test@test.com",
+                'active': True,
                 "contacts": [
                     {
                         "type": "EMAIL",
@@ -100,16 +101,18 @@ def test_collection_post_invalid_payload(pyramid_app, identity_payload, fakeUser
 
 
 def test_delete_identity(pyramid_app, identity_payload, fakeUserClass):
+    id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
+
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
                           content_type="application/vnd.api+json", status=200,)
 
-    assert len(fakeUserClass.IDENTITIES) == 1
+    assert fakeUserClass.IDENTITIES[id]['active'] is True
 
-    pyramid_app.delete_json("/api/v1/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506",
+    pyramid_app.delete_json("/api/v1/realms/REALM/identities/{}".format(id),
                             content_type="application/vnd.api+json",
                             status=204)
 
-    assert len(fakeUserClass.IDENTITIES) == 0
+    assert fakeUserClass.IDENTITIES[id]['active'] is False
 
 
 def test_delete_identity_not_found(pyramid_app, identity_payload, fakeUserClass):
@@ -149,6 +152,7 @@ def test_get_identity(pyramid_app, fakeUserClass):
                 ],
                 "contacts": None,
                 "name": None,
+                'active': True,
                 "username": "test@test.com.br"
             },
             "id": "1bed6e99-74d8-484a-a650-fab8f4f80506"

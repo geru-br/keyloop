@@ -1,11 +1,15 @@
+import cryptacular.bcrypt
 import sqlalchemy as sa
 import transaction
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils.types.uuid import UUIDType
 from zope.interface import implementer
 
 import uuid
+
+from keyloop.api.v1.exceptions import IdentityNotFound
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
@@ -17,13 +21,17 @@ def generate_uuid():
     """
     return uuid.uuid4().hex
 
+
+bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
+
+
 @implementer(IContact)
 class Contact:
     __tablename__ = "contact"
 
     @declared_attr
     def id(self):
-        return sa.Column(sa.Integer, autoincrement=True, primary_key=True)
+        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
 
     @declared_attr
     def type(self):
@@ -39,16 +47,16 @@ class Contact:
 
     @declared_attr
     def identity_id(self):
-        return sa.Column(sa.Integer, sa.ForeignKey('identity.id'))
+        return sa.Column(UUIDType, sa.ForeignKey('identity.id'))
 
-    # TODO: Make this attribute available on response schema
-    def contacts(self):
-        return relationship('Identity', backref=backref('contacts', lazy='dynamic'), foreign_keys=[self.identity_id])
+    def identity(self):
+        return relationship('RealIdentity', backref=backref('identity', lazy='dynamic'), foreign_keys=[
+            self.identity_id])
 
 
 @implementer(IIdentity)
 @singleton
-class Identity():
+class Identity:
     __tablename__ = "identity"
 
     @declared_attr
@@ -57,19 +65,19 @@ class Identity():
 
     @declared_attr
     def username(self):
-        return sa.Column(sa.String, index=True)
+        return sa.Column(sa.String, index=True, unique=True)
 
     @declared_attr
     def password(self):
-        return sa.Column(sa.String, index=True)
+        return sa.Column(sa.String, nullable=False)
 
     @declared_attr
     def name(self):
         return sa.Column(sa.String)
 
-    @singletonmethod
-    def login(self, username, password):
-        raise NotImplementedError()
+    @declared_attr
+    def active(self):
+        return sa.Column(sa.Boolean, default=True)
 
 
 @implementer(IIdentitySource)
@@ -79,13 +87,22 @@ class IdentitySource:
         self.model = model
         self.session = session
 
+    def _set_password(self, value):
+        return bcrypt.encode(value)
+
     @singletonmethod
-    def get(self, username):
-        return self.session.query(self.model).filter(self.model.username == username).one()
+    def get(self, identity_id):
+        try:
+            return self.session \
+                .query(self.model) \
+                .filter(self.model.id == identity_id, self.model.active == True) \
+                .one()
+        except NoResultFound:
+            raise IdentityNotFound
 
     @singletonmethod
     def create(self, username, password, name=None, contacts=None):
-        identity = self.model(username=username, password=password, name=name)
+        identity = self.model(username=username, password=self._set_password(password), name=name)
         self.session.add(identity)
         self.session.flush()
 
@@ -93,7 +110,31 @@ class IdentitySource:
             ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity.id)
 
         transaction.commit()
-        return self.get(username)
+        return self.session.query(self.model).filter(self.model.username == username).one()
+
+    @singletonmethod
+    def delete(self, identity_id):
+        identity = self.get(identity_id)
+
+        identity.active = False
+
+        transaction.commit()
+
+    @singletonmethod
+    def update(self, identity_id, params):
+        try:
+            identity = self.session.query(self.model).filter(self.model.id == identity_id).one()
+
+        except NoResultFound:
+            raise IdentityNotFound
+
+        for key, value in params.items():
+            if key in ('username', 'contacts'):
+                continue
+
+            setattr(identity, key, value)
+
+        transaction.commit()
 
 
 @singleton

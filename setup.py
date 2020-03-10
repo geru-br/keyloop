@@ -19,6 +19,7 @@ requires = [
     "marshmallow-jsonapi==0.23.0",
     "cornice-apispec==0.9.3",
     "click",
+    "cryptacular==1.5.5",
 ]
 
 test_requires = [

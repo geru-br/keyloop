@@ -3,7 +3,7 @@ import logging
 import marshmallow
 from cornice.resource import resource
 from pyramid.httpexceptions import HTTPNoContent
-from pyramid.security import Everyone, Allow
+from pyramid.security import Everyone, Allow, forget
 
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
@@ -77,7 +77,7 @@ class IdentityResource(BaseResource):
         except IdentityNotFound:
             self.request.errors.add(
                 location='path',
-                name='identity_delete',
+                name='identity_get',
                 description='Identity not found'
             )
             self.request.errors.status = 404
@@ -89,7 +89,6 @@ class IdentityResource(BaseResource):
         try:
             self.request.identity_provider.delete(self.request.validated['path']['id'])
 
-            return HTTPNoContent()
         except IdentityNotFound:
             self.request.errors.add(
                 location='path',
@@ -97,6 +96,11 @@ class IdentityResource(BaseResource):
                 description='Identity not found'
             )
             self.request.errors.status = 404
+            
+        else:
+            headers = forget(self.request)
+            self.request.response.headers.extend(headers)
+            return HTTPNoContent()
 
     @grip_view(schema=PutSchema, response_schema=collection_delete_put_response_schemas)
     def put(self):

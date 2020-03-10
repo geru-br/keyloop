@@ -15,6 +15,7 @@ class IContact(Interface):
 class IIdentity(Interface):
     username = Attribute('Unique string used for identifying a user party.')
     password = Attribute('The password for verifying the user')
+    active = Attribute('The indicator if the identity is active')
 
 
 class IIdentitySource(Interface):
@@ -30,5 +31,5 @@ class IIdentitySource(Interface):
     def delete(identity_id: str):
         pass
 
-    def update(identity_id: str, **kwargs: dict):
+    def update(identity_id: str, params: dict):
         pass

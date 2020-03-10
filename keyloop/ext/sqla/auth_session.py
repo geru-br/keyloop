@@ -1,58 +1,46 @@
-import datetime as DT
-
-from sqlalchemy.ext.declarative import declared_attr
+import cryptacular.bcrypt
+from sqlalchemy.orm.exc import NoResultFound
 from zope.interface import implementer
-from sqlalchemy_utils.types.uuid import UUIDType
-import sqlalchemy as sa
 
-from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
-import uuid
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.ext.utils.decorators import singleton, singletonmethod
+from keyloop.interfaces.auth_session import IAuthSessionSource
+
+bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
 
 
-@implementer(IAuthSession)
-class AuthSession:
-
-    __tablename__ = "auth_session"
-
-    @declared_attr
-    def id(self):
-        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
-
-    @declared_attr
-    def identity_id(cls):
-        return sa.Column('identity_id', sa.ForeignKey('identity.id'))
-
-    @declared_attr
-    def identity(cls):
-        return sa.orm.relationship("RealIdentity")
-
-    @declared_attr
-    def active(self):
-        return sa.Column(sa.Boolean, index=True)
-
-    @declared_attr
-    def ttl(self):
-        return sa.Column(sa.Integer)
-
-    @declared_attr
-    def start(self):
-        return sa.Column(sa.DateTime, index=True)
-
-    def delete(self):
-        self.active=False
+def password_check(password_field, value):
+    return bcrypt.check(password_field, value)
 
 
 @implementer(IAuthSessionSource)
+@singleton
 class AuthSessionSource:
     model = None
     session = None
 
-    @classmethod
-    def get(cls, session_id):
-        return cls.session.query(cls.model).filter(cls.model.id == session_id).one()
+    def __init__(self, session, model):
+        self.model = model
+        self.session = session
 
-    @classmethod
-    def create(cls, related_identity: str, ttl: int, start: DT.datetime):
-        return cls.model(
-            related_identity=related_identity, ttl=ttl, start=start
-        )
+
+    @singletonmethod
+    def _get_identity_by(self, username):
+        try:
+            return self.session.query(self.model).filter(self.model.username == username).one()
+
+        except NoResultFound:
+            raise IdentityNotFound
+
+    @singletonmethod
+    def get_identity(self, username):
+        return {'identity': self._get_identity_by(username)}
+
+    @singletonmethod
+    def login(self, username, password):
+        identity = self._get_identity_by(username)
+
+        if not password_check(identity.password, password):
+            raise AuthenticationFailed
+
+        return {'identity': identity}
