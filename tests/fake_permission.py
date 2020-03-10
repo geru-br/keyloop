@@ -54,7 +54,7 @@ class FakePermissionGrant:
         return cls.PERMISSION_GRANTS.get(uuid)
 
     @classmethod
-    def create(cls, permission_id, identity_id):
+    def grant_permission(cls, permission_id, identity_id):
         perm_ident_assoc = (permission_id, identity_id)
         if perm_ident_assoc in cls.PERM_IDENT_ASSOCIATIONS:
             raise PermissionGrantAlreadyExists
