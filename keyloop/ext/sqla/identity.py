@@ -148,7 +148,7 @@ class IdentitySource:
         if not password_check(identity.password, last_password):
             raise AuthenticationFailed
 
-        identity.password = password
+        identity.password = self._set_password(password)
 
         transaction.commit()
 
