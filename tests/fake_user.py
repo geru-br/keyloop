@@ -22,14 +22,21 @@ class FakeUser:
         cls.IDENTITIES = {}
 
     @classmethod
-    def get(cls, uuid=None, username=None):
-        if username:
-            for params in cls.IDENTITIES.values():
-                if params['username'] == username:
-                    return cls(**params)
+    def _get_by_username(cls, username):
+        for params in cls.IDENTITIES.values():
+            if params['username'] == username:
+                return cls(**params)
 
-        params = cls.IDENTITIES.get(str(uuid))
-        if params:
+        raise IdentityNotFound()
+
+    @classmethod
+    def get_by(cls, **kwargs):
+        if 'username' in kwargs.keys():
+            return cls._get_by_username(kwargs['username'])
+        elif 'uuid' in kwargs.keys():
+            params = cls.IDENTITIES.get(str(kwargs['uuid']))
+            if not params:
+                raise IdentityNotFound()
             return cls(**params)
 
     @classmethod
