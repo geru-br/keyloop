@@ -22,14 +22,20 @@ class FakeUser:
         cls.IDENTITIES = {}
 
     @classmethod
-    def get(cls, uuid):
-        params = cls.IDENTITIES.get(uuid)
-        return cls(**params)
+    def get(cls, uuid=None, username=None):
+        if username:
+            for params in cls.IDENTITIES.values():
+                if params['username'] == username:
+                    return cls(**params)
+
+        params = cls.IDENTITIES.get(str(uuid))
+        if params:
+            return cls(**params)
 
     @classmethod
-    def create(cls, username, password, name, contacts):
+    def create(cls, username, password, name=None, contacts=None):
         identity = cls(username, password, True, name, contacts)
-        cls.IDENTITIES.update({identity.id: identity.__dict__})
+        cls.IDENTITIES.update({str(identity.id): identity.__dict__})
         return identity
 
     def login(self, username, password):
