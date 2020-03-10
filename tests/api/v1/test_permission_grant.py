@@ -2,11 +2,6 @@ import pytest
 
 
 @pytest.fixture
-def identity(fake_user_class):
-    return fake_user_class.create('test@test.com.br', '1234567a', 'Test', [])
-
-
-@pytest.fixture
 def permission(fake_permission_class):
     return fake_permission_class.create(name='perm_a', description='Permission for service A.')
 
@@ -23,16 +18,36 @@ def perm_grant_payload():
     }
 
 
-def test_create_permission_grant(pyramid_app, perm_grant_payload, identity, permission, fake_perm_grant_class):
-    res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{identity.id}/permissions",
-                                perm_grant_payload,
-                                content_type="application/vnd.api+json",
-                                status=200)
+class TestGrantPermission:
 
-    assert res.content_type == "application/vnd.api+json"
-    assert res.json == {
-        "data": {
-            "type": "permission-grant",
-            "id": str(next(iter(fake_perm_grant_class.PERMISSION_GRANTS)))
+    def test_grant_permission_success(self, pyramid_app, perm_grant_payload, user, permission, fake_perm_grant_class):
+        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
+                                    perm_grant_payload,
+                                    content_type="application/vnd.api+json",
+                                    status=200)
+
+        assert res.content_type == "application/vnd.api+json"
+        assert res.json == {
+            "data": {
+                "type": "permission-grant",
+                "id": str(next(iter(fake_perm_grant_class.PERMISSION_GRANTS)))
+            }
         }
-    }
+
+    def test_identity_not_found(self, pyramid_app, perm_grant_payload, user):
+        res = pyramid_app.post_json("/api/v1/realms/REALM/identities/9f533cff-a6b3-4430-b1b9-557da85e0121/permissions",
+                                    perm_grant_payload,
+                                    content_type="application/vnd.api+json",
+                                    status=404)
+
+        assert res.content_type == "application/vnd.api+json"
+        assert res.json == {
+            "status": "error",
+            "errors": [
+                {
+                    "location": "path",
+                    "name": "identity_get",
+                    "description": "Identity not found"
+                }
+            ]
+        }
