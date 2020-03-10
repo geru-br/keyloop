@@ -5,7 +5,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.settings import aslist
 from zope.interface.adapter import AdapterRegistry
 
-from keyloop.interfaces import auth_session, identity, permission
+from keyloop.interfaces import auth_session, identity, permission, permission_grant
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +50,18 @@ def _register_adapters(config):
             config.maybe_dotted(permission_source_name)
         )
         logger.debug("Registered IPermissionSource adapter for realm '%s'", realm)
+
+    perm_grant_adapters = aslist(settings["keyloop.perm_grant_sources"])
+    for adapter_description in perm_grant_adapters:
+        realm, perm_grant_source_name = adapter_description.split(":")
+
+        adapter_registry.register(
+            [permission_grant.IPermissionGrant],
+            permission_grant.IPermissionGrantSource,
+            realm,
+            config.maybe_dotted(perm_grant_source_name)
+        )
+        logger.debug("Registered IPermissionGrantSource adapter for realm '%s'", realm)
 
     config.registry.settings["keyloop_adapters"] = adapter_registry
 

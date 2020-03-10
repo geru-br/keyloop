@@ -7,6 +7,7 @@ from pyramid.security import Everyone, Allow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
+from keyloop.api.v1.exceptions import PermissionAlreadyExists
 from keyloop.schemas.path import BasePathSchema
 from keyloop.schemas.permission import PermissionSchema
 
@@ -15,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 class PermissionContext(SimpleBaseFactory):
     def __acl__(self):
-        return [(Allow, Everyone, 'edit')]
+        return [(Allow, Everyone, "edit")]
 
 
-class CollectionPostPermissionSchema(marshmallow.Schema):
+class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(PermissionSchema)
 
@@ -36,9 +37,17 @@ collection_post_response_schemas = {
 )
 class PermissionResource(BaseResource):
 
-    @grip_view(schema=CollectionPostPermissionSchema, response_schema=collection_post_response_schemas,
+    @grip_view(schema=CollectionPostSchema, response_schema=collection_post_response_schemas,
                error_handler=default_error_handler)
     def collection_post(self):
-        validated = self.request.validated["body"]
-        permission = self.request.permission_provider.create(validated["name"], validated["description"])
-        return permission
+        params = self.request.validated["body"]
+
+        try:
+            permission = self.request.permission_provider.create(params["name"], params["description"])
+            return permission
+        except PermissionAlreadyExists:
+            self.request.errors.add(
+                location="body",
+                name="name",
+                description=f"Existent permission with name: {params['name']}"
+            )

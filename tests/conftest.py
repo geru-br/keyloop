@@ -10,6 +10,7 @@ def pyramid_config():
             "keyloop.identity_sources": "REALM:tests.fake_user.FakeUser",
             "keyloop.auth_session_sources": "REALM:tests.fake_auth_session.FakeAuthSession",
             "keyloop.permission_sources": "REALM:tests.fake_permission.FakePermission",
+            "keyloop.perm_grant_sources": "REALM:tests.fake_permission.FakePermissionGrant",
             "keyloop.authpolicysecret": "sekret"
         }
     )
@@ -41,3 +42,17 @@ def fakeAuthSessionClass():
     FakeAuthSession.test_reset()
 
     yield FakeAuthSession
+
+
+@pytest.fixture
+def fake_permission_class():
+    from tests.fake_permission import FakePermission
+    FakePermission.test_reset()
+    yield FakePermission
+
+
+@pytest.fixture
+def fake_perm_grant_class():
+    from tests.fake_permission import FakePermissionGrant
+    FakePermissionGrant.test_reset()
+    yield FakePermissionGrant

@@ -10,3 +10,13 @@ class IdentityAlreadyExists(Exception):
 class AuthenticationFailed(Exception):
     """Raise an error if an user pass a wrong password"""
     pass
+
+
+class PermissionAlreadyExists(Exception):
+    """Permission already exists with specific name."""
+    pass
+
+
+class PermissionGrantAlreadyExists(Exception):
+    """Permission-Identity association already exists."""
+    pass
