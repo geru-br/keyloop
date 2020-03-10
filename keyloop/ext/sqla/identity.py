@@ -9,7 +9,8 @@ from zope.interface import implementer
 
 import uuid
 
-from keyloop.api.v1.exceptions import IdentityNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.ext.sqla.auth_session import password_check
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
@@ -137,6 +138,17 @@ class IdentitySource:
                 value = self._set_password(value)
 
             setattr(identity, key, value)
+
+        transaction.commit()
+
+    @singletonmethod
+    def change_password(self, identity_id, last_password, password):
+        identity = self.get(identity_id)
+
+        if not password_check(identity.password, last_password):
+            raise AuthenticationFailed
+
+        identity.password = password
 
         transaction.commit()
 
