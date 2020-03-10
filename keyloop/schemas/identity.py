@@ -57,3 +57,9 @@ class IdentitySchema(BaseIdentitySchema):
 class IdentityUpdateSchema(BaseIdentitySchema):
     username = fields.String(required=False)
     password = fields.String(required=False)
+
+
+class IdentityUpdatePasswordSchema(BaseIdentitySchema):
+    last_password = fields.String(required=True)
+    password = fields.String(required=True)
+    

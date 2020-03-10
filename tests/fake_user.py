@@ -1,4 +1,4 @@
-from keyloop.api.v1.exceptions import IdentityNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
 
 
 class FakeUser:
@@ -50,3 +50,14 @@ class FakeUser:
             raise IdentityNotFound()
 
         identity['name'] = params['name']
+
+    @classmethod
+    def change_password(cls, identity_id, last_password, password):
+        identity = cls.IDENTITIES.get(str(identity_id))
+        if not identity:
+            raise IdentityNotFound()
+
+        if identity['password'] != last_password:
+            raise AuthenticationFailed()
+
+        identity['password'] = password
