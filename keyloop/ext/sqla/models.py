@@ -87,7 +87,8 @@ class IdentitySource:
         self.model = model
         self.session = session
 
-    def _set_password(self, value):
+    @staticmethod
+    def _set_password(value):
         return bcrypt.encode(value)
 
     @singletonmethod
@@ -131,6 +132,9 @@ class IdentitySource:
         for key, value in params.items():
             if key in ('username', 'contacts'):
                 continue
+
+            if key == 'password':
+                value = self._set_password(value)
 
             setattr(identity, key, value)
 

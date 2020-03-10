@@ -27,7 +27,7 @@ class CollectionPostAndPutSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
-class PutSchema(marshmallow.Schema):
+class PatchSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(IdentityUpdateSchema)
 
@@ -45,7 +45,7 @@ get_response_schemas = {
     200: IdentitySchema(exclude=["password"]),
 }
 
-collection_delete_put_response_schemas = {
+collection_delete_patch_response_schemas = {
     204: None,
     404: ErrorSchema()
 }
@@ -82,7 +82,7 @@ class IdentityResource(BaseResource):
             )
             self.request.errors.status = 404
 
-    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_put_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_patch_response_schemas)
     def delete(self):
         """Remove the identity"""
 
@@ -102,8 +102,8 @@ class IdentityResource(BaseResource):
             self.request.response.headers.extend(headers)
             return HTTPNoContent()
 
-    @grip_view(schema=PutSchema, response_schema=collection_delete_put_response_schemas)
-    def put(self):
+    @grip_view(schema=PatchSchema, response_schema=collection_delete_patch_response_schemas)
+    def patch(self):
         """Update an identity"""
         validated = self.request.validated["body"]
 
