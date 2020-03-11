@@ -180,7 +180,7 @@ def test_update_error_identity(pyramid_app, identity_payload, fake_user_class):
     }
 
 
-def test_update_identity_password(pyramid_app, identity_payload, fakeUserClass):
+def test_update_identity_password(pyramid_app, identity_payload, fake_user_class):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
                           content_type="application/vnd.api+json", status=200, )
 
@@ -194,15 +194,15 @@ def test_update_identity_password(pyramid_app, identity_payload, fakeUserClass):
         }
     }
 
-    pyramid_app.patch_json("/api/v1/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506/password",
+    identity_id = str(next(iter(fake_user_class.IDENTITIES.keys())))
+    pyramid_app.patch_json(f"/api/v1/realms/REALM/identities/{identity_id}/password",
                            params,
                            content_type="application/vnd.api+json", status=204, )
 
-    assert fakeUserClass.IDENTITIES['1bed6e99-74d8-484a-a650-fab8f4f80506']['password'] == \
-           params["data"]["attributes"]["password"]
+    assert fake_user_class.IDENTITIES[identity_id]['password'] == params["data"]["attributes"]["password"]
 
 
-def test_update_identity_password_user_not_found(pyramid_app, identity_payload, fakeUserClass):
+def test_update_identity_password_user_not_found(pyramid_app, identity_payload, fake_user_class):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
                           content_type="application/vnd.api+json", status=200, )
 
@@ -232,7 +232,7 @@ def test_update_identity_password_user_not_found(pyramid_app, identity_payload, 
     }
 
 
-def test_update_identity_password_authentucation_failed(pyramid_app, identity_payload, fakeUserClass):
+def test_update_identity_password_authentucation_failed(pyramid_app, identity_payload, fake_user_class):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
                           content_type="application/vnd.api+json", status=200, )
 
@@ -246,7 +246,8 @@ def test_update_identity_password_authentucation_failed(pyramid_app, identity_pa
         }
     }
 
-    res = pyramid_app.patch_json("/api/v1/realms/REALM/identities/1bed6e99-74d8-484a-a650-fab8f4f80506/password",
+    identity_id = str(next(iter(fake_user_class.IDENTITIES.keys())))
+    res = pyramid_app.patch_json(f"/api/v1/realms/REALM/identities/{identity_id}/password",
                                  params,
                                  content_type="application/vnd.api+json", status=401, )
 
