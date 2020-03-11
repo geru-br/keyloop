@@ -69,7 +69,6 @@ class IdentityResource(BaseResource):
     @grip_view(schema=CollectionPostAndPutSchema, response_schema=collection_post_response_schemas,
                error_handler=default_error_handler)
     def collection_post(self):
-        breakpoint()
         validated = self.request.validated["body"]
         try:
             identity = self.request.identity_provider.create(

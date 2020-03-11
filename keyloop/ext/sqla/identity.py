@@ -15,15 +15,6 @@ from keyloop.ext.sqla.auth_session import password_check
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
-
-def generate_uuid():
-    """Generate an hex representation of an uuid
-
-       :returns: str
-    """
-    return uuid.uuid4().hex
-
-
 bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
 
 
@@ -57,7 +48,6 @@ class Contact:
 
 
 @implementer(IIdentity)
-@singleton
 class Identity:
     __tablename__ = "identity"
 
@@ -85,6 +75,7 @@ class Identity:
 @implementer(IIdentitySource)
 @singleton
 class IdentitySource:
+
     def __init__(self, session, model):
         self.model = model
         self.session = session
@@ -105,26 +96,25 @@ class IdentitySource:
 
     @singletonmethod
     def create(self, username, password, name=None, contacts=None):
-        breakpoint()
         identity = self.model(username=username, password=self._set_password(password), name=name)
         self.session.add(identity)
+
+        for contact in contacts:
+            ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity)
+
         try:
             self.session.flush()
 
         except IntegrityError:
             raise IdentityAlreadyExists
 
-        for contact in contacts:
-            ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity.id)
-
-        return self.session.query(self.model).filter(self.model.username == username).one()
+        return identity
 
     @singletonmethod
     def delete(self, identity_id):
         identity = self.get(identity_id)
 
         identity.active = False
-
 
     @singletonmethod
     def update(self, identity_id, params):
@@ -143,7 +133,6 @@ class IdentitySource:
 
             setattr(identity, key, value)
 
-
     @singletonmethod
     def change_password(self, identity_id, last_password, password):
         identity = self.get(identity_id)
@@ -154,7 +143,6 @@ class IdentitySource:
         identity.password = self._set_password(password)
 
 
-
 @singleton
 class ContactSource:
     def __init__(self, session, model):
@@ -162,6 +150,6 @@ class ContactSource:
         self.session = session
 
     @singletonmethod
-    def create(self, type, value, valid_for_auth, identity_id):
-        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity_id=identity_id)
+    def create(self, type, value, valid_for_auth, identity):
+        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity=identity)
         self.session.add(contact)
