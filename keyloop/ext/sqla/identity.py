@@ -1,6 +1,7 @@
 import cryptacular.bcrypt
 import sqlalchemy as sa
 import transaction
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
@@ -9,18 +10,10 @@ from zope.interface import implementer
 
 import uuid
 
-from keyloop.api.v1.exceptions import IdentityNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
+from keyloop.ext.sqla.auth_session import password_check
 from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
 from keyloop.ext.utils.decorators import singleton, singletonmethod
-
-
-def generate_uuid():
-    """Generate an hex representation of an uuid
-
-       :returns: str
-    """
-    return uuid.uuid4().hex
-
 
 bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
 
@@ -55,7 +48,6 @@ class Contact:
 
 
 @implementer(IIdentity)
-@singleton
 class Identity:
     __tablename__ = "identity"
 
@@ -83,11 +75,13 @@ class Identity:
 @implementer(IIdentitySource)
 @singleton
 class IdentitySource:
+
     def __init__(self, session, model):
         self.model = model
         self.session = session
 
-    def _set_password(self, value):
+    @staticmethod
+    def _set_password(value):
         return bcrypt.encode(value)
 
     @singletonmethod
@@ -104,21 +98,23 @@ class IdentitySource:
     def create(self, username, password, name=None, contacts=None):
         identity = self.model(username=username, password=self._set_password(password), name=name)
         self.session.add(identity)
-        self.session.flush()
 
         for contact in contacts:
-            ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity.id)
+            ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity)
 
-        transaction.commit()
-        return self.session.query(self.model).filter(self.model.username == username).one()
+        try:
+            self.session.flush()
+
+        except IntegrityError:
+            raise IdentityAlreadyExists
+
+        return identity
 
     @singletonmethod
     def delete(self, identity_id):
         identity = self.get(identity_id)
 
         identity.active = False
-
-        transaction.commit()
 
     @singletonmethod
     def update(self, identity_id, params):
@@ -132,9 +128,19 @@ class IdentitySource:
             if key in ('username', 'contacts'):
                 continue
 
+            if key == 'password':
+                value = self._set_password(value)
+
             setattr(identity, key, value)
 
-        transaction.commit()
+    @singletonmethod
+    def change_password(self, identity_id, last_password, password):
+        identity = self.get(identity_id)
+
+        if not password_check(identity.password, last_password):
+            raise AuthenticationFailed
+
+        identity.password = self._set_password(password)
 
 
 @singleton
@@ -144,6 +150,6 @@ class ContactSource:
         self.session = session
 
     @singletonmethod
-    def create(self, type, value, valid_for_auth, identity_id):
-        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity_id=identity_id)
+    def create(self, type, value, valid_for_auth, identity):
+        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity=identity)
         self.session.add(contact)

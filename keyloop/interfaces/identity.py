@@ -25,6 +25,9 @@ class IIdentitySource(Interface):
     def get(identity_id: str) -> IIdentity:
         pass
 
+    def change_password(identity_id: str, last_password: str, password: str):
+        pass
+
     def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
         pass
 

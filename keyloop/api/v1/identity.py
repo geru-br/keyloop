@@ -8,9 +8,9 @@ from pyramid.security import Everyone, Allow, forget
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
 from keyloop.schemas.error import ErrorSchema
-from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema
+from keyloop.schemas.identity import IdentitySchema, IdentityUpdateSchema, IdentityUpdatePasswordSchema
 from keyloop.schemas.path import BasePathSchema
 
 logger = logging.getLogger(__name__)
@@ -27,9 +27,16 @@ class CollectionPostAndPutSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(IdentitySchema)
 
 
-class PutSchema(marshmallow.Schema):
+class PatchSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(IdentityUpdateSchema)
+
+
+class PatchPasswordSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+    body = marshmallow.fields.Nested(IdentityUpdatePasswordSchema(
+        exclude=['name', 'contacts', 'active', 'permissions']
+    ))
 
 
 class GetAndDeleteSchema(marshmallow.Schema):
@@ -45,7 +52,7 @@ get_response_schemas = {
     200: IdentitySchema(exclude=["password"]),
 }
 
-collection_delete_put_response_schemas = {
+collection_delete_patch_response_schemas = {
     204: None,
     404: ErrorSchema()
 }
@@ -63,10 +70,20 @@ class IdentityResource(BaseResource):
                error_handler=default_error_handler)
     def collection_post(self):
         validated = self.request.validated["body"]
-        identity = self.request.identity_provider.create(
-            validated["username"], validated["password"], validated["name"], validated["contacts"]
-        )
-        return identity
+        try:
+            identity = self.request.identity_provider.create(
+                validated["username"], validated["password"], validated["name"], validated["contacts"]
+            )
+        except IdentityAlreadyExists:
+            self.request.errors.add(
+                location='path',
+                name='identity_create',
+                description='Username already exists'
+            )
+            self.request.errors.status = 409
+
+        else:
+            return identity
 
     @grip_view(schema=GetAndDeleteSchema, response_schema=get_response_schemas)
     def get(self):
@@ -82,7 +99,7 @@ class IdentityResource(BaseResource):
             )
             self.request.errors.status = 404
 
-    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_put_response_schemas)
+    @grip_view(schema=GetAndDeleteSchema, response_schema=collection_delete_patch_response_schemas)
     def delete(self):
         """Remove the identity"""
 
@@ -96,14 +113,14 @@ class IdentityResource(BaseResource):
                 description='Identity not found'
             )
             self.request.errors.status = 404
-            
+
         else:
             headers = forget(self.request)
             self.request.response.headers.extend(headers)
             return HTTPNoContent()
 
-    @grip_view(schema=PutSchema, response_schema=collection_delete_put_response_schemas)
-    def put(self):
+    @grip_view(schema=PatchSchema, response_schema=collection_delete_patch_response_schemas)
+    def patch(self):
         """Update an identity"""
         validated = self.request.validated["body"]
 
@@ -118,3 +135,37 @@ class IdentityResource(BaseResource):
                 description='Identity not found'
             )
             self.request.errors.status = 404
+
+
+@resource(
+    path="/realms/{realm_slug}/identities/{id}/password",
+    content_type="application/vnd.api+json",
+    factory=IdentityContext,
+)
+class IdentityPasswordResource(BaseResource):
+    @grip_view(schema=PatchPasswordSchema, response_schema=collection_delete_patch_response_schemas)
+    def patch(self):
+        """Update the password identity"""
+        validated = self.request.validated["body"]
+
+        try:
+            self.request.identity_provider.change_password(self.request.validated['path']['id'],
+                                                           validated['last_password'],
+                                                           validated['password'])
+
+            return HTTPNoContent()
+        except IdentityNotFound:
+            self.request.errors.add(
+                location='path',
+                name='identity_password_update',
+                description='Identity not found'
+            )
+            self.request.errors.status = 404
+
+        except AuthenticationFailed:
+            self.request.errors.add(
+                location='body',
+                name='identity_password_update',
+                description='Last password not match'
+            )
+            self.request.errors.status = 401

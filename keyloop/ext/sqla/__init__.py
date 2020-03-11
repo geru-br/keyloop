@@ -1,4 +1,4 @@
-from keyloop.ext.sqla.models import IdentitySource, ContactSource
+from keyloop.ext.sqla.identity import IdentitySource, ContactSource
 from keyloop.ext.sqla.auth_session import AuthSessionSource
 
 

@@ -232,6 +232,35 @@ class Meta(type):
             # permission="edit",
         )
 
+        # patch
+        if "patch" not in namespace:
+
+            def patch(self):
+                return super(cls, self).patch()
+
+        else:
+            patch = namespace["patch"]
+
+        (
+            resource_patch_schema,
+            resource_patch_response_schemas,
+            resource_patch_validators,
+            resource_patch_error_handler,
+            factory_patch,
+        ) = _unpack_decorated_args(patch)
+
+        namespace["patch"] = add_view(
+            patch,
+            validators=resource_patch_validators,
+            # apispec_show=True,
+            schema=resource_patch_schema,
+            apispec_response_schemas=resource_patch_response_schemas,
+            renderer="json_api",
+            error_handler=resource_patch_error_handler,
+            factory=factory_patch
+            # permission="edit",
+        )
+
         cls = super(Meta, mcs).__new__(mcs, name, bases, namespace)
         return cls
 
