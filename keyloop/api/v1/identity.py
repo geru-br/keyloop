@@ -35,7 +35,7 @@ class PatchSchema(marshmallow.Schema):
 class PatchPasswordSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
     body = marshmallow.fields.Nested(IdentityUpdatePasswordSchema(
-        exclude=['name', 'contacts', 'active', 'permissions']
+        exclude=['name', 'active', 'permissions']
     ))
 
 
@@ -72,7 +72,7 @@ class IdentityResource(BaseResource):
         validated = self.request.validated["body"]
         try:
             identity = self.request.identity_provider.create(
-                validated["username"], validated["password"], validated["name"], validated["contacts"]
+                validated["username"], validated["password"], validated["name"],
             )
         except IdentityAlreadyExists:
             self.request.errors.add(

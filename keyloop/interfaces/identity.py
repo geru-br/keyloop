@@ -6,12 +6,6 @@ from zope.interface import (
 )
 
 
-class IContact(Interface):
-    type = Attribute('String to indicate type of contact (e.g. email, phone, etc...)')
-    value = Attribute('String value of contact type')
-    valid_for_auth = Attribute('Boolean to indicate if contact type is valid for auth')
-
-
 class IIdentity(Interface):
     username = Attribute('Unique string used for identifying a user party.')
     password = Attribute('The password for verifying the user')
@@ -28,7 +22,7 @@ class IIdentitySource(Interface):
     def change_password(identity_id: str, last_password: str, password: str):
         pass
 
-    def create(username: str, password: str, name: T.Optional[str], contacts: T.Optional[T.List[IContact]]):
+    def create(username: str, password: str, name: T.Optional[str]):
         pass
 
     def delete(identity_id: str):

@@ -4,7 +4,7 @@
     - group: "identity"
     - url: "/api/v1/realms/PLAYGROUND/identities"
     - method: "POST"
-    - body: '{"data": {"type": "identity", "attributes": {"username": "test@test.com.br", "password": "1234567a", "name": "xablau", "contacts": [{"type": "EMAIL", "value": "mail@mail.com"}, {"type": "MSISDN", "value": "11999999999"}]}}}'
+    - body: '{"data": {"type": "identity", "attributes": {"username": "test@test.com.br", "password": "1234567a", "name": "xablau"}}}'
     - headers: {Content-Type: application/vnd.api+json}
     - expected_status: [200]
 

@@ -1,6 +1,6 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
-from playground.models import Base, DBSession, RealIdentity, RealContact
+from playground.models import Base, DBSession, RealIdentity
 
 
 def main(_, **settings):
@@ -16,7 +16,6 @@ def main(_, **settings):
 
         config.key_loop_setup(DBSession, {
             'IdentitySource': RealIdentity,
-            'ContactSource': RealContact,
             'AuthSessionSource': RealIdentity
         })
 
