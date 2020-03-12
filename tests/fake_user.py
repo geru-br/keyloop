@@ -74,3 +74,7 @@ class FakeUser:
             raise AuthenticationFailed()
 
         identity['password'] = password
+
+    @classmethod
+    def grant_permission(cls, permission, identity):
+        pass

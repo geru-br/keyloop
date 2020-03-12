@@ -2,7 +2,8 @@ from wsgiref.simple_server import make_server
 
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
-from playground.models import Base, DBSession, RealIdentity
+
+from playground.models import Base, DBSession, RealIdentity, RealPermission
 
 
 def main():
@@ -26,7 +27,8 @@ def main():
 
         config.key_loop_setup(DBSession, {
             'IdentitySource': RealIdentity,
-            'AuthSessionSource': RealIdentity
+            'AuthSessionSource': RealIdentity,
+            'PermissionSource': RealPermission
         })
 
         app = config.make_wsgi_app()

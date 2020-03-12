@@ -51,18 +51,6 @@ def _register_adapters(config):
         )
         logger.debug("Registered IPermissionSource adapter for realm '%s'", realm)
 
-    perm_grant_adapters = aslist(settings["keyloop.perm_grant_sources"])
-    for adapter_description in perm_grant_adapters:
-        realm, perm_grant_source_name = adapter_description.split(":")
-
-        adapter_registry.register(
-            [permission_grant.IPermissionGrant],
-            permission_grant.IPermissionGrantSource,
-            realm,
-            config.maybe_dotted(perm_grant_source_name)
-        )
-        logger.debug("Registered IPermissionGrantSource adapter for realm '%s'", realm)
-
     config.registry.settings["keyloop_adapters"] = adapter_registry
 
 

@@ -7,7 +7,8 @@ from pyramid.security import Everyone, Allow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, PermissionNotFound
+from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.path import BasePathSchema
 from keyloop.schemas.permission import PermissionGrantSchema
 
@@ -25,7 +26,9 @@ class CollectionPostSchema(marshmallow.Schema):
 
 
 collection_post_response_schemas = {
-    200: PermissionGrantSchema
+    200: PermissionGrantSchema,
+    404: ErrorSchema(),
+    400: ErrorSchema()
 }
 
 
@@ -47,11 +50,19 @@ class PermissionGrantResource(BaseResource):
         except IdentityNotFound:
             self.request.errors.add(
                 location='path',
-                name='identity_get',
+                name='idendity_id',
                 description='Identity not found'
             )
             self.request.errors.status = 404
-        else:
-            permission = self.request.permission_provider.get(name=validated["body"]["perm_name"])
-            perm_grant = self.request.perm_grant_provider.grant_permission(permission.uuid, identity.id)
-            return perm_grant
+
+        try:
+            permission = self.request.permission_provider.get_by(name=validated["body"]["perm_name"])
+        except PermissionNotFound:
+            self.request.errors.add(
+                location='path',
+                name='perm_name',
+                description='Permission not found'
+            )
+            self.request.errors.status = 400
+
+        self.request.identity_provider.grant_permission(permission, identity)

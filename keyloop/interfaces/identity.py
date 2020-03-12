@@ -30,3 +30,6 @@ class IIdentitySource(Interface):
 
     def update(identity_id: str, params: dict):
         pass
+
+    def grant_permission(permission, identity):
+        pass

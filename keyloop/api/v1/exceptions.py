@@ -2,6 +2,7 @@ class IdentityNotFound(Exception):
     """Raise an error if identity has not been found"""
     pass
 
+
 class IdentityAlreadyExists(Exception):
     """Raise an error if identity already exists"""
     pass
@@ -9,6 +10,11 @@ class IdentityAlreadyExists(Exception):
 
 class AuthenticationFailed(Exception):
     """Raise an error if an user pass a wrong password"""
+    pass
+
+
+class PermissionNotFound(Exception):
+    """Permission not found."""
     pass
 
 

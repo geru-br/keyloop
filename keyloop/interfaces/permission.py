@@ -12,7 +12,7 @@ class IPermissionSource(Interface):
     """Marker interface for callables that retrieve a Permission object given a name/uuid
     """
 
-    def get(name: str) -> IPermission:
+    def get_by(name: str, uuid: str) -> IPermission:
         pass
 
     def create(self, name: str, description: T.Optional[str]):

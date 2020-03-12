@@ -1,5 +1,6 @@
-from keyloop.ext.sqla.identity import IdentitySource
 from keyloop.ext.sqla.auth_session import AuthSessionSource
+from keyloop.ext.sqla.identity import IdentitySource
+from keyloop.ext.sqla.permission import PermissionSource
 
 
 def setup_models(config, session, params):
