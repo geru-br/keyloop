@@ -17,3 +17,6 @@ class IPermissionSource(Interface):
 
     def create(self, name: str, description: T.Optional[str]):
         pass
+
+    def list(self, page: int, limit: int):
+        pass

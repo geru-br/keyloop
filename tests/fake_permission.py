@@ -42,3 +42,17 @@ class FakePermission:
             return permission
         else:
             raise PermissionAlreadyExists
+
+    @classmethod
+    def list(cls, page, limit):
+        params = []
+        total = len(cls.PERMISSIONS) if limit > len(cls.PERMISSIONS) else limit
+        current_page = 0 if page in (0, 1) else page
+
+        if not cls.PERMISSIONS:
+            return params
+
+        params.append(list(cls.PERMISSIONS.items())[0][1])
+
+        return params[current_page:total]
+

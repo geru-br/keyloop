@@ -10,7 +10,7 @@ from grip.resource import BaseResource, default_error_handler
 from keyloop.api.v1.exceptions import PermissionAlreadyExists
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.path import BasePathSchema
-from keyloop.schemas.permission import PermissionSchema
+from keyloop.schemas.permission import PermissionSchema, PermissionQueryStringSchema
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,18 @@ class CollectionPostSchema(marshmallow.Schema):
     body = marshmallow.fields.Nested(PermissionSchema)
 
 
+class CollectionGetSchema(marshmallow.Schema):
+    path = marshmallow.fields.Nested(BasePathSchema)
+    querystring = marshmallow.fields.Nested(PermissionQueryStringSchema)
+
+
 collection_post_response_schemas = {
     200: PermissionSchema(),
     400: ErrorSchema()
+}
+
+collection_get_response_schemas = {
+    200: PermissionSchema(many=True),
 }
 
 
@@ -53,3 +62,10 @@ class PermissionResource(BaseResource):
                 name="name",
                 description=f"Existent permission with name: {params['name']}"
             )
+
+    @grip_view(schema=CollectionGetSchema, response_schema=collection_get_response_schemas)
+    def collection_get(self):
+        params = self.request.validated["querystring"]
+
+        return self.request.permission_provider.list(params['page'], params['limit'])
+
