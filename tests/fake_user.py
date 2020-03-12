@@ -4,12 +4,11 @@ from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
 class FakeUser:
     IDENTITIES = {}
 
-    def __init__(self, username, password, active=True, name=None, contacts=None):
+    def __init__(self, username, password, active=True, name=None):
         self.id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
         self.username = username
         self.password = password
         self.name = name
-        self.contacts = contacts
         self.active = active
         self.permissions = ['perm_a', 'perm_b', 'perm_c']
 
@@ -24,17 +23,16 @@ class FakeUser:
         return identity
 
     @classmethod
-    def create(cls, username, password, name, contacts):
+    def create(cls, username, password, name):
         params = {
             'username': username,
             'password': password,
             'active': True,
             'name': name,
-            'contacts': contacts
         }
 
         cls.IDENTITIES.update({'1bed6e99-74d8-484a-a650-fab8f4f80506': params})
-        return cls(username, password, True, name, contacts)
+        return cls(username, password, True, name)
 
     @classmethod
     def delete(cls, identity_id):

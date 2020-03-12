@@ -12,16 +12,6 @@ class AuthSession(TaskSet):
                     "username": "test@test.com",
                     "password": "blablabla",
                     "name": "xablau",
-                    "contacts": [
-                        {
-                            "type": "EMAIL",
-                            "value": "mail@mail.com"
-                        },
-                        {
-                            "type": "MSISDN",
-                            "value": "11999999999"
-                        }
-                    ]
                 }
             }
         }

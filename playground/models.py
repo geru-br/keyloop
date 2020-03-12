@@ -5,7 +5,7 @@ from sqlalchemy.orm import (
 )
 from zope.sqlalchemy import register
 
-from keyloop.ext.sqla.identity import Identity, Contact
+from keyloop.ext.sqla.identity import Identity
 
 DBSession = scoped_session(sessionmaker())
 register(DBSession)
@@ -13,8 +13,4 @@ Base = declarative_base()
 
 
 class RealIdentity(Identity, Base):
-    pass
-
-
-class RealContact(Contact, Base):
     pass

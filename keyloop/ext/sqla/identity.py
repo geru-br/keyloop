@@ -12,39 +12,11 @@ import uuid
 
 from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
 from keyloop.ext.sqla.auth_session import password_check
-from keyloop.interfaces.identity import IIdentity, IIdentitySource, IContact
+from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 
 bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
 
-
-@implementer(IContact)
-class Contact:
-    __tablename__ = "contact"
-
-    @declared_attr
-    def id(self):
-        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
-
-    @declared_attr
-    def type(self):
-        return sa.Column(sa.String, index=True)
-
-    @declared_attr
-    def value(self):
-        return sa.Column(sa.String, index=True)
-
-    @declared_attr
-    def valid_for_auth(self):
-        return sa.Column(sa.Boolean, default=False)
-
-    @declared_attr
-    def identity_id(self):
-        return sa.Column(UUIDType, sa.ForeignKey('identity.id'))
-
-    def identity(self):
-        return relationship('RealIdentity', backref=backref('identity', lazy='dynamic'), foreign_keys=[
-            self.identity_id])
 
 
 @implementer(IIdentity)
@@ -95,12 +67,9 @@ class IdentitySource:
             raise IdentityNotFound
 
     @singletonmethod
-    def create(self, username, password, name=None, contacts=None):
+    def create(self, username, password, name=None):
         identity = self.model(username=username, password=self._set_password(password), name=name)
         self.session.add(identity)
-
-        for contact in contacts:
-            ContactSource.create(contact['type'].value, contact['value'], contact['valid_for_auth'], identity)
 
         try:
             self.session.flush()
@@ -125,7 +94,7 @@ class IdentitySource:
             raise IdentityNotFound
 
         for key, value in params.items():
-            if key in ('username', 'contacts'):
+            if key == 'username':
                 continue
 
             if key == 'password':
@@ -141,15 +110,3 @@ class IdentitySource:
             raise AuthenticationFailed
 
         identity.password = self._set_password(password)
-
-
-@singleton
-class ContactSource:
-    def __init__(self, session, model):
-        self.model = model
-        self.session = session
-
-    @singletonmethod
-    def create(self, type, value, valid_for_auth, identity):
-        contact = self.model(type=type, value=value, valid_for_auth=valid_for_auth, identity=identity)
-        self.session.add(contact)

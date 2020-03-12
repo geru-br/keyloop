@@ -10,16 +10,6 @@ def identity_payload():
                 "username": "test@test.com",
                 "password": "blablabla",
                 "name": "xablau",
-                "contacts": [
-                    {
-                        "type": "EMAIL",
-                        "value": "mail@mail.com",
-                    },
-                    {
-                        "type": "MSISDN",
-                        "value": "11999999999",
-                    },
-                ]
             }
         }
     }
@@ -34,16 +24,6 @@ def test_collection_post_identity_creates_identity(pyramid_app, identity_payload
             "attributes": {
                 "username": "test@test.com",
                 'active': True,
-                "contacts": [
-                    {
-                        "type": "EMAIL",
-                        "value": "mail@mail.com"
-                    },
-                    {
-                        "type": "MSISDN",
-                        "value": "11999999999"
-                    }
-                ],
                 "name": "xablau"
             }
         }
@@ -150,7 +130,6 @@ def test_get_identity(pyramid_app, fakeUserClass):
                     "perm_b",
                     "perm_c"
                 ],
-                "contacts": None,
                 "name": None,
                 'active': True,
                 "username": "test@test.com.br"
