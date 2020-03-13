@@ -1,9 +1,6 @@
-from enum import Enum
-
-import marshmallow
 import marshmallow_jsonapi
 from marshmallow import fields
-from marshmallow_enum import EnumField
+
 
 class BaseIdentitySchema(marshmallow_jsonapi.Schema):
     class Meta:

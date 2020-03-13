@@ -29,8 +29,12 @@ class TestGrantPermission:
         assert res.content_type == "application/vnd.api+json"
         assert res.json == {
             "data": {
-                "type": "permission-grant",
-                "id": str(next(iter(fake_perm_grant_class.PERMISSION_GRANTS)))
+                "type": "permission",
+                "attributes": {
+                    "description": "Permission for service A.",
+                    "name": "perm_a"
+                },
+                "id": str(permission.uuid)
             }
         }
 
@@ -46,7 +50,7 @@ class TestGrantPermission:
             "errors": [
                 {
                     "location": "path",
-                    "name": "identity_get",
+                    "name": "identity_id",
                     "description": "Identity not found"
                 }
             ]

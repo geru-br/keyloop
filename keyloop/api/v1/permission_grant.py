@@ -7,10 +7,10 @@ from pyramid.security import Everyone, Allow
 from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
-from keyloop.api.v1.exceptions import IdentityNotFound, PermissionNotFound
+from keyloop.api.v1.exceptions import IdentityNotFound, PermissionNotFound, PermissionAlreadyGranted
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.path import BasePathSchema
-from keyloop.schemas.permission import PermissionGrantSchema
+from keyloop.schemas.permission import PermissionGrantSchema, PermissionSchema
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class CollectionPostSchema(marshmallow.Schema):
 
 
 collection_post_response_schemas = {
-    200: PermissionGrantSchema,
+    200: PermissionSchema,
     404: ErrorSchema(),
     400: ErrorSchema()
 }
@@ -50,10 +50,11 @@ class PermissionGrantResource(BaseResource):
         except IdentityNotFound:
             self.request.errors.add(
                 location='path',
-                name='idendity_id',
+                name='identity_id',
                 description='Identity not found'
             )
             self.request.errors.status = 404
+            return
 
         try:
             permission = self.request.permission_provider.get_by(name=validated["body"]["perm_name"])
@@ -64,5 +65,16 @@ class PermissionGrantResource(BaseResource):
                 description='Permission not found'
             )
             self.request.errors.status = 400
+            return
 
-        self.request.identity_provider.grant_permission(permission, identity)
+        try:
+            self.request.identity_provider.grant_permission(permission, identity)
+        except PermissionAlreadyGranted:
+            self.request.errors.add(
+                location='path',
+                name='perm_name',
+                description='Permission already granted to identity.'
+            )
+            self.request.errors.status = 400
+
+        return permission

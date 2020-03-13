@@ -48,7 +48,6 @@ from keyloop.utils import generate_uuid
 
 
 @implementer(IPermission)
-@singleton
 class Permission:
     __tablename__ = 'permission'
 

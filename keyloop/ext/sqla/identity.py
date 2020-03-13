@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils.types.uuid import UUIDType
 from zope.interface import implementer
 
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists, PermissionAlreadyGranted
 from keyloop.ext.sqla.auth_session import password_check
 from keyloop.ext.utils.decorators import singleton, singletonmethod
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
@@ -122,4 +122,6 @@ class IdentitySource:
 
     @singletonmethod
     def grant_permission(self, permission, identity):
+        if permission in identity.permissions:
+            raise PermissionAlreadyGranted()
         identity.permissions.append(permission)

@@ -1,4 +1,4 @@
-from keyloop.api.v1.exceptions import PermissionAlreadyExists, PermissionGrantAlreadyExists, PermissionNotFound
+from keyloop.api.v1.exceptions import PermissionAlreadyExists, PermissionAlreadyGranted, PermissionNotFound
 from keyloop.utils import generate_uuid
 
 
@@ -34,12 +34,14 @@ class FakePermission:
 
     @classmethod
     def create(cls, name, description):
-        if cls.get(name=name):
+        try:
+            cls.get_by(name=name)
+        except PermissionNotFound:
+            permission = cls(name, description)
+            cls.PERMISSIONS.update({permission.uuid: permission.__dict__})
+            return permission
+        else:
             raise PermissionAlreadyExists
-
-        permission = cls(name, description)
-        cls.PERMISSIONS.update({permission.uuid: permission.__dict__})
-        return permission
 
 
 class FakePermissionGrant:
@@ -64,7 +66,7 @@ class FakePermissionGrant:
     def grant_permission(cls, permission_id, identity_id):
         perm_ident_assoc = (permission_id, identity_id)
         if perm_ident_assoc in cls.PERM_IDENT_ASSOCIATIONS:
-            raise PermissionGrantAlreadyExists
+            raise PermissionAlreadyGranted
 
         permission_grant = cls(*perm_ident_assoc)
         cls.PERMISSION_GRANTS.update({permission_grant.uuid: permission_grant.__dict__})

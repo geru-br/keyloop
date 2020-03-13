@@ -23,6 +23,8 @@ class PermissionAlreadyExists(Exception):
     pass
 
 
-class PermissionGrantAlreadyExists(Exception):
+class PermissionAlreadyGranted(Exception):
     """Permission-Identity association already exists."""
     pass
+
+
