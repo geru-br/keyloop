@@ -8,6 +8,7 @@ from grip.context import SimpleBaseFactory
 from grip.decorator import view as grip_view
 from grip.resource import BaseResource, default_error_handler
 from keyloop.api.v1.exceptions import PermissionAlreadyExists
+from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.path import BasePathSchema
 from keyloop.schemas.permission import PermissionSchema
 
@@ -26,6 +27,7 @@ class CollectionPostSchema(marshmallow.Schema):
 
 collection_post_response_schemas = {
     200: PermissionSchema(),
+    400: ErrorSchema()
 }
 
 

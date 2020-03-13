@@ -5,7 +5,6 @@ import marshmallow
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.interfaces.permission import IPermission, IPermissionSource
-from keyloop.interfaces.permission_grant import IPermissionGrant, IPermissionGrantSource
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +22,8 @@ class BasePathSchema(marshmallow.Schema):
         identity_provider = registry.lookup([IIdentity], IIdentitySource, value)
         auth_session = registry.lookup([IAuthSession], IAuthSessionSource, value)
         permission_provider = registry.lookup([IPermission], IPermissionSource, value)
-        perm_grant_provider = registry.lookup([IPermissionGrant], IPermissionGrantSource, value)
 
-        if not (identity_provider or auth_session or permission_provider or perm_grant_provider):
+        if not (identity_provider or auth_session or permission_provider):
             request.errors.add(
                 location='path',
                 name='realm_slug',
@@ -38,8 +36,3 @@ class BasePathSchema(marshmallow.Schema):
         request.identity_provider = identity_provider
         request.auth_session = auth_session
         request.permission_provider = permission_provider
-        request.perm_grant_provider = perm_grant_provider
-
-
-class PermissionGrantPathSchema(BasePathSchema):
-    perm_grant_id = marshmallow.fields.UUID()

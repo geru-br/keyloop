@@ -64,7 +64,6 @@ class PermissionGrantResource(BaseResource):
                 name='perm_name',
                 description='Permission not found'
             )
-            self.request.errors.status = 400
             return
 
         try:
@@ -75,7 +74,6 @@ class PermissionGrantResource(BaseResource):
                 name='perm_name',
                 description='Permission already granted to identity'
             )
-            self.request.errors.status = 400
             return
 
         return permission

@@ -11,42 +11,6 @@ from keyloop.interfaces.permission import IPermission, IPermissionSource
 from keyloop.utils import generate_uuid
 
 
-# @implementer(IPermissionGrantSource)
-# @singleton
-# class PermissionGrantSource:
-#
-#     def __init__(self, session, model):
-#         self.model = model
-#         self.session = session
-#
-#     def grant_permission(cls, permission_id, identity_id):
-#         perm_ident_assoc = (permission_id, identity_id)
-#         if perm_ident_assoc in cls.PERM_IDENT_ASSOCIATIONS:
-#             raise PermissionGrantAlreadyExists
-#
-#         permission_grant = cls(*perm_ident_assoc)
-#         cls.PERMISSION_GRANTS.update({permission_grant.uuid: permission_grant.__dict__})
-#         cls.PERM_IDENT_ASSOCIATIONS.add(perm_ident_assoc)
-#         return permission_grant
-
-
-# @implementer(IPermissionGrant)
-# class PermissionGrant:
-#     __tablename__ = 'permission_grant'
-#
-#     @declared_attr
-#     def id(self):
-#         return sa.Column(sa.Integer, autoincrement=True, primary_key=True)
-#
-#     @declared_attr
-#     def identity_id(self):
-#         return sa.Column('identity_id', sa.Integer, sa.ForeignKey('identity.id'))
-#
-#     @declared_attr
-#     def permission_id(self):
-#         return sa.Column('permission_id', sa.Integer, sa.ForeignKey('permission.id'))
-
-
 @implementer(IPermission)
 class Permission:
     __tablename__ = 'permission'

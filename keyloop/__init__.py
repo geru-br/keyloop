@@ -5,7 +5,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.settings import aslist
 from zope.interface.adapter import AdapterRegistry
 
-from keyloop.interfaces import auth_session, identity, permission, permission_grant
+from keyloop.interfaces import auth_session, identity, permission
 
 logger = logging.getLogger(__name__)
 
