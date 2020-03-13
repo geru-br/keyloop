@@ -5,10 +5,11 @@ from keyloop.utils import generate_uuid
 class FakePermission:
     PERMISSIONS = {}
 
-    def __init__(self, name, description, uuid=None):
+    def __init__(self, name, description, uuid=None, document_meta=None):
         self.uuid = uuid if uuid else generate_uuid()
         self.name = name
         self.description = description
+        self.document_meta = document_meta
 
     @classmethod
     def test_reset(cls):
@@ -46,13 +47,11 @@ class FakePermission:
     @classmethod
     def list(cls, page, limit):
         params = []
-        total = len(cls.PERMISSIONS) if limit > len(cls.PERMISSIONS) else limit
+        limit = len(cls.PERMISSIONS) if limit > len(cls.PERMISSIONS) else limit
         current_page = 0 if page in (0, 1) else page
 
         if not cls.PERMISSIONS:
             return params
 
         params.append(list(cls.PERMISSIONS.items())[0][1])
-
-        return params[current_page:total]
-
+        return {'items': params[current_page:limit], 'document_meta': {'page': page, 'total': len(cls.PERMISSIONS)}}

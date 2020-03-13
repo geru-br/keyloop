@@ -28,7 +28,7 @@ def test_create_permission(pyramid_app, permission_payload):
                 "name": "permission_a",
                 "description": "Permission for resource A"
             }
-        }
+        },
     }
 
 
@@ -96,41 +96,49 @@ def test_create_permission_with_invalid_realm(pyramid_app, permission_payload):
     }
 
 
+def test_get_permissions_empty_list(pyramid_app, permission_payload, fake_permission_class):
+    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page[number]': 2, 'page[size]': 30})
+
+    assert res.content_type == "application/vnd.api+json"
+    assert res.json == {'data': None}
+
+
 def test_get_permissions(pyramid_app, permission_payload, fake_permission_class):
     pyramid_app.post_json("/api/v1/realms/REALM/permissions", permission_payload,
                           content_type="application/vnd.api+json",
                           status=200)
 
-    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page': 1, 'limit': 30})
+    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page[number]': 1, 'page[size]': 30})
 
+    permission_id = str(next(iter(fake_permission_class.PERMISSIONS.keys())))
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
-        "data": [
-            {
-                "type": "permission",
-                "attributes": {
-                    "name": "permission_a",
-                    "description": "Permission for resource A"
-                },
-                "id": res.json['data'][0]['id']
+        "data": {
+            "type": "permission",
+            "attributes": {
+                "items": [
+                    {
+                        "data": {
+                            "type": "permission",
+                            "attributes": {
+                                "name": "permission_a",
+                                "description": "Permission for resource A"
+                            },
+                            "id": permission_id
+                        }
+                    }
+                ]
             }
-        ]
+        },
+        "meta": {
+            "page": 1,
+            "total": 1
+        }
     }
 
 
-def test_get_permissions_empty_list(pyramid_app, permission_payload, fake_permission_class):
-    pyramid_app.post_json("/api/v1/realms/REALM/permissions", permission_payload,
-                          content_type="application/vnd.api+json",
-                          status=200)
-
-    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page': 2, 'limit': 30})
-
-    assert res.content_type == "application/vnd.api+json"
-    assert res.json == {"data": []}
-
-
 def test_get_permissions_negative_page(pyramid_app, permission_payload):
-    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page': -1, 'limit': 30}, status=400)
+    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page[number]': -1, 'page[size]': 30}, status=400)
 
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
@@ -138,7 +146,7 @@ def test_get_permissions_negative_page(pyramid_app, permission_payload):
         "errors": [
             {
                 "location": "querystring",
-                "name": "page",
+                "name": "page[number]",
                 "description": [
                     "Invalid value."
                 ]
@@ -148,7 +156,7 @@ def test_get_permissions_negative_page(pyramid_app, permission_payload):
 
 
 def test_get_permissions_negative_limit(pyramid_app, permission_payload):
-    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page': 1, 'limit': -30}, status=400)
+    res = pyramid_app.get("/api/v1/realms/REALM/permissions", params={'page[number]': 1, 'page[size]': -30}, status=400)
 
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
@@ -156,7 +164,7 @@ def test_get_permissions_negative_limit(pyramid_app, permission_payload):
         "errors": [
             {
                 "location": "querystring",
-                "name": "limit",
+                "name": "page[size]",
                 "description": [
                     "Invalid value."
                 ]

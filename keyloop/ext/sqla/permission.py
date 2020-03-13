@@ -2,6 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy_pagination import paginate
 from sqlalchemy_utils import UUIDType
 from zope.interface import implementer
 
@@ -63,3 +64,17 @@ class PermissionSource:
             raise PermissionAlreadyExists()
 
         return permission
+
+    @singletonmethod
+    def list(self, page, limit):
+        permissions = paginate(self.session.query(self.model), page, limit)
+        params = {
+            'items': permissions.items,
+            'document_meta': {
+                'prev': permissions.previous_page,
+                'next': permissions.next_page,
+                'page': permissions.pages,
+                'total': permissions.total
+            }
+        }
+        return params
