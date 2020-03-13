@@ -1,15 +1,15 @@
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, PermissionAlreadyGranted
 from keyloop.utils import generate_uuid
 
 
 class FakeUser:
     IDENTITIES = {}
+    PERMISSION_GRANTS = set()  # Set of tuples (permission_uuid, identity_id)
 
     test_delete_result = True
     test_delete_called = False
 
-    def __init__(self, username, password, active=True, name=None, contacts=None, id=None, permissions=None):
-        # self.id = '1bed6e99-74d8-484a-a650-fab8f4f80506'
+    def __init__(self, username, password, active=True, name=None, id=None, permissions=[]):
         self.id = id if id else generate_uuid()
         self.username = username
         self.password = password
@@ -20,6 +20,7 @@ class FakeUser:
     @classmethod
     def test_reset(cls):
         cls.IDENTITIES = {}
+        cls.PERMISSION_GRANTS = set()
 
     @classmethod
     def _get_by_username(cls, username):
@@ -44,10 +45,6 @@ class FakeUser:
         identity = cls(username, password, True, name, contacts)
         cls.IDENTITIES.update({str(identity.id): identity.__dict__})
         return identity
-
-    def login(self, username, password):
-        self.__class__.test_login_called = True
-        return self.__class__.test_login_result
 
     @classmethod
     def delete(cls, identity_id):
@@ -77,4 +74,8 @@ class FakeUser:
 
     @classmethod
     def grant_permission(cls, permission, identity):
-        pass
+        perm_grant = (str(permission.uuid), str(identity.id))
+        if perm_grant in cls.PERMISSION_GRANTS:
+            raise PermissionAlreadyGranted()
+
+        cls.PERMISSION_GRANTS.add(perm_grant)

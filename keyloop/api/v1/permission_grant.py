@@ -60,7 +60,7 @@ class PermissionGrantResource(BaseResource):
             permission = self.request.permission_provider.get_by(name=validated["body"]["perm_name"])
         except PermissionNotFound:
             self.request.errors.add(
-                location='path',
+                location='body',
                 name='perm_name',
                 description='Permission not found'
             )
@@ -71,10 +71,11 @@ class PermissionGrantResource(BaseResource):
             self.request.identity_provider.grant_permission(permission, identity)
         except PermissionAlreadyGranted:
             self.request.errors.add(
-                location='path',
+                location='body',
                 name='perm_name',
-                description='Permission already granted to identity.'
+                description='Permission already granted to identity'
             )
             self.request.errors.status = 400
+            return
 
         return permission

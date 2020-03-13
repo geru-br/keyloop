@@ -51,10 +51,3 @@ def fake_permission_class():
     from tests.fake_permission import FakePermission
     FakePermission.test_reset()
     yield FakePermission
-
-
-@pytest.fixture
-def fake_perm_grant_class():
-    from tests.fake_permission import FakePermissionGrant
-    FakePermissionGrant.test_reset()
-    yield FakePermissionGrant
