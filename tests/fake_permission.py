@@ -25,9 +25,9 @@ class FakePermission:
 
     @classmethod
     def get_by(cls, **kwargs):
-        if 'name' in kwargs.keys():
+        if 'name' in kwargs:
             return cls._get_by_name(kwargs['name'])
-        elif 'uuid' in kwargs.keys():
+        elif 'uuid' in kwargs:
             params = cls.PERMISSIONS.get(kwargs['uuid'])
             if not params:
                 raise PermissionNotFound()

@@ -58,22 +58,19 @@ class IdentitySource:
 
     @singletonmethod
     def get_by(self, **kwargs):
-        if 'username' in kwargs.keys():
-            try:
-                return (self.session
-                        .query(self.model)
-                        .filter(self.model.username == kwargs['username'], self.model.active == True)
-                        .one())
-            except NoResultFound:
-                raise IdentityNotFound
-        elif 'uuid' in kwargs.keys():
-            try:
-                return (self.session
-                        .query(self.model)
-                        .filter(self.model.id == kwargs['uuid'], self.model.active == True)
-                        .one())
-            except NoResultFound:
-                raise IdentityNotFound
+        active_users = self.session.query(self.model).filter(self.model.active == True)
+
+        if 'username' in kwargs:
+            query = active_users.filter_by(username=kwargs['username'])
+        elif 'uuid' in kwargs:
+            query = active_users.filter_by(id=kwargs['uuid'])
+        else:
+            return
+
+        try:
+            return query.one()
+        except NoResultFound:
+            raise IdentityNotFound()
 
     @singletonmethod
     def create(self, username, password, name=None):

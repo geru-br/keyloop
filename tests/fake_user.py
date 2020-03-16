@@ -32,9 +32,9 @@ class FakeUser:
 
     @classmethod
     def get_by(cls, **kwargs):
-        if 'username' in kwargs.keys():
+        if 'username' in kwargs:
             return cls._get_by_username(kwargs['username'])
-        elif 'uuid' in kwargs.keys():
+        elif 'uuid' in kwargs:
             params = cls.IDENTITIES.get(str(kwargs['uuid']))
             if not params:
                 raise IdentityNotFound()

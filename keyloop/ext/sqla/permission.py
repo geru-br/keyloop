@@ -42,16 +42,17 @@ class PermissionSource:
 
     @singletonmethod
     def get_by(self, **kwargs):
-        if 'name' in kwargs.keys():
-            try:
-                return self.session.query(self.model).filter_by(name=kwargs['name']).one()
-            except NoResultFound:
-                raise PermissionNotFound()
-        elif 'uuid' in kwargs.keys():
-            try:
-                return self.session.query(self.model).filter_by(uuid=kwargs['uuid']).one()
-            except NoResultFound:
-                raise PermissionNotFound()
+        if 'name' in kwargs:
+            query = self.session.query(self.model).filter_by(name=kwargs['name'])
+        elif 'uuid' in kwargs:
+            query = self.session.query(self.model).filter_by(uuid=kwargs['uuid'])
+        else:
+            return
+
+        try:
+            return query.one()
+        except NoResultFound:
+            raise PermissionNotFound()
 
     @singletonmethod
     def create(self, name, description):

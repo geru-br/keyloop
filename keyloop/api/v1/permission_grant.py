@@ -26,7 +26,7 @@ class CollectionPostSchema(marshmallow.Schema):
 
 
 collection_post_response_schemas = {
-    200: PermissionSchema,
+    200: PermissionSchema(),
     404: ErrorSchema(),
     400: ErrorSchema()
 }
