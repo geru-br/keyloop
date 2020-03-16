@@ -89,7 +89,7 @@ class IdentityResource(BaseResource):
     def get(self):
         """ Return identity info + permissions """
         try:
-            return self.request.identity_provider.get(self.request.validated['path']['id'])
+            return self.request.identity_provider.get_by(uuid=self.request.validated['path']['id'])
 
         except IdentityNotFound:
             self.request.errors.add(

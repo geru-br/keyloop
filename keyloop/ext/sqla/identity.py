@@ -1,22 +1,18 @@
-import cryptacular.bcrypt
+import cryptacular
 import sqlalchemy as sa
-import transaction
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_utils.types.uuid import UUIDType
 from zope.interface import implementer
 
-import uuid
-
-from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists
+from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed, IdentityAlreadyExists, PermissionAlreadyGranted
 from keyloop.ext.sqla.auth_session import password_check
-from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.ext.utils.decorators import singleton, singletonmethod
+from keyloop.interfaces.identity import IIdentity, IIdentitySource
+from keyloop.utils import generate_uuid
 
 bcrypt = cryptacular.bcrypt.BCRYPTPasswordManager()
-
 
 
 @implementer(IIdentity)
@@ -25,7 +21,7 @@ class Identity:
 
     @declared_attr
     def id(self):
-        return sa.Column(UUIDType, primary_key=True, default=uuid.uuid4)
+        return sa.Column(UUIDType, primary_key=True, default=generate_uuid)
 
     @declared_attr
     def username(self):
@@ -43,6 +39,10 @@ class Identity:
     def active(self):
         return sa.Column(sa.Boolean, default=True)
 
+    @declared_attr
+    def permissions(self):
+        raise NotImplemented()
+
 
 @implementer(IIdentitySource)
 @singleton
@@ -57,14 +57,20 @@ class IdentitySource:
         return bcrypt.encode(value)
 
     @singletonmethod
-    def get(self, identity_id):
+    def get_by(self, **kwargs):
+        active_users = self.session.query(self.model).filter(self.model.active == True)
+
+        if 'username' in kwargs:
+            query = active_users.filter_by(username=kwargs['username'])
+        elif 'uuid' in kwargs:
+            query = active_users.filter_by(id=kwargs['uuid'])
+        else:
+            return
+
         try:
-            return self.session \
-                .query(self.model) \
-                .filter(self.model.id == identity_id, self.model.active == True) \
-                .one()
+            return query.one()
         except NoResultFound:
-            raise IdentityNotFound
+            raise IdentityNotFound()
 
     @singletonmethod
     def create(self, username, password, name=None):
@@ -110,3 +116,9 @@ class IdentitySource:
             raise AuthenticationFailed
 
         identity.password = self._set_password(password)
+
+    @singletonmethod
+    def grant_permission(self, permission, identity):
+        if permission in identity.permissions:
+            raise PermissionAlreadyGranted()
+        identity.permissions.append(permission)

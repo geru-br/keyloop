@@ -1,11 +1,7 @@
 .PHONY: install reset-db run-playground test-playground
 
 install:
-	pip install -e .
 	pip install -e .[dev]
-	pip install -e .[test]
-	pip install -e .[ci]
-	pip install -e .[sqla]
 
 run-playground:
 	python playground/main.py

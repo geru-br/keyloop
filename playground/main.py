@@ -2,7 +2,8 @@ from wsgiref.simple_server import make_server
 
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
-from playground.models import Base, DBSession, RealIdentity
+
+from playground.models import Base, DBSession, RealIdentity, RealPermission
 
 
 def main():
@@ -10,6 +11,7 @@ def main():
         "sqlalchemy.url": "sqlite:///keyloop.dev",
         "keyloop.identity_sources": "PLAYGROUND:keyloop.ext.sqla.identity.IdentitySource",
         "keyloop.auth_session_sources": "PLAYGROUND:keyloop.ext.sqla.auth_session.AuthSessionSource",
+        "keyloop.permission_sources": "PLAYGROUND:keyloop.ext.sqla.permission.PermissionSource",
         "keyloop.authpolicysecret": "sekret",
     }
 
@@ -25,10 +27,12 @@ def main():
 
         config.key_loop_setup(DBSession, {
             'IdentitySource': RealIdentity,
-            'AuthSessionSource': RealIdentity
+            'AuthSessionSource': RealIdentity,
+            'PermissionSource': RealPermission
         })
 
         app = config.make_wsgi_app()
+
     return app
 
 
