@@ -20,6 +20,7 @@ requires = [
     "cornice-apispec==0.9.3",
     "click",
     "cryptacular==1.5.5",
+    "sqlalchemy-pagination==0.0.2",
 ]
 
 test_requires = [
