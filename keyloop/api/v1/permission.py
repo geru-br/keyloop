@@ -11,6 +11,7 @@ from keyloop.api.v1.exceptions import PermissionAlreadyExists
 from keyloop.schemas.error import ErrorSchema
 from keyloop.schemas.path import BasePathSchema
 from keyloop.schemas.permission import PermissionSchema, PermissionQueryStringSchema, PermissionsListSchema
+from keyloop.utils.pagination import Pagination
 
 logger = logging.getLogger(__name__)
 
@@ -74,4 +75,10 @@ class PermissionResource(BaseResource):
         limit = params['limit'] if 'limit' in params else MAX_ROWS_PER_PAGE
 
         # TODO: Adjust the grip for mount the pages link. The marshmallow json-api doesn't do it yet
-        return self.request.permission_provider.list(page, limit)
+        list_permissions = self.request.permission_provider.list(page, limit)
+        pagination_links = Pagination().pagination_links(list_permissions, self.request)
+
+        return {'items': list_permissions.items,
+                'document_meta': {'count': list_permissions.total, 'total_pages': list_permissions.pages,
+                                  'links': pagination_links}}
+
