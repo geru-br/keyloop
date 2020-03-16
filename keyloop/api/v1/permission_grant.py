@@ -22,7 +22,7 @@ class PermissionGrantContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(PermissionGrantSchema())
+    body = marshmallow.fields.Nested(PermissionGrantSchema)
 
 
 collection_post_response_schemas = {
