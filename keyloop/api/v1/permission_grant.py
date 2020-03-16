@@ -22,7 +22,7 @@ class PermissionGrantContext(SimpleBaseFactory):
 
 class CollectionPostSchema(marshmallow.Schema):
     path = marshmallow.fields.Nested(BasePathSchema)
-    body = marshmallow.fields.Nested(PermissionGrantSchema)
+    body = marshmallow.fields.Nested(PermissionGrantSchema())
 
 
 collection_post_response_schemas = {
@@ -46,7 +46,7 @@ class PermissionGrantResource(BaseResource):
     def collection_post(self):
         validated = self.request.validated
         try:
-            identity = self.request.identity_provider.get_by(uuid=validated["path"]["id"])
+            identity = self.request.identity_provider.get(uuid=validated["path"]["id"])
         except IdentityNotFound:
             self.request.errors.add(
                 location='path',
@@ -54,10 +54,11 @@ class PermissionGrantResource(BaseResource):
                 description='Identity not found'
             )
             self.request.errors.status = 404
+
             return
 
         try:
-            permission = self.request.permission_provider.get_by(name=validated["body"]["perm_name"])
+            permission = self.request.permission_provider.get(name=validated["body"]["perm_name"])
         except PermissionNotFound:
             self.request.errors.add(
                 location='body',
@@ -69,11 +70,10 @@ class PermissionGrantResource(BaseResource):
         try:
             self.request.identity_provider.grant_permission(permission, identity)
         except PermissionAlreadyGranted:
-            self.request.errors.add(
-                location='body',
-                name='perm_name',
-                description='Permission already granted to identity'
-            )
-            return
+            # XXX Guilherme: in this scenario we return the same response as
+            # the first time a permission is granted. This solution provides
+            # better caching management on the client's side when it is
+            # attempting to grant the same permission twice for some identity.
+            logger.info("Identity already have this permission")
 
         return permission

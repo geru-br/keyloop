@@ -41,11 +41,11 @@ class PermissionSource:
         self.session = session
 
     @singletonmethod
-    def get_by(self, **kwargs):
-        if 'name' in kwargs:
-            query = self.session.query(self.model).filter_by(name=kwargs['name'])
-        elif 'uuid' in kwargs:
-            query = self.session.query(self.model).filter_by(uuid=kwargs['uuid'])
+    def get(self, uuid=None, name=None):
+        if name:
+            query = self.session.query(self.model).filter_by(name=name)
+        elif uuid:
+            query = self.session.query(self.model).filter_by(uuid=uuid)
         else:
             return
 

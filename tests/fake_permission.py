@@ -24,11 +24,11 @@ class FakePermission:
         raise PermissionNotFound()
 
     @classmethod
-    def get_by(cls, **kwargs):
-        if 'name' in kwargs:
-            return cls._get_by_name(kwargs['name'])
-        elif 'uuid' in kwargs:
-            params = cls.PERMISSIONS.get(kwargs['uuid'])
+    def get(cls, uuid=None, name=None):
+        if name:
+            return cls._get_by_name(name)
+        elif uuid:
+            params = cls.PERMISSIONS.get(uuid)
             if not params:
                 raise PermissionNotFound()
             return cls(**params)
@@ -36,7 +36,7 @@ class FakePermission:
     @classmethod
     def create(cls, name, description):
         try:
-            cls.get_by(name=name)
+            cls.get(name=name)
         except PermissionNotFound:
             permission = cls(name, description)
             cls.PERMISSIONS.update({permission.uuid: permission.__dict__})

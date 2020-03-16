@@ -1,6 +1,6 @@
-import marshmallow_jsonapi
 import marshmallow
-from marshmallow import fields
+import marshmallow_jsonapi
+from marshmallow import fields, validate
 
 
 class BaseSchema(marshmallow_jsonapi.Schema):
@@ -11,9 +11,10 @@ class BaseSchema(marshmallow_jsonapi.Schema):
 
 
 class PermissionSchema(BaseSchema):
+    # TODO: Add information about context.
     name = fields.String(required=True)
     description = fields.String(required=True,
-                                validate=lambda x: True if x != "" else False)  # Empty string not accepted
+                                validate=validate.Length(min=1))  # Empty string not accepted
 
 
 class PermissionQueryStringSchema(marshmallow.Schema):

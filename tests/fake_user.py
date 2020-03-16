@@ -31,11 +31,11 @@ class FakeUser:
         raise IdentityNotFound()
 
     @classmethod
-    def get_by(cls, **kwargs):
-        if 'username' in kwargs:
-            return cls._get_by_username(kwargs['username'])
-        elif 'uuid' in kwargs:
-            params = cls.IDENTITIES.get(str(kwargs['uuid']))
+    def get(cls, uuid=None, username=None):
+        if username:
+            return cls._get_by_username(username)
+        elif uuid:
+            params = cls.IDENTITIES.get(str(uuid))
             if not params:
                 raise IdentityNotFound()
             return cls(**params)
