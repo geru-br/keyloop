@@ -69,7 +69,7 @@ def test_create_permission_with_invalid_data(pyramid_app, permission_payload):
                 "name": "errors",
                 "description": [
                     {
-                        "detail": "Invalid value.",
+                        "detail": "Shorter than minimum length 1.",
                         "source": {"pointer": "/data/attributes/description"}
                     }
                 ]

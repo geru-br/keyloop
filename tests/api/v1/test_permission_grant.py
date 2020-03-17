@@ -88,15 +88,15 @@ class TestGrantPermission:
         res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
                                     perm_grant_payload,
                                     content_type="application/vnd.api+json",
-                                    status=400)
-        assert res.content_type == "application/vnd.api+json"
+                                    status=200)
+
         assert res.json == {
-            "status": "error",
-            "errors": [
-                {
-                    "location": "body",
-                    "name": "perm_name",
-                    "description": "Permission already granted to identity"
-                }
-            ]
+            "data": {
+                "type": "permission",
+                "attributes": {
+                    "description": "Permission for service A.",
+                    "name": "perm_a"
+                },
+                "id": str(permission.uuid)
+            }
         }

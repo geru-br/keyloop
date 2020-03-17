@@ -1,30 +1,38 @@
-class IdentityNotFound(Exception):
+class KeyloopError(Exception):
+    """Base Exception."""
+    pass
+
+
+class IdentityNotFound(KeyloopError):
     """Raise an error if identity has not been found"""
     pass
 
 
-class IdentityAlreadyExists(Exception):
+class IdentityAlreadyExists(KeyloopError):
     """Raise an error if identity already exists"""
     pass
 
 
-class AuthenticationFailed(Exception):
+class AuthenticationFailed(KeyloopError):
     """Raise an error if an user pass a wrong password"""
     pass
 
 
-class PermissionNotFound(Exception):
+class PermissionError(KeyloopError):
+    """Base Exception for permission errors."""
+    pass
+
+
+class PermissionNotFound(PermissionError):
     """Permission not found."""
     pass
 
 
-class PermissionAlreadyExists(Exception):
+class PermissionAlreadyExists(PermissionError):
     """Permission already exists with specific name."""
     pass
 
 
-class PermissionAlreadyGranted(Exception):
+class PermissionAlreadyGranted(PermissionError):
     """Permission-Identity association already exists."""
     pass
-
-

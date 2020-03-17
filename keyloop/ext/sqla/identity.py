@@ -41,7 +41,23 @@ class Identity:
 
     @declared_attr
     def permissions(self):
-        raise NotImplemented()
+        raise NotImplementedError()
+
+
+class PermissionGrant:
+    """Holds many-to-many relationship between identity and permission."""
+
+    __tablename__ = "permission_grant"
+
+    @declared_attr
+    def identity_id(self):
+        # return sa.Column(UUIDType, sa.ForeignKey('identity.id'))
+        raise NotImplementedError()
+
+    @declared_attr
+    def permission_id(self):
+        # return sa.Column(sa.Integer, sa.ForeignKey('permission.id'))
+        raise NotImplementedError()
 
 
 @implementer(IIdentitySource)
@@ -57,13 +73,13 @@ class IdentitySource:
         return bcrypt.encode(value)
 
     @singletonmethod
-    def get_by(self, **kwargs):
+    def get(self, uuid=None, username=None):
         active_users = self.session.query(self.model).filter(self.model.active == True)
 
-        if 'username' in kwargs:
-            query = active_users.filter_by(username=kwargs['username'])
-        elif 'uuid' in kwargs:
-            query = active_users.filter_by(id=kwargs['uuid'])
+        if username:
+            query = active_users.filter_by(username=username)
+        elif uuid:
+            query = active_users.filter_by(id=uuid)
         else:
             return
 
@@ -86,19 +102,11 @@ class IdentitySource:
         return identity
 
     @singletonmethod
-    def delete(self, identity_id):
-        identity = self.get(identity_id)
-
+    def delete(self, identity):
         identity.active = False
 
     @singletonmethod
-    def update(self, identity_id, params):
-        try:
-            identity = self.session.query(self.model).filter(self.model.id == identity_id).one()
-
-        except NoResultFound:
-            raise IdentityNotFound
-
+    def update(self, identity, params):
         for key, value in params.items():
             if key == 'username':
                 continue
@@ -109,9 +117,7 @@ class IdentitySource:
             setattr(identity, key, value)
 
     @singletonmethod
-    def change_password(self, identity_id, last_password, password):
-        identity = self.get(identity_id)
-
+    def change_password(self, identity, last_password, password):
         if not password_check(identity.password, last_password):
             raise AuthenticationFailed
 

@@ -23,7 +23,6 @@ class AuthSessionSource:
         self.model = model
         self.session = session
 
-
     @singletonmethod
     def _get_identity_by(self, username):
         try:

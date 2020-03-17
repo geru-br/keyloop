@@ -110,7 +110,7 @@ def test_delete_identity_not_found(pyramid_app, identity_payload, fake_user_clas
         "errors": [
             {
                 "location": "path",
-                "name": "identity_delete",
+                "name": "identity_id",
                 "description": "Identity not found"
             }
         ]
@@ -173,7 +173,7 @@ def test_update_error_identity(pyramid_app, identity_payload, fake_user_class):
         "errors": [
             {
                 "location": "path",
-                "name": "identity_update",
+                "name": "identity_id",
                 "description": "Identity not found"
             }
         ]
@@ -225,14 +225,14 @@ def test_update_identity_password_user_not_found(pyramid_app, identity_payload, 
         "errors": [
             {
                 "location": "path",
-                "name": "identity_password_update",
+                "name": "identity_id",
                 "description": "Identity not found"
             }
         ]
     }
 
 
-def test_update_identity_password_authentucation_failed(pyramid_app, identity_payload, fake_user_class):
+def test_update_identity_password_authentication_failed(pyramid_app, identity_payload, fake_user_class):
     pyramid_app.post_json("/api/v1/realms/REALM/identities", identity_payload,
                           content_type="application/vnd.api+json", status=200, )
 
@@ -256,8 +256,8 @@ def test_update_identity_password_authentucation_failed(pyramid_app, identity_pa
         "errors": [
             {
                 "location": "body",
-                "name": "identity_password_update",
-                "description": "Last password not match"
+                "name": "last_password",
+                "description": "Last password did not match"
             }
         ]
     }

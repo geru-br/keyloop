@@ -30,7 +30,7 @@ class FakeAuthSession:
     @classmethod
     def login(cls, username, password):
         from tests.fake_user import FakeUser
-        cls.identity = FakeUser.get_by(username=username)
+        cls.identity = FakeUser.get(username=username)
 
         if not cls.identity:
             raise IdentityNotFound

@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 MAX_ROWS_PER_PAGE = 30
 
+
 class PermissionContext(SimpleBaseFactory):
     def __acl__(self):
         return [(Allow, Everyone, "edit")]
@@ -58,11 +59,13 @@ class PermissionResource(BaseResource):
             permission = self.request.permission_provider.create(params["name"], params["description"])
             return permission
         except PermissionAlreadyExists:
+            msg = f"Existent permission with name: {params['name']}"
             self.request.errors.add(
                 location="body",
                 name="name",
-                description=f"Existent permission with name: {params['name']}"
+                description=msg
             )
+            logger.info(msg)
 
     @grip_view(schema=CollectionGetSchema, response_schema=collection_get_response_schemas)
     def collection_get(self):
@@ -72,4 +75,3 @@ class PermissionResource(BaseResource):
 
         # TODO: Adjust the grip for mount the pages link. The marshmallow json-api doesn't do it yet
         return self.request.permission_provider.list(page, limit)
-
