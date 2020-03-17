@@ -21,16 +21,16 @@ class IIdentitySource(Interface):
     def get(identity_id: str, username: str) -> IIdentity:
         pass
 
-    def change_password(identity_id: str, last_password: str, password: str):
+    def change_password(identity: IIdentity, last_password: str, password: str):
         pass
 
     def create(username: str, password: str, name: T.Optional[str]):
         pass
 
-    def delete(identity_id: str):
+    def delete(identity: IIdentity):
         pass
 
-    def update(identity_id: str, params: dict):
+    def update(identity: IIdentity, params: dict):
         pass
 
     def grant_permission(permission: IPermission, identity: IIdentity):
