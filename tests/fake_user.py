@@ -47,30 +47,29 @@ class FakeUser:
         return identity
 
     @classmethod
-    def delete(cls, identity_id):
-        if not cls.IDENTITIES.get(str(identity_id)):
+    def delete(cls, identity):
+        if not cls.IDENTITIES.get(str(identity.id)):
             raise IdentityNotFound()
 
-        cls.IDENTITIES[str(identity_id)]['active'] = False
+        cls.IDENTITIES[str(identity.id)]['active'] = False
 
     @classmethod
-    def update(cls, identity_id, params):
-        identity = cls.IDENTITIES.get(str(identity_id))
-        if not identity:
-            raise IdentityNotFound()
+    def update(cls, identity, params):
+        for key, value in params.items():
+            if key in ['username', 'password']:  # Does not update
+                continue
 
-        identity['name'] = params['name']
+            setattr(identity, key, value)
+
+        cls.IDENTITIES.update({str(identity.id): identity.__dict__})
 
     @classmethod
-    def change_password(cls, identity_id, last_password, password):
-        identity = cls.IDENTITIES.get(str(identity_id))
-        if not identity:
-            raise IdentityNotFound()
-
-        if identity['password'] != last_password:
+    def change_password(cls, identity, last_password, password):
+        if identity.password != last_password:
             raise AuthenticationFailed()
 
-        identity['password'] = password
+        identity.password = password
+        cls.IDENTITIES.update({str(identity.id): identity.__dict__})
 
     @classmethod
     def grant_permission(cls, permission, identity):
