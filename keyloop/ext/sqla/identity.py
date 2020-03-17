@@ -102,19 +102,11 @@ class IdentitySource:
         return identity
 
     @singletonmethod
-    def delete(self, identity_id):
-        identity = self.get(identity_id)
-
+    def delete(self, identity):
         identity.active = False
 
     @singletonmethod
-    def update(self, identity_id, params):
-        try:
-            identity = self.session.query(self.model).filter(self.model.id == identity_id).one()
-
-        except NoResultFound:
-            raise IdentityNotFound
-
+    def update(self, identity, params):
         for key, value in params.items():
             if key == 'username':
                 continue
@@ -125,9 +117,7 @@ class IdentitySource:
             setattr(identity, key, value)
 
     @singletonmethod
-    def change_password(self, identity_id, last_password, password):
-        identity = self.get(identity_id)
-
+    def change_password(self, identity, last_password, password):
         if not password_check(identity.password, last_password):
             raise AuthenticationFailed
 
