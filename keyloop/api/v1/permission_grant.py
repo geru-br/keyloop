@@ -49,11 +49,13 @@ class PermissionGrantResource(BaseResource):
         try:
             permission = self.request.permission_provider.get(name=validated["body"]["perm_name"])
         except PermissionNotFound:
+            msg = 'Permission not found'
             self.request.errors.add(
                 location='body',
                 name='perm_name',
-                description='Permission not found'
+                description=msg
             )
+            logger.info(msg)
             return
 
         try:

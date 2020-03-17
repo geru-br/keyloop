@@ -75,12 +75,14 @@ class IdentityResource(BaseResource):
                 validated["username"], validated["password"], validated["name"],
             )
         except IdentityAlreadyExists:
+            msg = 'Username already exists'
             self.request.errors.add(
                 location='path',
                 name='identity_create',
-                description='Username already exists'
+                description=msg
             )
             self.request.errors.status = 409
+            logger.info(msg)
 
         else:
             return identity
@@ -124,9 +126,11 @@ class IdentityPasswordResource(BaseResource):
                                                            validated['password'])
             return HTTPNoContent()
         except AuthenticationFailed:
+            msg = 'Last password did not match'
             self.request.errors.add(
                 location='body',
                 name='last_password',
-                description='Last password not match'
+                description=msg
             )
             self.request.errors.status = 401
+            logger.info('Last password did not match')

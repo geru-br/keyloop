@@ -1,3 +1,5 @@
+import logging
+
 import marshmallow
 from cornice.resource import resource
 from pyramid.httpexceptions import HTTPNoContent
@@ -9,6 +11,8 @@ from grip.resource import BaseResource, default_error_handler
 from keyloop.api.v1.exceptions import IdentityNotFound, AuthenticationFailed
 from keyloop.schemas.auth_session import AuthSessionSchema
 from keyloop.schemas.path import BasePathSchema
+
+logger = logging.getLogger(__name__)
 
 
 class AuthSessionContext(SimpleBaseFactory):
@@ -51,20 +55,24 @@ class AuthSessionResource(BaseResource):
         try:
             new_session = self.request.auth_session.login(params['username'], params['password'])
         except IdentityNotFound:
+            msg = 'User not found'
             self.request.errors.add(
                 location='body',
-                name='login',
-                description='User not found'
+                name='username',
+                description=msg
             )
             self.request.errors.status = 404
+            logger.info(msg)
 
         except AuthenticationFailed:
+            msg = 'Username or password are incorrect'
             self.request.errors.add(
                 location='body',
                 name='login',
-                description='Username or password are incorrect'
+                description=msg
             )
             self.request.errors.status = 401
+            logger.info(msg)
 
         else:
             headers = remember(self.request, params['username'])
@@ -82,12 +90,14 @@ class AuthSessionResource(BaseResource):
             return self.request.auth_session.get_identity(self.request.authenticated_userid)
 
         except IdentityNotFound:
+            msg = 'Auth session not found'
             self.request.errors.add(
                 location='header',
                 name='retrieve_auth_session',
-                description='Auth session not found'
+                description=msg
             )
             self.request.errors.status = 404
+            logger.info(msg)
 
     @grip_view(
         schema=BaseValidatedSchema,

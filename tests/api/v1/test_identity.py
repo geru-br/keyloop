@@ -257,7 +257,7 @@ def test_update_identity_password_authentication_failed(pyramid_app, identity_pa
             {
                 "location": "body",
                 "name": "last_password",
-                "description": "Last password not match"
+                "description": "Last password did not match"
             }
         ]
     }
