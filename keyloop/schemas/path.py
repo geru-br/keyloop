@@ -2,6 +2,7 @@ import logging
 
 import marshmallow
 
+from keyloop.api.v1.exceptions import IdentityNotFound
 from keyloop.interfaces.auth_session import IAuthSession, IAuthSessionSource
 from keyloop.interfaces.identity import IIdentity, IIdentitySource
 from keyloop.interfaces.permission import IPermission, IPermissionSource
@@ -10,8 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class BasePathSchema(marshmallow.Schema):
-    id = marshmallow.fields.UUID()
-
     realm_slug = marshmallow.fields.String()
 
     @marshmallow.validates("realm_slug")
@@ -36,3 +35,23 @@ class BasePathSchema(marshmallow.Schema):
         request.identity_provider = identity_provider
         request.auth_session = auth_session
         request.permission_provider = permission_provider
+
+
+class IdentityPathSchema(BasePathSchema):
+    identity_id = marshmallow.fields.UUID()
+
+    @marshmallow.post_load
+    def validate_identity_id(self, params):
+        request = self.context['request']
+        try:
+            identity = request.identity_provider.get(uuid=params['identity_id'])
+        except IdentityNotFound:
+            request.errors.add(
+                location='path',
+                name='identity_id',
+                description='Identity not found'
+            )
+            request.errors.status = 404
+            return
+
+        request.identity = identity
