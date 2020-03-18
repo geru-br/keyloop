@@ -101,22 +101,17 @@ def test_get_permissions_empty_list(pyramid_app, permission_payload, fake_permis
 
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
-        "data": {
-            "type": "permission",
-            "attributes": {
-                "items": []
-            }
+        "data": [],
+        "links": {
+            "self": "http://localhost/api/v1/realms/REALM/permissions?page%5Bnumber%5D=2&page%5Bsize%5D=30",
+            "first": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
+            "prev": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
+            "next": None,
+            "last": "http://localhost/api/v1/realms/REALM/permissions?page[number]=0&page[size]=30"
         },
         "meta": {
             "count": 0,
-            "total_pages": 0,
-            "links": {
-                "self": "http://localhost/api/v1/realms/REALM/permissions?page%5Bnumber%5D=2&page%5Bsize%5D=30",
-                "first": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
-                "prev": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
-                "next": None,
-                "last": "http://localhost/api/v1/realms/REALM/permissions?page[number]=0&page[size]=30"
-            }
+            "total_pages": 0
         }
     }
 
@@ -131,33 +126,26 @@ def test_get_permissions(pyramid_app, permission_payload, fake_permission_class)
     permission_id = str(next(iter(fake_permission_class.PERMISSIONS.keys())))
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
-        "data": {
-            "type": "permission",
-            "attributes": {
-                "items": [
-                    {
-                        "data": {
-                            "type": "permission",
-                            "attributes": {
-                                "description": "Permission for resource A",
-                                "name": "permission_a"
-                            },
-                            "id": permission_id
-                        }
-                    }
-                ]
+        "data": [
+            {
+                "type": "permission",
+                "attributes": {
+                    "name": "permission_a",
+                    "description": "Permission for resource A"
+                },
+                "id": permission_id
             }
+        ],
+        "links": {
+            "self": "http://localhost/api/v1/realms/REALM/permissions?page%5Bnumber%5D=1&page%5Bsize%5D=30",
+            "first": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
+            "prev": None,
+            "next": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
+            "last": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30"
         },
         "meta": {
             "count": 1,
-            "total_pages": 1,
-            "links": {
-                "self": "http://localhost/api/v1/realms/REALM/permissions?page%5Bnumber%5D=1&page%5Bsize%5D=30",
-                "first": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
-                "prev": None,
-                "next": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30",
-                "last": "http://localhost/api/v1/realms/REALM/permissions?page[number]=1&page[size]=30"
-            }
+            "total_pages": 1
         }
     }
 

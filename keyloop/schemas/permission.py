@@ -24,11 +24,6 @@ class PermissionQueryStringSchema(marshmallow.Schema):
                            load_from="page[size]")  # Only number great than zero
 
 
-class PermissionsListSchema(BaseSchema):
-    items = fields.List(fields.Nested(PermissionSchema))
-    document_meta = marshmallow_jsonapi.fields.DocumentMeta(required=False)
-
-
 class PermissionGrantSchema(marshmallow_jsonapi.Schema):
     class Meta:
         type_ = "permission-grant"

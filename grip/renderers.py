@@ -7,6 +7,8 @@ import marshmallow
 from pyramid.renderers import JSON
 from sqlalchemy.ext.associationproxy import _AssociationList
 
+from grip.pagination import Pagination
+
 
 class JsonApi(JSON):
     def _get_schema(self, system):
@@ -28,6 +30,9 @@ class JsonApi(JSON):
                 response = request.response
                 response.content_type = "application/vnd.api+json"
                 schema.context = {"request": request}
+
+            if schema.many:
+                return Pagination(value, request, schema).dumps()
 
             return schema.dumps(value).data
 
