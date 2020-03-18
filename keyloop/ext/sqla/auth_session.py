@@ -26,7 +26,8 @@ class AuthSessionSource:
     @singletonmethod
     def _get_identity_by(self, username):
         try:
-            return self.session.query(self.model).filter(self.model.username == username).one()
+            return self.session.query(self.model).filter(self.model.username == username,
+                                                         self.model.active == True).one()
 
         except NoResultFound:
             raise IdentityNotFound
