@@ -1,5 +1,23 @@
+import math
+
 from keyloop.api.v1.exceptions import PermissionAlreadyExists, PermissionNotFound
 from keyloop.utils import generate_uuid
+
+
+class Page(object):
+    def __init__(self, items, page, page_size, total):
+        self.items = items
+        self.previous_page = None
+        self.next_page = None
+        self.has_previous = page > 1
+        if self.has_previous:
+            self.previous_page = page - 1
+        previous_items = (page - 1) * page_size
+        self.has_next = previous_items + len(items) < total
+        if self.has_next:
+            self.next_page = page + 1
+        self.total = total
+        self.pages = int(math.ceil(total / float(page_size)))
 
 
 class FakePermission:
@@ -47,11 +65,11 @@ class FakePermission:
     @classmethod
     def list(cls, page, limit):
         params = []
-        limit = len(cls.PERMISSIONS) if limit > len(cls.PERMISSIONS) else limit
+        total = len(cls.PERMISSIONS) if limit > len(cls.PERMISSIONS) else limit
         current_page = 0 if page in (0, 1) else page
 
         if not cls.PERMISSIONS:
-            return params
+            return Page([], current_page, limit, total)
 
         params.append(list(cls.PERMISSIONS.items())[0][1])
-        return {'items': params[current_page:limit], 'document_meta': {'page': page, 'total': len(cls.PERMISSIONS)}}
+        return Page(params[current_page:total], current_page, limit, total)

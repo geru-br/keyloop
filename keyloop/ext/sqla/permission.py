@@ -68,14 +68,4 @@ class PermissionSource:
 
     @singletonmethod
     def list(self, page, limit):
-        permissions = paginate(self.session.query(self.model), page, limit)
-        params = {
-            'items': permissions.items,
-            'document_meta': {
-                'prev': permissions.previous_page,
-                'next': permissions.next_page,
-                'page': permissions.pages,
-                'total': permissions.total
-            }
-        }
-        return params
+        return paginate(self.session.query(self.model), page, limit)

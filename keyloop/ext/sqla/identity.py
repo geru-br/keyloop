@@ -112,6 +112,9 @@ class IdentitySource:
                 continue
 
             if key == 'password':
+                if not value:
+                    continue
+                    
                 value = self._set_password(value)
 
             setattr(identity, key, value)
