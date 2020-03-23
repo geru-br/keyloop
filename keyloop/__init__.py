@@ -58,6 +58,8 @@ def includeme(config):
     config.include("cornice")
     config.include('cornice_apispec')
 
+    config.include("grip")
+    config.include("keyloop.ext.sqla")
     config.include("keyloop.api.v1", route_prefix="/api/v1")
 
     # Security policies
