@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md") as f:
     long_description = f.read()
@@ -46,7 +46,6 @@ dev_requires = [
 
 sqla = ["sqlalchemy"]
 
-
 extras_require = {
     "sqla": sqla,
     "test": sqla + test_requires,
@@ -69,7 +68,7 @@ setup(
     install_requires=requires,
     extras_require=extras_require,
     url="https://github.com/debonzi/keyloop",
-    packages=["keyloop", ],
+    packages=find_packages(),
     entry_points={
         "paste.app_factory": ["main = keyloop:main", ],
         "console_scripts": [
