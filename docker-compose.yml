@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      args:
+        PIP_EXTRA_INDEX_URL: ${PIP_EXTRA_INDEX_URL}
+    volumes:
+      - .:/app
+    ports:
+      - "6543:6543"
