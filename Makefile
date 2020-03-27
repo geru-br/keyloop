@@ -1,7 +1,9 @@
 .PHONY: install reset-db run-playground test-playground
 
 install:
-	pip install -e .[dev]
+	pip install --upgrade pip==19.0.3
+	pip install poetry==0.12.17
+	poetry install
 
 run-playground:
 	python playground/main.py
