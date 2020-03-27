@@ -7,7 +7,7 @@ class BaseIdentitySchema(marshmallow_jsonapi.Schema):
         type_ = "identity"
 
     id = fields.UUID(dump_only=True, attribute="id")
-    name = fields.String(required=False)
+    name = fields.String(required=True)
     active = fields.Boolean()
     permissions = fields.List(fields.String(), dump_only=True)
 
