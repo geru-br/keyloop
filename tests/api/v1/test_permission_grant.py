@@ -21,12 +21,12 @@ def perm_grant_payload():
 class TestGrantPermission:
 
     def test_grant_permission_success(self, pyramid_app, perm_grant_payload, user, permission):
-        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
+        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.uuid}/permissions",
                                     perm_grant_payload,
                                     content_type="application/vnd.api+json",
                                     status=200)
 
-        assert (str(permission.uuid), str(user.id)) in user.PERMISSION_GRANTS
+        assert (str(permission.uuid), str(user.uuid)) in user.PERMISSION_GRANTS
         assert res.content_type == "application/vnd.api+json"
         assert res.json == {
             "data": {
@@ -60,7 +60,7 @@ class TestGrantPermission:
 
     def test_permission_not_found(self, pyramid_app, perm_grant_payload, user):
         perm_grant_payload["data"]["attributes"]["perm_name"] = "crazy-permission"
-        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
+        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.uuid}/permissions",
                                     perm_grant_payload,
                                     content_type="application/vnd.api+json",
                                     status=400)
@@ -78,14 +78,14 @@ class TestGrantPermission:
         }
 
     def test_permission_already_granted_to_identity(self, pyramid_app, perm_grant_payload, user, permission):
-        pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
+        pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.uuid}/permissions",
                               perm_grant_payload,
                               content_type="application/vnd.api+json",
                               status=200)
 
-        assert {(str(permission.uuid), str(user.id))} == user.PERMISSION_GRANTS
+        assert {(str(permission.uuid), str(user.uuid))} == user.PERMISSION_GRANTS
 
-        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.id}/permissions",
+        res = pyramid_app.post_json(f"/api/v1/realms/REALM/identities/{user.uuid}/permissions",
                                     perm_grant_payload,
                                     content_type="application/vnd.api+json",
                                     status=200)

@@ -44,11 +44,11 @@ def test_post_auth_session_calls_registered_identity_source(
                 "relationships": {
                     "identity": {
                         "links": {
-                            "self": f"/realms/REALM/identities/{str(user.id)}"
+                            "self": f"/realms/REALM/identities/{str(user.uuid)}"
                         },
                         "data": {
                             "type": "identity",
-                            "id": str(user.id)
+                            "id": str(user.uuid)
                         }
                     }
                 }
@@ -56,7 +56,7 @@ def test_post_auth_session_calls_registered_identity_source(
             "included": [
                 {
                     "type": "identity",
-                    "id": str(user.id),
+                    "id": str(user.uuid),
                     "attributes": {
                         "name": None,
                         "username": "test@test.com.br",

@@ -3,6 +3,7 @@ from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
+from keyloop.ext.sqla import IdentitySource, AuthSessionSource, PermissionSource
 from playground.models import Base, DBSession, RealIdentity, RealPermission
 
 
@@ -25,10 +26,10 @@ def main():
         config.include("keyloop.ext.sqla")
         config.include('pyramid_tm')
 
-        config.key_loop_setup(DBSession, {
-            'IdentitySource': RealIdentity,
-            'AuthSessionSource': RealIdentity,
-            'PermissionSource': RealPermission
+        config.keyloop_setup(DBSession, {
+            IdentitySource: RealIdentity,
+            AuthSessionSource: RealIdentity,
+            PermissionSource: RealPermission
         })
 
         app = config.make_wsgi_app()
