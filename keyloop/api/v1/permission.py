@@ -65,6 +65,7 @@ class PermissionResource(BaseResource):
                 name="name",
                 description=msg
             )
+            self.request.errors.status = 409
             logger.info(msg)
 
     @grip_view(schema=CollectionGetSchema, response_schema=collection_get_response_schemas)

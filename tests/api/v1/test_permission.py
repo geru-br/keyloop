@@ -39,7 +39,7 @@ def test_create_permission_with_existent_name(pyramid_app, permission_payload, f
 
     res = pyramid_app.post_json("/api/v1/realms/REALM/permissions", permission_payload,
                                 content_type="application/vnd.api+json",
-                                status=400)
+                                status=409)
 
     assert res.content_type == "application/vnd.api+json"
     assert res.json == {
