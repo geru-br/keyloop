@@ -12,9 +12,8 @@ class BaseSchema(marshmallow_jsonapi.Schema):
 
 class PermissionSchema(BaseSchema):
     # TODO: Add information about context.
-    name = fields.String(required=True)
-    description = fields.String(required=True,
-                                validate=validate.Length(min=1))  # Empty string not accepted
+    name = fields.String(required=True, validate=validate.Length(min=1))
+    description = fields.String(required=True, validate=validate.Length(min=1))
 
 
 class PermissionQueryStringSchema(marshmallow.Schema):
