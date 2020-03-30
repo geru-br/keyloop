@@ -23,7 +23,7 @@ jobs:
       - checkout
       - run:
           name: Install poetry
-          command: pip install poetry==1.0.5
+          command: pip install poetry==0.12.17
       - run:
           name: Build and publish to geru-pypi
           command: make publish
