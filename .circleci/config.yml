@@ -17,7 +17,8 @@ jobs:
             poetry install -vvv
       - run:
           name: Run Tests
-          command: pytest -vvv
+          command: |
+            pytest -vvv
   deploy:
     docker:
       - image: circleci/python:3.7
