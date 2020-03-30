@@ -11,7 +11,7 @@ class FakeAuthSession:
     def __init__(self, identity, active, ttl, start, uuid=None):
         self.uuid = uuid if uuid else generate_uuid()
         self.identity = identity
-        self.identity_id = identity.id
+        self.identity_id = identity.uuid
         self.active = active
         self.ttl = ttl
         self.start = start

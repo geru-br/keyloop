@@ -118,7 +118,7 @@ def test_delete_identity_not_found(pyramid_app, identity_payload, fake_user_clas
 
 
 def test_get_identity(pyramid_app, fake_user_class, user):
-    res = pyramid_app.get(f"/api/v1/realms/REALM/identities/{user.id}", status=200)
+    res = pyramid_app.get(f"/api/v1/realms/REALM/identities/{user.uuid}", status=200)
 
     assert res.json == {
         "data": {
@@ -133,7 +133,7 @@ def test_get_identity(pyramid_app, fake_user_class, user):
                 'active': True,
                 "username": "test@test.com.br"
             },
-            "id": str(user.id)
+            "id": str(user.uuid)
         }
     }
 

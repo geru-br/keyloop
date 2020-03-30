@@ -4,10 +4,9 @@ from keyloop.ext.sqla.permission import PermissionSource
 
 
 def setup_models(config, session, params):
-    for key, value in params.items():
-        merge_model = eval(key)
-        merge_model(session=session, model=value)
+    for source_class, model in params.items():
+        source_class(session=session, model=model)
 
 
 def includeme(config):
-    config.add_directive("key_loop_setup", setup_models)
+    config.add_directive("keyloop_setup", setup_models)

@@ -15,7 +15,7 @@ class AuthSessionSchema(marshmallow_jsonapi.Schema):
     identity = marshmallow_jsonapi.fields.Relationship(
         type_="identity",
         self_url='/realms/{realm_slug}/identities/{identity_id}',
-        self_url_kwargs={'realm_slug': 'REALM', "identity_id": "<identity.id>"},
+        self_url_kwargs={'realm_slug': 'REALM', "identity_id": "<identity.uuid>"},
         schema="IdentitySchema",
         dump_only=True,
     )

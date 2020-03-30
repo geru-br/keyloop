@@ -1,0 +1,1524 @@
+[[package]]
+category = "main"
+description = "A database migration tool for SQLAlchemy."
+name = "alembic"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.4.2"
+
+[package.dependencies]
+Mako = "*"
+SQLAlchemy = ">=1.1.0"
+python-dateutil = "*"
+python-editor = ">=0.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A pluggable API specification generator. Currently supports the OpenAPI Specification (f.k.a. the Swagger specification)."
+name = "apispec"
+optional = false
+python-versions = "*"
+version = "1.3.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Disable App Nap on OS X 10.9"
+marker = "sys_platform == \"darwin\""
+name = "appnope"
+optional = false
+python-versions = "*"
+version = "0.1.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Better dates & times for Python"
+name = "arrow"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.15.5"
+
+[package.dependencies]
+python-dateutil = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Atomic file writes."
+marker = "sys_platform == \"win32\""
+name = "atomicwrites"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.3.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Classes Without Boilerplate"
+name = "attrs"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "19.3.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Specifications for callback functions passed in to an API"
+name = "backcall"
+optional = false
+python-versions = "*"
+version = "0.1.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Screen-scraping library"
+name = "beautifulsoup4"
+optional = false
+python-versions = "*"
+version = "4.8.2"
+
+[package.dependencies]
+soupsieve = ">=1.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Python package for providing Mozilla's CA Bundle."
+name = "certifi"
+optional = false
+python-versions = "*"
+version = "2019.11.28"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Foreign Function Interface for Python calling C code."
+marker = "platform_python_implementation == \"CPython\" and sys_platform == \"win32\""
+name = "cffi"
+optional = false
+python-versions = "*"
+version = "1.14.0"
+
+[package.dependencies]
+pycparser = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Universal encoding detector for Python 2 and 3"
+name = "chardet"
+optional = false
+python-versions = "*"
+version = "3.0.4"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Composable command line interface toolkit"
+name = "click"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "7.1.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Cross-platform colored terminal text."
+marker = "sys_platform == \"win32\""
+name = "colorama"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.4.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
+name = "configargparse"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "1.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Define Web Services in Pyramid."
+name = "cornice"
+optional = false
+python-versions = "*"
+version = "4.0.1"
+
+[package.dependencies]
+pyramid = ">=1.7"
+simplejson = "*"
+six = "*"
+venusian = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Generate swagger from a Cornice application"
+name = "cornice-apispec"
+optional = false
+python-versions = "*"
+version = "0.9.3"
+
+[package.dependencies]
+cornice = "*"
+pyramid_apispec = "*"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Code coverage measurement for Python"
+name = "coverage"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+version = "5.0.4"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = ""
+name = "cryptacular"
+optional = false
+python-versions = "*"
+version = "1.5.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Decorators for Humans"
+name = "decorator"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+version = "4.4.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
+name = "factory-boy"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.12.0"
+
+[package.dependencies]
+Faker = ">=0.7.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Faker is a Python package that generates fake data for you."
+name = "faker"
+optional = false
+python-versions = ">=3.4"
+version = "4.0.2"
+
+[package.dependencies]
+python-dateutil = ">=2.4"
+text-unidecode = "1.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "A simple framework for building complex web applications."
+name = "flask"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "1.1.1"
+
+[package.dependencies]
+Jinja2 = ">=2.10.1"
+Werkzeug = ">=0.15"
+click = ">=5.1"
+itsdangerous = ">=0.24"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Let your Python tests travel through time"
+name = "freezegun"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.3.15"
+
+[package.dependencies]
+python-dateutil = ">=1.0,<2.0 || >2.0"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Coroutine-based network library"
+name = "gevent"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
+version = "1.5a3"
+
+[package.dependencies]
+cffi = ">=1.12.2"
+greenlet = ">=0.4.14"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Pre-built wheels for geventhttpclient"
+name = "geventhttpclient-wheels"
+optional = false
+python-versions = "*"
+version = "1.3.1.dev2"
+
+[package.dependencies]
+certifi = "*"
+gevent = ">=0.13"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Lightweight in-process concurrent programming"
+marker = "platform_python_implementation == \"CPython\""
+name = "greenlet"
+optional = false
+python-versions = "*"
+version = "0.4.15"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "WSGI HTTP Server for UNIX"
+name = "gunicorn"
+optional = false
+python-versions = ">=3.4"
+version = "20.0.4"
+
+[package.dependencies]
+setuptools = ">=3.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Integrated process monitor for developing and reloading daemons."
+name = "hupper"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.10.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Internationalized Domain Names in Applications (IDNA)"
+name = "idna"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.9"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Read metadata from Python packages"
+marker = "python_version < \"3.8\""
+name = "importlib-metadata"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+version = "1.5.2"
+
+[package.dependencies]
+zipp = ">=0.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "IPython: Productive Interactive Computing"
+name = "ipython"
+optional = false
+python-versions = ">=3.6"
+version = "7.13.0"
+
+[package.dependencies]
+appnope = "*"
+backcall = "*"
+colorama = "*"
+decorator = "*"
+jedi = ">=0.10"
+pexpect = "*"
+pickleshare = "*"
+prompt-toolkit = ">=2.0.0,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.1.0"
+pygments = "*"
+setuptools = ">=18.5"
+traitlets = ">=4.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Vestigial utilities from IPython"
+name = "ipython-genutils"
+optional = false
+python-versions = "*"
+version = "0.2.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Various helpers to pass data to untrusted environments and back."
+name = "itsdangerous"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.1.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "An autocompletion tool for Python that can be used for text editors."
+name = "jedi"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.16.0"
+
+[package.dependencies]
+parso = ">=0.5.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "A very fast and expressive template engine."
+name = "jinja2"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "2.11.1"
+
+[package.dependencies]
+MarkupSafe = ">=0.23"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Use package locustio instead"
+name = "locust"
+optional = false
+python-versions = "*"
+version = "0.0"
+
+[package.dependencies]
+locustio = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Website load testing framework"
+name = "locustio"
+optional = false
+python-versions = ">=3.6"
+version = "0.14.5"
+
+[package.dependencies]
+ConfigArgParse = ">=1.0"
+flask = ">=0.10.1"
+gevent = "1.5a3"
+geventhttpclient-wheels = "1.3.1.dev2"
+msgpack = ">=0.6.2"
+psutil = ">=5.6.7"
+pyzmq = ">=16.0.2"
+requests = ">=2.9.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A super-fast templating language that borrows the  best ideas from the existing templating languages."
+name = "mako"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.1.2"
+
+[package.dependencies]
+MarkupSafe = ">=0.9.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Safely add untrusted strings to HTML/XML markup."
+name = "markupsafe"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.1.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A lightweight library for converting complex datatypes to and from native Python datatypes."
+name = "marshmallow"
+optional = false
+python-versions = "*"
+version = "2.19.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Enum field for Marshmallow"
+name = "marshmallow-enum"
+optional = false
+python-versions = "*"
+version = "1.5.1"
+
+[package.dependencies]
+marshmallow = ">=2.0.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "JSON API 1.0 (https://jsonapi.org) formatting with marshmallow"
+name = "marshmallow-jsonapi"
+optional = false
+python-versions = ">=3.6"
+version = "0.23.0"
+
+[package.dependencies]
+marshmallow = ">=2.15.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "More routines for operating on iterables, beyond itertools"
+name = "more-itertools"
+optional = false
+python-versions = ">=3.5"
+version = "8.2.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "MessagePack (de)serializer."
+name = "msgpack"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Core utilities for Python packages"
+name = "packaging"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "20.3"
+
+[package.dependencies]
+pyparsing = ">=2.0.2"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A Python Parser"
+name = "parso"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.6.2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Load, configure, and compose WSGI applications and servers"
+name = "pastedeploy"
+optional = false
+python-versions = "*"
+version = "2.1.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Pexpect allows easy control of interactive console applications."
+marker = "sys_platform != \"win32\""
+name = "pexpect"
+optional = false
+python-versions = "*"
+version = "4.8.0"
+
+[package.dependencies]
+ptyprocess = ">=0.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Tiny 'shelve'-like database with concurrency support"
+name = "pickleshare"
+optional = false
+python-versions = "*"
+version = "0.7.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A loader interface around multiple config file formats."
+name = "plaster"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.0"
+
+[package.dependencies]
+setuptools = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A loader implementing the PasteDeploy syntax to be used by plaster."
+name = "plaster-pastedeploy"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "0.7"
+
+[package.dependencies]
+PasteDeploy = ">=2.0"
+plaster = ">=0.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "plugin and hook calling mechanisms for python"
+name = "pluggy"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.13.1"
+
+[package.dependencies]
+[package.dependencies.importlib-metadata]
+python = "<3.8"
+version = ">=0.12"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Library for building powerful interactive command lines in Python"
+name = "prompt-toolkit"
+optional = false
+python-versions = ">=3.6.1"
+version = "3.0.5"
+
+[package.dependencies]
+wcwidth = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Cross-platform lib for process and system monitoring in Python."
+name = "psutil"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "5.7.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Run a subprocess in a pseudo terminal"
+marker = "sys_platform != \"win32\""
+name = "ptyprocess"
+optional = false
+python-versions = "*"
+version = "0.6.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+name = "py"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.8.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "C parser in Python"
+marker = "platform_python_implementation == \"CPython\" and sys_platform == \"win32\""
+name = "pycparser"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.20"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "PycURL -- A Python Interface To The cURL library"
+name = "pycurl"
+optional = false
+python-versions = "*"
+version = "7.43.0.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Pygments is a syntax highlighting package written in Python."
+name = "pygments"
+optional = false
+python-versions = ">=3.5"
+version = "2.6.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Python parsing module"
+name = "pyparsing"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.6"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "The Pyramid Web Framework, a Pylons project"
+name = "pyramid"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.10.4"
+
+[package.dependencies]
+hupper = ">=1.5"
+plaster = "*"
+plaster-pastedeploy = "*"
+setuptools = "*"
+translationstring = ">=0.4"
+venusian = ">=1.0"
+webob = ">=1.8.3"
+"zope.deprecation" = ">=3.5.0"
+"zope.interface" = ">=3.8.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Pyramid plugin for openapi spec generation"
+name = "pyramid-apispec"
+optional = false
+python-versions = "*"
+version = "0.3.3"
+
+[package.dependencies]
+apispec = "1.3.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "pyramid ipython pshell"
+name = "pyramid-ipython"
+optional = false
+python-versions = "*"
+version = "0.2"
+
+[package.dependencies]
+IPython = "*"
+pyramid = ">1.6a2"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A package which allows Pyramid requests to join the active transaction"
+name = "pyramid-tm"
+optional = false
+python-versions = "*"
+version = "2.4"
+
+[package.dependencies]
+pyramid = ">=1.5"
+transaction = ">=2.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Python RESTful API Testing & Microbenchmarking Tool"
+name = "pyresttest"
+optional = false
+python-versions = "*"
+version = "1.7.1"
+
+[package.dependencies]
+pycurl = "*"
+pyyaml = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "pytest: simple powerful testing with Python"
+name = "pytest"
+optional = false
+python-versions = ">=3.5"
+version = "5.4.1"
+
+[package.dependencies]
+atomicwrites = ">=1.0"
+attrs = ">=17.4.0"
+colorama = "*"
+more-itertools = ">=4.0.0"
+packaging = "*"
+pluggy = ">=0.12,<1.0"
+py = ">=1.5.0"
+wcwidth = "*"
+
+[package.dependencies.importlib-metadata]
+python = "<3.8"
+version = ">=0.12"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Pytest plugin for measuring coverage."
+name = "pytest-cov"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.8.1"
+
+[package.dependencies]
+coverage = ">=4.4"
+pytest = ">=3.6"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Extensions to the standard Python datetime module"
+name = "python-dateutil"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+version = "2.8.1"
+
+[package.dependencies]
+six = ">=1.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Programmatically open an editor, capture the result."
+name = "python-editor"
+optional = false
+python-versions = "*"
+version = "1.0.4"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "YAML parser and emitter for Python"
+name = "pyyaml"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "5.3.1"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Python bindings for 0MQ"
+name = "pyzmq"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+version = "19.0.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Python HTTP for Humans."
+name = "requests"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "2.23.0"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+chardet = ">=3.0.2,<4"
+idna = ">=2.5,<3"
+urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Simple, fast, extensible JSON encoder/decoder for Python"
+name = "simplejson"
+optional = false
+python-versions = ">=2.5, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "3.17.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "1.14.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "A modern CSS selector implementation for Beautiful Soup."
+name = "soupsieve"
+optional = false
+python-versions = ">=3.5"
+version = "2.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Database Abstraction Library"
+name = "sqlalchemy"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.3.15"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A small utility to paginate SqlAlchemy queries."
+name = "sqlalchemy-pagination"
+optional = false
+python-versions = "*"
+version = "0.0.2"
+
+[package.dependencies]
+SqlAlchemy = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Various utility functions for SQLAlchemy."
+name = "sqlalchemy-utils"
+optional = false
+python-versions = "*"
+version = "0.36.3"
+
+[package.dependencies]
+SQLAlchemy = ">=1.0"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "The most basic Text::Unidecode port"
+name = "text-unidecode"
+optional = false
+python-versions = "*"
+version = "1.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Traitlets Python config system"
+name = "traitlets"
+optional = false
+python-versions = "*"
+version = "4.3.3"
+
+[package.dependencies]
+decorator = "*"
+ipython-genutils = "*"
+six = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Transaction management for Python"
+name = "transaction"
+optional = false
+python-versions = "*"
+version = "3.0.0"
+
+[package.dependencies]
+"zope.interface" = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Utility library for i18n relied on by various Repoze and Pyramid packages"
+name = "translationstring"
+optional = false
+python-versions = "*"
+version = "1.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+name = "urllib3"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+version = "1.25.8"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "A library for deferring decorator actions"
+name = "venusian"
+optional = false
+python-versions = ">=3.5"
+version = "3.0.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Waitress WSGI server"
+name = "waitress"
+optional = false
+python-versions = "*"
+version = "1.4.3"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Measures number of Terminal column cells of wide-character codes"
+name = "wcwidth"
+optional = false
+python-versions = "*"
+version = "0.1.9"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "WSGI request and response object"
+name = "webob"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+version = "1.8.6"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Helper to test WSGI applications"
+name = "webtest"
+optional = false
+python-versions = "*"
+version = "2.0.34"
+
+[package.dependencies]
+WebOb = ">=1.2"
+beautifulsoup4 = "*"
+six = "*"
+waitress = ">=0.8.5"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "The comprehensive WSGI web application library."
+name = "werkzeug"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "1.0.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "dev"
+description = "Backport of pathlib-compatible object wrapper for zip files"
+marker = "python_version < \"3.8\""
+name = "zipp"
+optional = false
+python-versions = ">=3.6"
+version = "3.1.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Zope Deprecation Infrastructure"
+name = "zope.deprecation"
+optional = false
+python-versions = "*"
+version = "4.4.0"
+
+[package.dependencies]
+setuptools = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Interfaces for Python"
+name = "zope.interface"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "5.0.1"
+
+[package.dependencies]
+setuptools = "*"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[[package]]
+category = "main"
+description = "Minimal Zope/SQLAlchemy transaction integration"
+name = "zope.sqlalchemy"
+optional = false
+python-versions = "*"
+version = "1.3"
+
+[package.dependencies]
+SQLAlchemy = ">=0.7"
+setuptools = "*"
+transaction = ">=1.6.0"
+"zope.interface" = ">=3.6.0"
+
+[package.source]
+reference = "geru-pypi"
+type = "legacy"
+url = "https://geru-pypi.geru.com.br/simple"
+
+[metadata]
+content-hash = "b5dffc9803d72c87e9c9d690eacec0a153a57ae1e413e3d8ef4d6e92e13baf7c"
+python-versions = "^3.7"
+
+[metadata.hashes]
+alembic = []
+apispec = []
+appnope = []
+arrow = []
+atomicwrites = []
+attrs = []
+backcall = []
+beautifulsoup4 = []
+certifi = []
+cffi = []
+chardet = []
+click = []
+colorama = []
+configargparse = []
+cornice = []
+cornice-apispec = []
+coverage = []
+cryptacular = []
+decorator = []
+factory-boy = []
+faker = []
+flask = []
+freezegun = []
+gevent = []
+geventhttpclient-wheels = []
+greenlet = []
+gunicorn = []
+hupper = []
+idna = []
+importlib-metadata = []
+ipython = []
+ipython-genutils = []
+itsdangerous = []
+jedi = []
+jinja2 = []
+locust = []
+locustio = []
+mako = []
+markupsafe = []
+marshmallow = []
+marshmallow-enum = []
+marshmallow-jsonapi = []
+more-itertools = []
+msgpack = []
+packaging = []
+parso = []
+pastedeploy = []
+pexpect = []
+pickleshare = []
+plaster = []
+plaster-pastedeploy = []
+pluggy = []
+prompt-toolkit = []
+psutil = []
+ptyprocess = []
+py = []
+pycparser = []
+pycurl = []
+pygments = []
+pyparsing = []
+pyramid = []
+pyramid-apispec = []
+pyramid-ipython = []
+pyramid-tm = []
+pyresttest = []
+pytest = []
+pytest-cov = []
+python-dateutil = []
+python-editor = []
+pyyaml = []
+pyzmq = []
+requests = []
+simplejson = []
+six = []
+soupsieve = []
+sqlalchemy = []
+sqlalchemy-pagination = []
+sqlalchemy-utils = []
+text-unidecode = []
+traitlets = []
+transaction = []
+translationstring = []
+urllib3 = []
+venusian = []
+waitress = []
+wcwidth = []
+webob = []
+webtest = []
+werkzeug = []
+zipp = []
+"zope.deprecation" = []
+"zope.interface" = []
+"zope.sqlalchemy" = []
