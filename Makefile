@@ -5,7 +5,7 @@ build:
 
 install:
 	pip install --upgrade pip==19.0.3
-	pip install poetry==0.12.17
+	pip install poetry==0.12.15
 	poetry install
 
 run-playground:
