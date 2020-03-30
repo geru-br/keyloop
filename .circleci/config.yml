@@ -18,8 +18,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            source venv/bin/activate
-            pytest -vvv
+            poetry run pytest -vvv
   deploy:
     docker:
       - image: circleci/python:3.7
