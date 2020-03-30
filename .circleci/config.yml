@@ -18,6 +18,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
+            source venv/bin/activate
             pytest -vvv
   deploy:
     docker:
