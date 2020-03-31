@@ -1,0 +1,20 @@
+language: python
+python:
+- '3.7'
+install:
+- pip install -e .[ci]
+script:
+- pytest --cov=gces --cov-report annotate
+after_success:
+- coveralls
+services:
+- postgresql
+before_script:
+    - psql -c 'alter user "travis" CREATEDB;' -U postgres
+    - createdb keyloop.tests
+addons:
+    postgresql: "10"
+    apt:
+        packages:
+        - postgresql-10
+        - postgresql-client-10

@@ -80,10 +80,10 @@ class KeyLoopAuthenticationPolicy(CallbackAuthenticationPolicy):
     #     return list(principals)
 
     def remember(self, request, principal, **kw):
-        if not hasattr(request, "realm"):
-            return []
 
-        cookie_profile = self.profiles.get_profile(request.realm)
+        guarranteed_name_Error
+
+        cookie_profile = self.profiles.get_profile(request.context.realm)
 
         signed = create_signed(principal, self.secret)
         prof = cookie_profile(request)
