@@ -18,6 +18,5 @@ test-playground:
 	pyresttest http://127.0.0.1:6543 playground/tests/pyresttest_api_scenarios.yaml
 
 publish: build
-	poetry config repositories.geru-pypi https://geru-pypi.geru.com.br/simple
-	poetry config http-basic.geru-pypi ${PYPI_USERNAME} ${PYPI_PASSWORD}
-	poetry publish -r geru-pypi
+	# Using twine because of poetry issue https://github.com/python-poetry/poetry/issues/1999
+	twine upload --repository-url https://geru-pypi.geru.com.br/ dist/*
