@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "keyloop"
-version = "0.0.1"
+version = "0.0.2"
 description = "Key Loop - Authorization Server."
 authors = ["Geru <tecnologia@geru.com.br>"]
+packages = [
+    { include = "keyloop" },
+    { include = "grip" },
+]
 
 [[tool.poetry.source]]
 name = "geru-pypi"
