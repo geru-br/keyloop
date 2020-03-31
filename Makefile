@@ -19,4 +19,5 @@ test-playground:
 
 publish: build
 	poetry config repositories.geru-pypi https://geru-pypi.geru.com.br/simple
-	poetry publish -r geru-pypi --username ${PYPI_USERNAME} --password ${PYPI_PASSWORD}
+	poetry config http-basic.geru-pypi ${PYPI_USERNAME} ${PYPI_PASSWORD}
+	poetry publish -r geru-pypi
